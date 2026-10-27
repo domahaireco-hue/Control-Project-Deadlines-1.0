@@ -70,18 +70,28 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ onEditProject }) => {
         </button>
       </div>
 
-      {/* Grid das 5 Colunas Kanban (Exibido na tela quando activeView === 'kanban') */}
+      {/* Grid das 6 Colunas Kanban (Exibido na tela quando activeView === 'kanban') */}
       {activeView === 'kanban' && (
-        <div className="kanban-board-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+        <div className="kanban-board-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
           {columns.map((col) => {
             const colProjects = filteredProjects.filter((p) => {
+              // 1. Concluídos: projetos finalizados com PC apresentada / aprovada
               if (col.id === 'col_completed') {
                 return p.columnId === 'col_completed' || p.isCompleted;
               }
-              // Projetos concluídos pertencem exclusivamente à coluna col_completed
               if (p.isCompleted || p.columnId === 'col_completed') {
                 return false;
               }
+
+              // 2. Em Tratativa: projetos com prorrogação solicitada / em análise
+              if (col.id === 'col_treaty') {
+                return p.columnId === 'col_treaty' || p.isInTreaty;
+              }
+              if (p.isInTreaty || p.columnId === 'col_treaty') {
+                return false;
+              }
+
+              // 3. Prazos Regulares (90, 60, 45, 32 Dias)
               return (
                 p.columnId === col.id || 
                 (col.id === 'col_45' && (p.columnId as string) === 'col_30') ||

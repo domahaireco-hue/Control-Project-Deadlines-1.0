@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { KanbanColumnConfig, Project } from '@/types';
 import { ProjectCard } from './ProjectCard';
 import { useProjects } from '@/context/ProjectContext';
-import { Layers, ShieldAlert, Clock, CheckCircle2 } from 'lucide-react';
+import { Layers, ShieldAlert, Clock, CheckCircle2, FileCheck2 } from 'lucide-react';
 
 interface KanbanColumnProps {
   column: KanbanColumnConfig;
@@ -52,6 +52,15 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           badgeLabelColor: 'text-sky-800',
           dropHighlight: 'ring-2 ring-sky-500 bg-sky-100/60 scale-[1.01]',
         };
+      case 'col_treaty':
+        return {
+          gradient: 'linear-gradient(135deg, #7e22ce 0%, #4c1d95 100%)',
+          borderClass: 'border-purple-300',
+          containerBg: 'bg-purple-50/30',
+          subtextColor: '#f3e8ff',
+          badgeLabelColor: 'text-purple-800',
+          dropHighlight: 'ring-2 ring-purple-500 bg-purple-100/60 scale-[1.01]',
+        };
       case 'col_completed':
         return {
           gradient: 'linear-gradient(135deg, #0d9488 0%, #065f46 100%)',
@@ -81,6 +90,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
     switch (column.id) {
       case 'col_completed':
         return <CheckCircle2 className="w-4 h-4 text-white" />;
+      case 'col_treaty':
+        return <FileCheck2 className="w-4 h-4 text-white" />;
       case 'col_risk':
       case 'col_32':
         return <ShieldAlert className="w-4 h-4 text-white" />;

@@ -64,6 +64,17 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
     headerBg: 'bg-gradient-to-r from-red-600 to-rose-700 text-white',
   },
   {
+    id: 'col_treaty',
+    title: 'Em Tratativa',
+    subtitle: 'Prorrogação solicitada / Em análise no órgão',
+    badgeLabel: 'Prorrogação',
+    accentColor: '#9333ea', // purple
+    lightBg: 'bg-purple-50/70',
+    borderClass: 'border-purple-200',
+    badgeClass: 'bg-purple-100 text-purple-800 border-purple-300',
+    headerBg: 'bg-gradient-to-r from-purple-700 to-indigo-800 text-white',
+  },
+  {
     id: 'col_completed',
     title: 'Concluídos / Finalizados',
     subtitle: 'Prestação de contas apresentada / Finalizado',
@@ -112,14 +123,15 @@ interface ProjectContextType {
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'quest_deadline_control_projects_v5';
+const LOCAL_STORAGE_KEY = 'quest_deadline_control_projects_v6';
 
-// Normaliza colunas legadas e garante que concluídos fiquem em col_completed
-function normalizeColumn(col: string, isCompleted?: boolean): KanbanColumnId {
+// Normaliza colunas e garante alocação correta para concluídos e tratativa
+function normalizeColumn(col: string, isCompleted?: boolean, isInTreaty?: boolean): KanbanColumnId {
   if (isCompleted || col === 'col_completed') return 'col_completed';
+  if ((isInTreaty || col === 'col_treaty') && !isCompleted) return 'col_treaty';
   if (col === 'col_30') return 'col_45';
   if (col === 'col_32') return 'col_risk';
-  if (col === 'col_90' || col === 'col_60' || col === 'col_45' || col === 'col_risk' || col === 'col_completed') return col;
+  if (col === 'col_90' || col === 'col_60' || col === 'col_45' || col === 'col_risk' || col === 'col_treaty' || col === 'col_completed') return col as KanbanColumnId;
   return 'col_90';
 }
 
@@ -133,7 +145,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           if (Array.isArray(parsed) && parsed.length > 0) {
             return parsed.map((p: Project) => ({
               ...p,
-              columnId: normalizeColumn(p.columnId, p.isCompleted),
+              columnId: normalizeColumn(p.columnId, p.isCompleted, p.isInTreaty),
             }));
           }
         }
@@ -143,7 +155,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     return (initialProjectsData as Project[]).map((p) => ({
       ...p,
-      columnId: normalizeColumn(p.columnId, p.isCompleted),
+      columnId: normalizeColumn(p.columnId, p.isCompleted, p.isInTreaty),
     }));
   });
 
@@ -230,7 +242,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       const fromColumn = project.columnId;
       const isMovingToCompleted = normalizedTo === 'col_completed';
-      const isMovingFromCompleted = fromColumn === 'col_completed';
+      const isMovingToTreaty = normalizedTo === 'col_treaty';
       const now = new Date().toISOString();
 
       const historyEntry: ProjectHistoryEntry = {
@@ -247,8 +259,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
             ? {
                 ...p,
                 columnId: normalizedTo,
-                isCompleted: isMovingToCompleted ? true : (isMovingFromCompleted ? false : p.isCompleted),
-                isInTreaty: isMovingToCompleted ? true : p.isInTreaty,
+                isCompleted: isMovingToCompleted,
+                isInTreaty: isMovingToCompleted ? true : (isMovingToTreaty ? true : false),
                 isManualColumn: true,
                 history: [historyEntry, ...(p.history || [])],
                 updatedAt: now,
@@ -531,7 +543,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (confirm('Deseja restaurar a base de dados original da planilha Quest Consult com a Coluna C atualizada?')) {
       const fresh = (initialProjectsData as Project[]).map((p) => ({
         ...p,
-        columnId: normalizeColumn(p.columnId),
+        columnId: normalizeColumn(p.columnId, p.isCompleted, p.isInTreaty),
       }));
       setProjects(fresh);
       if (typeof window !== 'undefined') {

@@ -68,9 +68,17 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
       color: '#047857',
     },
     {
+      id: 'col_treaty',
+      matchIds: ['col_treaty'],
+      title: '5. EM TRATATIVA (Prorrogação Solicitada / Em Análise no Órgão)',
+      subtitle: 'Projetos com pedido de prorrogação em andamento',
+      badge: 'bg-purple-100 text-purple-900 border-purple-300',
+      color: '#7e22ce',
+    },
+    {
       id: 'col_completed',
       matchIds: ['col_completed'],
-      title: '5. CONCLUÍDOS / FINALIZADOS (Prestação de Contas Apresentada / Aprovada)',
+      title: '6. CONCLUÍDOS / FINALIZADOS (Prestação de Contas Apresentada / Aprovada)',
       subtitle: 'Projetos finalizados',
       badge: 'bg-teal-100 text-teal-900 border-teal-300',
       color: '#0d9488',

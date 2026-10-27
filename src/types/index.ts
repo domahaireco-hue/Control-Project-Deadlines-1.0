@@ -3,7 +3,7 @@
  * Desenvolvido para Quest Consult
  */
 
-export type KanbanColumnId = 'col_90' | 'col_60' | 'col_45' | 'col_32' | 'col_30' | 'col_risk' | 'col_completed';
+export type KanbanColumnId = 'col_90' | 'col_60' | 'col_45' | 'col_32' | 'col_30' | 'col_risk' | 'col_treaty' | 'col_completed';
 
 export type KvStatus = 'nao_enviado' | 'em_aprovacao' | 'aprovada' | 'reprovada';
 

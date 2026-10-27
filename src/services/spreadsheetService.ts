@@ -318,7 +318,9 @@ export function evaluateProjectStatusAndDates({
     }
   }
 
-  const columnId: KanbanColumnId = isCompleted ? 'col_completed' : determineKanbanColumn(daysRemaining);
+  const columnId: KanbanColumnId = isCompleted 
+    ? 'col_completed' 
+    : (isInTreaty ? 'col_treaty' : determineKanbanColumn(daysRemaining));
 
   return {
     status: finalStatus,

@@ -8,7 +8,8 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   Info,
-  Loader2 
+  Loader2,
+  Trash2 
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { ImportResult } from '@/types';
@@ -19,11 +20,12 @@ interface UploadModalProps {
 }
 
 export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
-  const { importSpreadsheet } = useProjects();
+  const { importSpreadsheet, clearAllProjects, projects } = useProjects();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [dragActive, setDragActive] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [cleanBeforeImport, setCleanBeforeImport] = useState(true);
   const [result, setResult] = useState<ImportResult | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
 
@@ -39,8 +41,8 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => 
 
     try {
       const buffer = await file.arrayBuffer();
-      // Executa o parser do spreadsheetService
-      const importStats = importSpreadsheet(buffer);
+      // Executa o parser do spreadsheetService passando flag de substituição
+      const importStats = importSpreadsheet(buffer, cleanBeforeImport);
       setResult(importStats);
     } catch (err: unknown) {
       console.error('Erro ao importar planilha:', err);
@@ -123,6 +125,41 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => 
               <li>A coluna Kanban é calculada com base na data de vencimento restante.</li>
             </ul>
           </div>
+
+          {/* Opção para Limpar / Substituir Base */}
+          {!result && (
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 text-xs">
+              <label className="flex items-center gap-2.5 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={cleanBeforeImport}
+                  onChange={(e) => setCleanBeforeImport(e.target.checked)}
+                  className="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500 shrink-0"
+                />
+                <div>
+                  <span className="font-bold text-slate-800">Substituir base existente por completo</span>
+                  <p className="text-[11px] text-slate-500">
+                    Limpa os {projects.length} projetos atuais e carrega exclusivamente os dados da nova planilha.
+                  </p>
+                </div>
+              </label>
+
+              {projects.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (clearAllProjects()) {
+                      alert('Base de projetos limpa com sucesso! Agora você pode importar sua nova planilha.');
+                    }
+                  }}
+                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors shrink-0"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-500" />
+                  <span>Limpar Base Agora ({projects.length})</span>
+                </button>
+              )}
+            </div>
+          )}
 
           {/* Área de Drag & Drop */}
           {!result && (

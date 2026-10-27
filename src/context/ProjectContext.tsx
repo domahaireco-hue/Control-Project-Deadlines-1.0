@@ -103,7 +103,8 @@ interface ProjectContextType {
   addProject: (newProj: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateProject: (id: string, updates: Partial<Project>, logNote?: string) => void;
   deleteProject: (id: string) => void;
-  importSpreadsheet: (buffer: ArrayBuffer) => ImportResult;
+  importSpreadsheet: (buffer: ArrayBuffer, replaceAll?: boolean) => ImportResult;
+  clearAllProjects: () => boolean;
   runFunnelAdvance: (force?: boolean) => Promise<FunnelAdvanceResult>;
   sendDailyReportEmail: () => Promise<{ log: NotificationLog; summary: any }>;
   resetToDefault: () => void;
@@ -479,15 +480,31 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setProjects((prev) => prev.filter((p) => p.id !== id));
   }, []);
 
-  // Importar Planilha Excel (.xlsx / .csv)
+  // Importar Planilha Excel (.xlsx / .csv) com opção de substituir base
   const importSpreadsheet = useCallback(
-    (buffer: ArrayBuffer): ImportResult => {
-      const { projects: updatedList, result } = parseSpreadsheetBuffer(buffer, projects);
+    (buffer: ArrayBuffer, replaceAll: boolean = false): ImportResult => {
+      const baseProjects = replaceAll ? [] : projects;
+      const { projects: updatedList, result } = parseSpreadsheetBuffer(buffer, baseProjects);
       setProjects(updatedList);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedList));
+      }
       return result;
     },
     [projects]
   );
+
+  // Limpar toda a base de projetos para importação limpa
+  const clearAllProjects = useCallback((): boolean => {
+    if (confirm('Tem certeza de que deseja limpar todos os projetos cadastrados? A base ficará zerada para você importar a planilha atualizada.')) {
+      setProjects([]);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([]));
+      }
+      return true;
+    }
+    return false;
+  }, []);
 
   // Executar Avanço Automático do Funil
   const runFunnelAdvance = useCallback(
@@ -550,6 +567,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateProject,
         deleteProject,
         importSpreadsheet,
+        clearAllProjects,
         runFunnelAdvance,
         sendDailyReportEmail,
         resetToDefault,

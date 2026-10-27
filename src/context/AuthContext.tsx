@@ -18,24 +18,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Inicializa sessão a partir do localStorage
+  // Inicializa sessão a partir do servidor via Cookie HttpOnly seguro
   useEffect(() => {
-    try {
-      const active = AuthService.getCurrentUser();
-      setUser(active);
-    } catch (err) {
-      console.error('Erro ao verificar sessão ativa:', err);
-    } finally {
-      setIsLoading(false);
-    }
+    let isMounted = true;
+    AuthService.getCurrentUser()
+      .then((activeUser) => {
+        if (isMounted) {
+          setUser(activeUser);
+          setIsLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.error('Erro ao verificar sessão ativa no servidor:', err);
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      // Simula pequena latência de validação para UX suave
-      await new Promise((resolve) => setTimeout(resolve, 350));
-      const res = AuthService.login(email, password);
+      const res = await AuthService.login(email, password);
       if (res.success && res.user) {
         setUser(res.user);
         return { success: true };
@@ -46,8 +52,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const logout = useCallback(() => {
-    AuthService.logout();
+  const logout = useCallback(async () => {
+    await AuthService.logout();
     setUser(null);
   }, []);
 

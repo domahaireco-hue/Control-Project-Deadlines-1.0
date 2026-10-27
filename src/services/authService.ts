@@ -1,72 +1,56 @@
 /**
- * Authentication Service
+ * Client Authentication Service
  * Desenvolvido para Quest Consult
  * 
- * Gerencia a autenticação dos 4 usuários oficiais da Quest Consult
+ * Comunica-se exclusivamente com a API de segurança no servidor (/api/auth/*).
+ * Nenhuma senha ou hash é exposta no código do cliente.
  */
 
 import { AuthUser } from '@/types';
 
-export interface UserCredentials {
+export interface TeamMemberProfile {
   email: string;
-  passwordHash: string; // senha em texto/hash para validação
-  user: AuthUser;
+  name: string;
+  role: string;
+  avatarInitials: string;
 }
 
-export const VALID_CREDENTIALS: UserCredentials[] = [
+// Perfis públicos apenas para atalhos de preenchimento na interface (sem credenciais)
+export const QUEST_TEAM_MEMBERS: TeamMemberProfile[] = [
   {
     email: 'catelani@questconsult.com.br',
-    passwordHash: 'Catelani@2026',
-    user: {
-      id: 'usr_catelani',
-      email: 'catelani@questconsult.com.br',
-      name: 'Thiago Catelani',
-      role: 'Diretoria / Coordenação Geral',
-      avatarInitials: 'TC',
-    },
+    name: 'Thiago Catelani',
+    role: 'Diretoria / Coordenação Geral',
+    avatarInitials: 'TC',
   },
   {
     email: 'tk@questconsult.com.br',
-    passwordHash: 'Tk@2026',
-    user: {
-      id: 'usr_tk',
-      email: 'tk@questconsult.com.br',
-      name: 'Thiago Kling',
-      role: 'Gestão Estratégica & Projetos',
-      avatarInitials: 'TK',
-    },
+    name: 'Thiago Kling',
+    role: 'Gestão Estratégica & Projetos',
+    avatarInitials: 'TK',
   },
   {
     email: 'lucas@questconsult.com.br',
-    passwordHash: 'Lucas@2026',
-    user: {
-      id: 'usr_lucas',
-      email: 'lucas@questconsult.com.br',
-      name: 'Lucas',
-      role: 'Operações & Prestação de Contas',
-      avatarInitials: 'LU',
-    },
+    name: 'Lucas',
+    role: 'Operações & Prestação de Contas',
+    avatarInitials: 'LU',
   },
   {
     email: 'bruno.britto@questconsult.com.br',
-    passwordHash: 'Bruno@2026',
-    user: {
-      id: 'usr_bruno',
-      email: 'bruno.britto@questconsult.com.br',
-      name: 'Bruno Britto',
-      role: 'Gestão de Prazos & Compliance',
-      avatarInitials: 'BB',
-    },
+    name: 'Bruno Britto',
+    role: 'Gestão de Prazos & Compliance',
+    avatarInitials: 'BB',
   },
 ];
 
-const AUTH_STORAGE_KEY = 'quest_deadline_auth_user_v1';
-
 export class AuthService {
   /**
-   * Tenta realizar o login com email e senha
+   * Dispara autenticação segura para o servidor
    */
-  public static login(emailInput: string, passwordInput: string): { success: boolean; user?: AuthUser; error?: string } {
+  public static async login(
+    emailInput: string,
+    passwordInput: string
+  ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
     const trimmedEmail = emailInput.trim().toLowerCase();
     const trimmedPassword = passwordInput.trim();
 
@@ -74,77 +58,78 @@ export class AuthService {
       return { success: false, error: 'Por favor, preencha o e-mail e a senha corporativa.' };
     }
 
-    const matched = VALID_CREDENTIALS.find(
-      (c) => c.email.toLowerCase() === trimmedEmail
-    );
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          password: trimmedPassword,
+        }),
+      });
 
-    if (!matched) {
-      return { 
-        success: false, 
-        error: 'E-mail não autorizado. Utilize um dos endereços corporativos autorizados da Quest Consult.' 
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        return {
+          success: false,
+          error: data.error || 'Credenciais inválidas ou acesso não autorizado.',
+        };
+      }
+
+      return { success: true, user: data.user };
+    } catch (err) {
+      console.error('Erro na requisição de autenticação:', err);
+      return {
+        success: false,
+        error: 'Erro de conexão com o servidor. Verifique sua conexão e tente novamente.',
       };
     }
-
-    if (matched.passwordHash !== trimmedPassword) {
-      return { 
-        success: false, 
-        error: 'Senha incorreta. Verifique maiúsculas e caracteres especiais.' 
-      };
-    }
-
-    // Salva na sessão local
-    this.saveSession(matched.user);
-
-    return { success: true, user: matched.user };
   }
 
   /**
-   * Obtém o usuário atualmente logado (se houver sessão válida)
+   * Obtém a sessão ativa validada pelo servidor via Cookie HttpOnly
    */
-  public static getCurrentUser(): AuthUser | null {
-    if (typeof window === 'undefined') return null;
-
+  public static async getCurrentUser(): Promise<AuthUser | null> {
     try {
-      const stored = localStorage.getItem(AUTH_STORAGE_KEY);
-      if (!stored) return null;
-      const parsed = JSON.parse(stored) as AuthUser;
-      
-      // Valida se o usuário salvo ainda pertence à lista autorizada
-      const isValid = VALID_CREDENTIALS.some((c) => c.user.id === parsed.id && c.user.email === parsed.email);
-      return isValid ? parsed : null;
-    } catch {
+      const response = await fetch('/api/auth/me', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const data = await response.json();
+      return data.user || null;
+    } catch (err) {
       return null;
     }
   }
 
   /**
-   * Salva a sessão no localStorage
+   * Realiza logout invalidando o cookie HttpOnly no servidor
    */
-  public static saveSession(user: AuthUser): void {
-    if (typeof window === 'undefined') return;
+  public static async logout(): Promise<void> {
     try {
-      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+      await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
     } catch (err) {
-      console.error('Erro ao salvar sessão de usuário:', err);
+      console.error('Erro ao encerrar sessão no servidor:', err);
     }
   }
 
   /**
-   * Encerra a sessão
+   * Retorna os membros da equipe para exibição nos atalhos visuais
    */
-  public static logout(): void {
-    if (typeof window === 'undefined') return;
-    try {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
-    } catch (err) {
-      console.error('Erro ao encerrar sessão:', err);
-    }
-  }
-
-  /**
-   * Retorna os usuários corporativos disponíveis
-   */
-  public static getAvailableUsers(): AuthUser[] {
-    return VALID_CREDENTIALS.map((c) => c.user);
+  public static getTeamMembers(): TeamMemberProfile[] {
+    return QUEST_TEAM_MEMBERS;
   }
 }

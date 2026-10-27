@@ -14,7 +14,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { VALID_CREDENTIALS } from '@/services/authService';
+import { QUEST_TEAM_MEMBERS } from '@/services/authService';
 
 export const LoginScreen: React.FC = () => {
   const { login, isLoading } = useAuth();
@@ -163,24 +163,24 @@ export const LoginScreen: React.FC = () => {
               <span>Usuários Cadastrados</span>
             </p>
             <div className="grid grid-cols-2 gap-2">
-              {VALID_CREDENTIALS.map((cred) => (
+              {QUEST_TEAM_MEMBERS.map((member) => (
                 <button
-                  key={cred.email}
+                  key={member.email}
                   type="button"
-                  onClick={() => handleSelectQuickUser(cred.email)}
+                  onClick={() => handleSelectQuickUser(member.email)}
                   className={`p-2 rounded-xl border text-left transition-all ${
-                    email.toLowerCase() === cred.email.toLowerCase()
+                    email.toLowerCase() === member.email.toLowerCase()
                       ? 'bg-sky-950/60 border-sky-500 text-white shadow-2xs'
                       : 'bg-slate-950/40 border-slate-850 hover:bg-slate-800/60 text-slate-300'
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-sky-300 shrink-0">
-                      {cred.user.avatarInitials}
+                      {member.avatarInitials}
                     </div>
                     <div className="truncate">
-                      <p className="text-xs font-bold truncate">{cred.user.name}</p>
-                      <p className="text-[10px] text-slate-400 truncate">{cred.email.split('@')[0]}</p>
+                      <p className="text-xs font-bold truncate">{member.name}</p>
+                      <p className="text-[10px] text-slate-400 truncate">{member.email.split('@')[0]}</p>
                     </div>
                   </div>
                 </button>

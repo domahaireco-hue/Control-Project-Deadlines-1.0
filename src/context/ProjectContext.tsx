@@ -5,12 +5,8 @@ import { Project, KanbanColumnConfig, KanbanColumnId, CardMoveEvent, Notificatio
 import { notificationService } from '@/services/notificationService';
 import { FunnelService, FunnelAdvanceResult } from '@/services/funnelService';
 import { parseSpreadsheetBuffer } from '@/services/spreadsheetService';
-import { AuthService } from '@/services/authService';
+import { useAuth } from '@/context/AuthContext';
 import initialProjectsData from '@/data/initialProjects.json';
-
-function getActiveUserName(): string {
-  return AuthService.getCurrentUser()?.name || 'Equipe Quest';
-}
 
 export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
   {
@@ -136,6 +132,9 @@ function normalizeColumn(col: string, isCompleted?: boolean, isInTreaty?: boolea
 }
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  const getActiveUserName = useCallback(() => user?.name || 'Equipe Quest', [user]);
+
   const [projects, setProjects] = useState<Project[]>(() => {
     if (typeof window !== 'undefined') {
       try {

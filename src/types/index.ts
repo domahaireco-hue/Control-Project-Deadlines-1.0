@@ -16,6 +16,14 @@ export interface ProjectHistoryEntry {
   changes?: { field: string; from: any; to: any }[];
 }
 
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  avatarInitials: string;
+}
+
 export type LawMechanism = 
   | 'Rouanet' 
   | 'PROAC' 

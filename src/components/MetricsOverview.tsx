@@ -46,22 +46,15 @@ export const MetricsOverview: React.FC = () => {
     <div className="bg-white border-b border-quest-200 py-3.5 px-4 sm:px-6 lg:px-8 shadow-xs no-print">
       <div className="max-w-7xl mx-auto space-y-3.5">
         
-        {/* KPI Cards (Janelas 90, 60, 45, 32 Dias, Tratativa e Concluídos) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5">
+        {/* KPI Cards (Janelas 90, 60, 45, 32 Dias, Tratativa e Concluídos) - Visualização Estatística (Não clicáveis) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5 select-none">
           
           {/* Total Projetos */}
-          <div 
-            onClick={() => setTreatyFilter('ALL')}
-            className={`border rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-pointer transition-all ${
-              treatyFilter === 'ALL'
-                ? 'bg-slate-100 border-slate-400 ring-2 ring-slate-400'
-                : 'bg-slate-50 border-slate-200 hover:bg-slate-100'
-            }`}
-            title="Clique para ver todos os projetos"
-          >
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-default">
             <div>
               <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Total Geral</p>
               <p className="text-xl font-black text-slate-900 mt-0.5">{projects.length}</p>
+              <p className="text-[9px] text-slate-500 font-medium">Projetos Ativos</p>
             </div>
             <div className="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center text-slate-700">
               <Layers className="w-4 h-4" />
@@ -69,7 +62,7 @@ export const MetricsOverview: React.FC = () => {
           </div>
 
           {/* Coluna 90 Dias */}
-          <div className="bg-emerald-50/80 border border-emerald-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs">
+          <div className="bg-emerald-50/80 border border-emerald-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-default">
             <div>
               <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">90 Dias</p>
               <p className="text-xl font-black text-emerald-950 mt-0.5">{count90}</p>
@@ -81,7 +74,7 @@ export const MetricsOverview: React.FC = () => {
           </div>
 
           {/* Coluna 60 Dias */}
-          <div className="bg-sky-50/80 border border-sky-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs">
+          <div className="bg-sky-50/80 border border-sky-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-default">
             <div>
               <p className="text-[10px] font-bold text-sky-800 uppercase tracking-wider">60 Dias</p>
               <p className="text-xl font-black text-sky-950 mt-0.5">{count60}</p>
@@ -93,7 +86,7 @@ export const MetricsOverview: React.FC = () => {
           </div>
 
           {/* Coluna 45 Dias */}
-          <div className="bg-amber-50/80 border border-amber-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs">
+          <div className="bg-amber-50/80 border border-amber-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-default">
             <div>
               <p className="text-[10px] font-bold text-amber-800 uppercase tracking-wider">45 Dias</p>
               <p className="text-xl font-black text-amber-950 mt-0.5">{count45}</p>
@@ -105,7 +98,7 @@ export const MetricsOverview: React.FC = () => {
           </div>
 
           {/* Coluna 32 Dias (Risco) */}
-          <div className="bg-red-50 border border-red-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs">
+          <div className="bg-red-50 border border-red-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-default">
             <div>
               <p className="text-[10px] font-bold text-red-800 uppercase tracking-wider flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping"></span>
@@ -120,15 +113,7 @@ export const MetricsOverview: React.FC = () => {
           </div>
 
           {/* Projetos em Tratativa */}
-          <div 
-            onClick={() => setTreatyFilter(treatyFilter === 'TREATY' ? 'ALL' : 'TREATY')}
-            className={`border rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-pointer transition-all ${
-              treatyFilter === 'TREATY'
-                ? 'bg-purple-100 border-purple-500 ring-2 ring-purple-500'
-                : 'bg-purple-50/80 border-purple-300 hover:bg-purple-100/70'
-            }`}
-            title="Clique para filtrar apenas os projetos em tratativa (prorrogação solicitada)"
-          >
+          <div className="bg-purple-50/80 border border-purple-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-default">
             <div>
               <p className="text-[10px] font-bold text-purple-800 uppercase tracking-wider">Em Tratativa</p>
               <p className="text-xl font-black text-purple-950 mt-0.5">{countTreaty}</p>
@@ -140,15 +125,7 @@ export const MetricsOverview: React.FC = () => {
           </div>
 
           {/* Projetos Concluídos */}
-          <div 
-            onClick={() => setTreatyFilter(treatyFilter === 'COMPLETED' ? 'ALL' : 'COMPLETED')}
-            className={`border rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-pointer transition-all ${
-              treatyFilter === 'COMPLETED'
-                ? 'bg-teal-100 border-teal-500 ring-2 ring-teal-500'
-                : 'bg-teal-50/80 border-teal-300 hover:bg-teal-100/70'
-            }`}
-            title="Clique para filtrar apenas os projetos concluídos (prestação de contas apresentada / aprovada)"
-          >
+          <div className="bg-teal-50/80 border border-teal-300 rounded-xl p-2.5 flex items-center justify-between shadow-2xs cursor-default">
             <div>
               <p className="text-[10px] font-bold text-teal-800 uppercase tracking-wider">Concluídos</p>
               <p className="text-xl font-black text-teal-950 mt-0.5">{countCompleted}</p>

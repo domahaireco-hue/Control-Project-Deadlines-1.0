@@ -9,9 +9,12 @@ import {
   RotateCcw,
   Printer,
   Mail,
-  Send
+  Send,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
+import { useAuth } from '@/context/AuthContext';
 import { PdfSnapshotService } from '@/services/pdfSnapshotService';
 
 interface HeaderProps {
@@ -28,6 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenDailyReport,
 }) => {
   const { projects, historyLogs, isAdvancingFunnel, runFunnelAdvance, resetToDefault } = useProjects();
+  const { user, logout } = useAuth();
 
   const handleAdvanceFunnel = async () => {
     const res = await runFunnelAdvance(false);
@@ -147,6 +151,32 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <RotateCcw className="w-4 h-4" />
             </button>
+
+            {/* Perfil do Usuário Logado & Logout */}
+            {user && (
+              <div className="flex items-center gap-2 pl-2 border-l border-quest-800">
+                <div 
+                  className="flex items-center gap-2 py-1 px-2.5 rounded-xl bg-quest-800/90 border border-quest-700/80 shadow-2xs"
+                  title={`Conectado como ${user.name} (${user.email})`}
+                >
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-sky-500 to-indigo-600 text-white font-black text-[11px] flex items-center justify-center shadow-xs">
+                    {user.avatarInitials}
+                  </div>
+                  <div className="text-left hidden lg:block leading-tight">
+                    <p className="text-xs font-bold text-white leading-none">{user.name}</p>
+                    <p className="text-[10px] text-quest-400 truncate max-w-[120px]">{user.role.split('/')[0]}</p>
+                  </div>
+                </div>
+
+                <button
+                  onClick={logout}
+                  title="Sair do sistema (Logout)"
+                  className="p-2 rounded-lg bg-quest-800 hover:bg-rose-950/70 hover:text-rose-300 text-quest-400 border border-quest-700 hover:border-rose-800/80 transition-all"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            )}
 
           </div>
 

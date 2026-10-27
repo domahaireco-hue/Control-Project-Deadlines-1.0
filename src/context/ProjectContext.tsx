@@ -5,7 +5,12 @@ import { Project, KanbanColumnConfig, KanbanColumnId, CardMoveEvent, Notificatio
 import { notificationService } from '@/services/notificationService';
 import { FunnelService, FunnelAdvanceResult } from '@/services/funnelService';
 import { parseSpreadsheetBuffer } from '@/services/spreadsheetService';
+import { AuthService } from '@/services/authService';
 import initialProjectsData from '@/data/initialProjects.json';
+
+function getActiveUserName(): string {
+  return AuthService.getCurrentUser()?.name || 'Equipe Quest';
+}
 
 export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
   {
@@ -230,7 +235,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const historyEntry: ProjectHistoryEntry = {
         id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         timestamp: now,
-        user: 'Usuário',
+        user: getActiveUserName(),
         action: `Movido de "${fromColumn}" para "${normalizedTo}"`,
         details: reason || 'Movimentação manual no quadro Kanban',
       };
@@ -276,7 +281,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const historyEntry: ProjectHistoryEntry = {
           id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
           timestamp: now,
-          user: 'Usuário',
+          user: getActiveUserName(),
           action: 'Atualização de KV / Arte Digital',
           details: `Status alterado de "${p.kvStatus || 'nao_enviado'}" para "${status}"`,
         };
@@ -303,7 +308,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const historyEntry: ProjectHistoryEntry = {
           id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
           timestamp: now,
-          user: 'Usuário',
+          user: getActiveUserName(),
           action: `PROAC: ${fieldName}`,
           details: `${fieldName} marcado como ${newVal ? 'Cadastrado' : 'Pendente'}`,
         };
@@ -334,7 +339,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const historyEntry: ProjectHistoryEntry = {
           id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
           timestamp: now,
-          user: 'Usuário',
+          user: getActiveUserName(),
           action: newInTreaty ? 'Marcado como Em Tratativa' : 'Removido de Tratativa',
           details: newInTreaty ? 'Projeto em prorrogação ou prestação de contas' : 'Retornado ao fluxo normal',
         };
@@ -360,7 +365,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const historyEntry: ProjectHistoryEntry = {
           id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
           timestamp: now,
-          user: 'Usuário',
+          user: getActiveUserName(),
           action: newCompleted ? 'Conclusão de Projeto' : 'Reabertura de Projeto',
           details: newCompleted 
             ? 'Movido para Concluídos / Finalizados (Prestação de Contas Apresentada)' 
@@ -385,7 +390,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const historyEntry: ProjectHistoryEntry = {
       id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       timestamp: now,
-      user: 'Usuário',
+      user: getActiveUserName(),
       action: 'Anotação / Observação Registrada',
       details: noteText.trim(),
     };
@@ -410,7 +415,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const historyEntry: ProjectHistoryEntry = {
         id: `hist_${Date.now()}_init`,
         timestamp: now,
-        user: 'Usuário',
+        user: getActiveUserName(),
         action: 'Criação do Projeto',
         details: 'Projeto cadastrado manualmente no sistema',
       };
@@ -452,7 +457,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const historyEntry: ProjectHistoryEntry = {
           id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
           timestamp: now,
-          user: 'Usuário',
+          user: getActiveUserName(),
           action: logNote || (changes.length > 0 ? `Atualizou: ${changes.map(c => c.field).join(', ')}` : 'Edição de dados do projeto'),
           details: changes.map(c => `${c.field}: "${c.from ?? 'vazio'}" ➔ "${c.to ?? 'vazio'}"`).join(' | '),
           changes,

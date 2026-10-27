@@ -9,14 +9,36 @@ import { UploadModal } from '@/components/UploadModal';
 import { NotificationDrawer } from '@/components/NotificationDrawer';
 import { NotificationToast } from '@/components/NotificationToast';
 import { DailyReportModal } from '@/components/DailyReportModal';
+import { LoginScreen } from '@/components/LoginScreen';
+import { useAuth } from '@/context/AuthContext';
 import { Project } from '@/types';
 
 export default function HomePage() {
+  const { isAuthenticated, isLoading } = useAuth();
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
   const [isDailyReportOpen, setIsDailyReportOpen] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
+
+  // Splash screen enquanto valida a sessão local
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-400 p-0.5 animate-pulse mb-3">
+          <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+            <span className="font-black text-xl text-sky-400">Q</span>
+          </div>
+        </div>
+        <p className="text-xs text-slate-400 font-medium">Validando autenticação Quest Consult...</p>
+      </div>
+    );
+  }
+
+  // Se não estiver logado, exibe tela de login corporativo
+  if (!isAuthenticated) {
+    return <LoginScreen />;
+  }
 
   const handleOpenNewProject = () => {
     setProjectToEdit(null);

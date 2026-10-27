@@ -67,6 +67,14 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
       badge: 'bg-emerald-100 text-emerald-900 border-emerald-300',
       color: '#047857',
     },
+    {
+      id: 'col_completed',
+      matchIds: ['col_completed'],
+      title: '5. CONCLUÍDOS / FINALIZADOS (Prestação de Contas Apresentada / Aprovada)',
+      subtitle: 'Projetos finalizados',
+      badge: 'bg-teal-100 text-teal-900 border-teal-300',
+      color: '#0d9488',
+    },
   ];
 
   const formatDaysText = (days: number | null | undefined, isInTreaty?: boolean, isCompleted?: boolean) => {

@@ -2,7 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { Project, KanbanColumnId, LawMechanism, KvStatus } from '@/types';
-import { X, Save, Calendar, User, FileText, Tag, CheckCircle2, Building2, HelpCircle, Clock4, XCircle, CalendarCheck2, Building } from 'lucide-react';
+import { 
+  X, 
+  Save, 
+  Calendar, 
+  User, 
+  FileText, 
+  Tag, 
+  CheckCircle2, 
+  Building2, 
+  HelpCircle, 
+  Clock4, 
+  Clock, 
+  XCircle, 
+  CalendarCheck2, 
+  Building,
+  History,
+  Plus
+} from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { EMPTY_CELL_FALLBACK, calculateDaysRemaining, determineKanbanColumn } from '@/services/spreadsheetService';
 
@@ -17,7 +34,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   onClose,
   projectToEdit,
 }) => {
-  const { addProject, updateProject, columns, availableMechanisms } = useProjects();
+  const { addProject, updateProject, addProjectHistoryNote, columns, availableMechanisms } = useProjects();
+
+  const [activeTab, setActiveTab] = useState<'details' | 'history'>('details');
+  const [newHistoryNote, setNewHistoryNote] = useState('');
 
   const [name, setName] = useState('');
   const [code, setCode] = useState('');
@@ -60,6 +80,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       setAgendaVivaRegistered(projectToEdit.agendaVivaRegistered || false);
       setProacSystemRegistered(projectToEdit.proacSystemRegistered || false);
       setIsInTreaty(projectToEdit.isInTreaty || false);
+      setActiveTab('details');
+      setNewHistoryNote('');
     } else {
       setName('');
       setCode('');
@@ -77,6 +99,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       setAgendaVivaRegistered(false);
       setProacSystemRegistered(false);
       setIsInTreaty(false);
+      setActiveTab('details');
+      setNewHistoryNote('');
     }
   }, [projectToEdit, isOpen]);
 
@@ -179,7 +203,135 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           </button>
         </div>
 
-        {/* Formulário */}
+        {/* Abas: Detalhes do Projeto e Histórico de Atualizações */}
+        {projectToEdit && (
+          <div className="bg-slate-100 px-6 pt-2.5 border-b border-slate-200 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab('details')}
+              className={`px-3.5 py-2 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+                activeTab === 'details'
+                  ? 'border-sky-600 text-sky-900 bg-white rounded-t-lg shadow-2xs'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Dados do Projeto</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('history')}
+              className={`px-3.5 py-2 text-xs font-bold border-b-2 transition-all flex items-center gap-1.5 ${
+                activeTab === 'history'
+                  ? 'border-sky-600 text-sky-900 bg-white rounded-t-lg shadow-2xs'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              <History className="w-3.5 h-3.5 text-sky-600" />
+              <span>Histórico de Atualizações</span>
+              <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-200">
+                {projectToEdit.history?.length || 0}
+              </span>
+            </button>
+          </div>
+        )}
+
+        {/* Aba de Histórico de Auditoria */}
+        {activeTab === 'history' && projectToEdit && (
+          <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+            
+            {/* Caixa para registrar nova anotação / atualização */}
+            <div className="p-4 bg-sky-50/70 border border-sky-200 rounded-xl space-y-2">
+              <label className="block text-xs font-bold text-sky-950 uppercase tracking-wider">
+                Registrar Nova Anotação / Atualização de Acompanhamento
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newHistoryNote}
+                  onChange={(e) => setNewHistoryNote(e.target.value)}
+                  placeholder="Ex: Documentação de prorrogação enviada; proponente aprovou artes..."
+                  className="flex-1 px-3 py-2 text-xs border border-sky-300 rounded-lg focus:ring-2 focus:ring-sky-500 bg-white"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      if (newHistoryNote.trim()) {
+                        addProjectHistoryNote(projectToEdit.id, newHistoryNote);
+                        setNewHistoryNote('');
+                      }
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (newHistoryNote.trim()) {
+                      addProjectHistoryNote(projectToEdit.id, newHistoryNote);
+                      setNewHistoryNote('');
+                    }
+                  }}
+                  className="px-4 py-2 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white rounded-lg transition-colors flex items-center gap-1.5 shrink-0 shadow-xs"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Registrar</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Linha do tempo dos registros */}
+            <div className="space-y-2.5">
+              <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                <span>Histórico Completo de Alterações</span>
+                <span className="text-[11px] font-normal text-slate-500">
+                  Total de registros: {projectToEdit.history?.length || 0}
+                </span>
+              </h3>
+
+              {(!projectToEdit.history || projectToEdit.history.length === 0) ? (
+                <div className="p-8 text-center border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 text-slate-500">
+                  <Clock className="w-6 h-6 mx-auto mb-1 text-slate-400" />
+                  <p className="text-xs font-medium">Nenhum registro no histórico deste projeto ainda.</p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Qualquer edição, movimentação de card ou anotação ficará salva aqui.</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-[45vh] overflow-y-auto pr-1">
+                  {projectToEdit.history.map((entry) => (
+                    <div key={entry.id} className="p-3 bg-white border border-slate-200 rounded-xl shadow-2xs">
+                      <div className="flex items-center justify-between text-[11px] mb-1">
+                        <span className="font-bold text-slate-800 flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-sky-500"></span>
+                          {entry.action}
+                        </span>
+                        <span className="text-slate-400 font-mono text-[10px]">
+                          {new Date(entry.timestamp).toLocaleString('pt-BR')}
+                        </span>
+                      </div>
+                      {entry.details && (
+                        <p className="text-slate-600 text-[11px] bg-slate-50 p-2 rounded-lg border border-slate-100 mt-1 whitespace-pre-wrap">
+                          {entry.details}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Rodapé da aba de histórico */}
+            <div className="pt-3 border-t border-slate-200 flex justify-end">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              >
+                Fechar
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Formulário de Edição */}
+        {activeTab === 'details' && (
         <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
           
           {/* Nome do Projeto */}
@@ -457,6 +609,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           </div>
 
         </form>
+        )}
 
       </div>
     </div>

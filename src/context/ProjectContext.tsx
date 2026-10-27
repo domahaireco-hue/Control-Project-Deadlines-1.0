@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { Project, KanbanColumnConfig, KanbanColumnId, CardMoveEvent, NotificationLog, ImportResult, KvStatus } from '@/types';
+import { Project, KanbanColumnConfig, KanbanColumnId, CardMoveEvent, NotificationLog, ImportResult, KvStatus, ProjectHistoryEntry } from '@/types';
 import { notificationService } from '@/services/notificationService';
 import { FunnelService, FunnelAdvanceResult } from '@/services/funnelService';
 import { parseSpreadsheetBuffer } from '@/services/spreadsheetService';
@@ -58,6 +58,17 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
     badgeClass: 'bg-red-100 text-red-800 border-red-300 animate-pulse',
     headerBg: 'bg-gradient-to-r from-red-600 to-rose-700 text-white',
   },
+  {
+    id: 'col_completed',
+    title: 'Concluídos / Finalizados',
+    subtitle: 'Prestação de contas apresentada / Finalizado',
+    badgeLabel: 'Finalizado',
+    accentColor: '#0d9488', // teal
+    lightBg: 'bg-teal-50/60',
+    borderClass: 'border-teal-200',
+    badgeClass: 'bg-teal-100 text-teal-800 border-teal-300',
+    headerBg: 'bg-gradient-to-r from-teal-600 to-emerald-700 text-white',
+  },
 ];
 
 export type TreatyFilter = 'ALL' | 'ACTIVE' | 'TREATY' | 'COMPLETED';
@@ -83,8 +94,9 @@ interface ProjectContextType {
   toggleProacField: (cardId: string, field: 'agendaViva' | 'proacSystem') => void;
   toggleTreaty: (cardId: string) => void;
   toggleCompleted: (cardId: string) => void;
+  addProjectHistoryNote: (cardId: string, noteText: string) => void;
   addProject: (newProj: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
-  updateProject: (id: string, updates: Partial<Project>) => void;
+  updateProject: (id: string, updates: Partial<Project>, logNote?: string) => void;
   deleteProject: (id: string) => void;
   importSpreadsheet: (buffer: ArrayBuffer) => ImportResult;
   runFunnelAdvance: (force?: boolean) => Promise<FunnelAdvanceResult>;
@@ -94,13 +106,14 @@ interface ProjectContextType {
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'quest_deadline_control_projects_v3';
+const LOCAL_STORAGE_KEY = 'quest_deadline_control_projects_v5';
 
-// Normaliza colunas legadas se existirem
-function normalizeColumn(col: string): KanbanColumnId {
+// Normaliza colunas legadas e garante que concluídos fiquem em col_completed
+function normalizeColumn(col: string, isCompleted?: boolean): KanbanColumnId {
+  if (isCompleted || col === 'col_completed') return 'col_completed';
   if (col === 'col_30') return 'col_45';
   if (col === 'col_32') return 'col_risk';
-  if (col === 'col_90' || col === 'col_60' || col === 'col_45' || col === 'col_risk') return col;
+  if (col === 'col_90' || col === 'col_60' || col === 'col_45' || col === 'col_risk' || col === 'col_completed') return col;
   return 'col_90';
 }
 
@@ -114,7 +127,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           if (Array.isArray(parsed) && parsed.length > 0) {
             return parsed.map((p: Project) => ({
               ...p,
-              columnId: normalizeColumn(p.columnId),
+              columnId: normalizeColumn(p.columnId, p.isCompleted),
             }));
           }
         }
@@ -124,7 +137,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
     return (initialProjectsData as Project[]).map((p) => ({
       ...p,
-      columnId: normalizeColumn(p.columnId),
+      columnId: normalizeColumn(p.columnId, p.isCompleted),
     }));
   });
 
@@ -210,6 +223,17 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (!project || project.columnId === normalizedTo) return;
 
       const fromColumn = project.columnId;
+      const isMovingToCompleted = normalizedTo === 'col_completed';
+      const isMovingFromCompleted = fromColumn === 'col_completed';
+      const now = new Date().toISOString();
+
+      const historyEntry: ProjectHistoryEntry = {
+        id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+        timestamp: now,
+        user: 'Usuário',
+        action: `Movido de "${fromColumn}" para "${normalizedTo}"`,
+        details: reason || 'Movimentação manual no quadro Kanban',
+      };
 
       setProjects((prev) =>
         prev.map((p) =>
@@ -217,8 +241,11 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
             ? {
                 ...p,
                 columnId: normalizedTo,
+                isCompleted: isMovingToCompleted ? true : (isMovingFromCompleted ? false : p.isCompleted),
+                isInTreaty: isMovingToCompleted ? true : p.isInTreaty,
                 isManualColumn: true,
-                updatedAt: new Date().toISOString(),
+                history: [historyEntry, ...(p.history || [])],
+                updatedAt: now,
               }
             : p
         )
@@ -229,7 +256,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         projectName: project.name,
         fromColumn,
         toColumn: normalizedTo,
-        timestamp: new Date().toISOString(),
+        timestamp: now,
         movedBy: 'Usuário (Painel Kanban Quest)',
         reason: reason || 'Movimentação manual de ajuste operacional',
       };
@@ -241,15 +268,24 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Atualização rápida de KV / Arte Digital
   const updateKvStatus = useCallback((cardId: string, status: KvStatus) => {
+    const now = new Date().toISOString();
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== cardId) return p;
         const sent = status !== 'nao_enviado';
+        const historyEntry: ProjectHistoryEntry = {
+          id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          timestamp: now,
+          user: 'Usuário',
+          action: 'Atualização de KV / Arte Digital',
+          details: `Status alterado de "${p.kvStatus || 'nao_enviado'}" para "${status}"`,
+        };
         return {
           ...p,
           kvStatus: status,
           kvSent: sent,
-          updatedAt: new Date().toISOString(),
+          history: [historyEntry, ...(p.history || [])],
+          updatedAt: now,
         };
       })
     );
@@ -257,28 +293,34 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Alternar sinalização PROAC ICMS (Agenda Viva ou Sistema PROAC)
   const toggleProacField = useCallback((cardId: string, field: 'agendaViva' | 'proacSystem') => {
+    const now = new Date().toISOString();
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== cardId) return p;
-        if (field === 'agendaViva') {
-          return {
-            ...p,
-            agendaVivaRegistered: !p.agendaVivaRegistered,
-            updatedAt: new Date().toISOString(),
-          };
-        } else {
-          return {
-            ...p,
-            proacSystemRegistered: !p.proacSystemRegistered,
-            updatedAt: new Date().toISOString(),
-          };
-        }
+        const isAgenda = field === 'agendaViva';
+        const newVal = isAgenda ? !p.agendaVivaRegistered : !p.proacSystemRegistered;
+        const fieldName = isAgenda ? 'Agenda Viva' : 'Sistema PROAC';
+        const historyEntry: ProjectHistoryEntry = {
+          id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          timestamp: now,
+          user: 'Usuário',
+          action: `PROAC: ${fieldName}`,
+          details: `${fieldName} marcado como ${newVal ? 'Cadastrado' : 'Pendente'}`,
+        };
+        return {
+          ...p,
+          agendaVivaRegistered: isAgenda ? newVal : p.agendaVivaRegistered,
+          proacSystemRegistered: !isAgenda ? newVal : p.proacSystemRegistered,
+          history: [historyEntry, ...(p.history || [])],
+          updatedAt: now,
+        };
       })
     );
   }, []);
 
   // Alternar se projeto está em tratativa
   const toggleTreaty = useCallback((cardId: string) => {
+    const now = new Date().toISOString();
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== cardId) return p;
@@ -289,11 +331,19 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         } else if (!newInTreaty) {
           newTags = newTags.filter((t) => t !== 'Projetos em Tratativa');
         }
+        const historyEntry: ProjectHistoryEntry = {
+          id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          timestamp: now,
+          user: 'Usuário',
+          action: newInTreaty ? 'Marcado como Em Tratativa' : 'Removido de Tratativa',
+          details: newInTreaty ? 'Projeto em prorrogação ou prestação de contas' : 'Retornado ao fluxo normal',
+        };
         return {
           ...p,
           isInTreaty: newInTreaty,
           tags: newTags,
-          updatedAt: new Date().toISOString(),
+          history: [historyEntry, ...(p.history || [])],
+          updatedAt: now,
         };
       })
     );
@@ -301,40 +351,121 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Alternar se projeto está concluído
   const toggleCompleted = useCallback((cardId: string) => {
+    const now = new Date().toISOString();
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== cardId) return p;
         const newCompleted = !p.isCompleted;
+        const newColumn: KanbanColumnId = newCompleted ? 'col_completed' : 'col_90';
+        const historyEntry: ProjectHistoryEntry = {
+          id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          timestamp: now,
+          user: 'Usuário',
+          action: newCompleted ? 'Conclusão de Projeto' : 'Reabertura de Projeto',
+          details: newCompleted 
+            ? 'Movido para Concluídos / Finalizados (Prestação de Contas Apresentada)' 
+            : 'Removido de Concluídos e retornado para fluxo de prazos',
+        };
         return {
           ...p,
           isCompleted: newCompleted,
           isInTreaty: newCompleted ? true : p.isInTreaty,
-          updatedAt: new Date().toISOString(),
+          columnId: newColumn,
+          history: [historyEntry, ...(p.history || [])],
+          updatedAt: now,
         };
       })
+    );
+  }, []);
+
+  // Adicionar anotação manual ao histórico do projeto
+  const addProjectHistoryNote = useCallback((cardId: string, noteText: string) => {
+    if (!noteText.trim()) return;
+    const now = new Date().toISOString();
+    const historyEntry: ProjectHistoryEntry = {
+      id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      timestamp: now,
+      user: 'Usuário',
+      action: 'Anotação / Observação Registrada',
+      details: noteText.trim(),
+    };
+    setProjects((prev) =>
+      prev.map((p) =>
+        p.id === cardId
+          ? {
+              ...p,
+              history: [historyEntry, ...(p.history || [])],
+              updatedAt: now,
+            }
+          : p
+      )
     );
   }, []);
 
   // Adicionar novo projeto manualmente
   const addProject = useCallback(
     (newProjData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
+      const now = new Date().toISOString();
       const newId = `proj_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+      const historyEntry: ProjectHistoryEntry = {
+        id: `hist_${Date.now()}_init`,
+        timestamp: now,
+        user: 'Usuário',
+        action: 'Criação do Projeto',
+        details: 'Projeto cadastrado manualmente no sistema',
+      };
       const newProj: Project = {
         ...newProjData,
-        columnId: normalizeColumn(newProjData.columnId),
+        columnId: normalizeColumn(newProjData.columnId, newProjData.isCompleted),
         id: newId,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        history: [historyEntry],
+        createdAt: now,
+        updatedAt: now,
       };
       setProjects((prev) => [newProj, ...prev]);
     },
     []
   );
 
-  // Editar projeto existente
-  const updateProject = useCallback((id: string, updates: Partial<Project>) => {
+  // Editar projeto existente com registro detalhado de histórico
+  const updateProject = useCallback((id: string, updates: Partial<Project>, logNote?: string) => {
+    const now = new Date().toISOString();
     setProjects((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p))
+      prev.map((p) => {
+        if (p.id !== id) return p;
+
+        let targetCol = updates.columnId || p.columnId;
+        if (updates.isCompleted === true) {
+          targetCol = 'col_completed';
+        } else if (updates.isCompleted === false && targetCol === 'col_completed') {
+          targetCol = 'col_90';
+        }
+
+        // Mapeia mudanças para histórico
+        const changes: { field: string; from: any; to: any }[] = [];
+        (Object.keys(updates) as (keyof Project)[]).forEach((key) => {
+          if (key !== 'updatedAt' && key !== 'history' && updates[key] !== undefined && updates[key] !== (p as any)[key]) {
+            changes.push({ field: key, from: (p as any)[key], to: updates[key] });
+          }
+        });
+
+        const historyEntry: ProjectHistoryEntry = {
+          id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+          timestamp: now,
+          user: 'Usuário',
+          action: logNote || (changes.length > 0 ? `Atualizou: ${changes.map(c => c.field).join(', ')}` : 'Edição de dados do projeto'),
+          details: changes.map(c => `${c.field}: "${c.from ?? 'vazio'}" ➔ "${c.to ?? 'vazio'}"`).join(' | '),
+          changes,
+        };
+
+        return {
+          ...p,
+          ...updates,
+          columnId: targetCol,
+          history: [historyEntry, ...(p.history || [])],
+          updatedAt: now,
+        };
+      })
     );
   }, []);
 
@@ -409,6 +540,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         toggleProacField,
         toggleTreaty,
         toggleCompleted,
+        addProjectHistoryNote,
         addProject,
         updateProject,
         deleteProject,

@@ -3,9 +3,18 @@
  * Desenvolvido para Quest Consult
  */
 
-export type KanbanColumnId = 'col_90' | 'col_60' | 'col_45' | 'col_32' | 'col_30' | 'col_risk';
+export type KanbanColumnId = 'col_90' | 'col_60' | 'col_45' | 'col_32' | 'col_30' | 'col_risk' | 'col_completed';
 
 export type KvStatus = 'nao_enviado' | 'em_aprovacao' | 'aprovada' | 'reprovada';
+
+export interface ProjectHistoryEntry {
+  id: string;
+  timestamp: string;
+  user?: string;
+  action: string;
+  details?: string;
+  changes?: { field: string; from: any; to: any }[];
+}
 
 export type LawMechanism = 
   | 'Rouanet' 
@@ -44,6 +53,7 @@ export interface Project {
   readequationDate?: string | null;  // Data extraída da coluna Data da Readequação
   readequationNotes?: string;        // Anotações da coluna Data da Readequação
   originalStatusColC?: string;       // Status original extraído da Coluna C da planilha
+  history?: ProjectHistoryEntry[];   // Histórico de alterações e auditoria de ajustes
   createdAt: string;
   updatedAt: string;
 }

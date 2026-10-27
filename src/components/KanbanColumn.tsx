@@ -52,6 +52,15 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
           badgeLabelColor: 'text-sky-800',
           dropHighlight: 'ring-2 ring-sky-500 bg-sky-100/60 scale-[1.01]',
         };
+      case 'col_completed':
+        return {
+          gradient: 'linear-gradient(135deg, #0d9488 0%, #065f46 100%)',
+          borderClass: 'border-teal-300',
+          containerBg: 'bg-teal-50/30',
+          subtextColor: '#ccfbf1',
+          badgeLabelColor: 'text-teal-800',
+          dropHighlight: 'ring-2 ring-teal-500 bg-teal-100/60 scale-[1.01]',
+        };
       case 'col_90':
       default:
         return {
@@ -70,6 +79,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = ({
   // Ícones por coluna
   const renderColumnIcon = () => {
     switch (column.id) {
+      case 'col_completed':
+        return <CheckCircle2 className="w-4 h-4 text-white" />;
       case 'col_risk':
       case 'col_32':
         return <ShieldAlert className="w-4 h-4 text-white" />;

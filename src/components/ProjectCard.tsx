@@ -210,6 +210,40 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
     );
   };
 
+  // Data da última alteração e sinalizador de projeto abandonado
+  const renderLastUpdateBadge = () => {
+    const updatedDateStr = project.updatedAt || project.createdAt;
+    if (!updatedDateStr) return null;
+
+    const updatedDate = new Date(updatedDateStr);
+    const now = new Date();
+    const diffDays = Math.floor((now.getTime() - updatedDate.getTime()) / (1000 * 60 * 60 * 24));
+
+    const formattedDate = updatedDate.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    });
+
+    const isAbandoned = diffDays >= 15 && !project.isCompleted;
+
+    return (
+      <div 
+        className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border transition-colors ${
+          isAbandoned
+            ? 'bg-rose-50 text-rose-800 border-rose-300 font-bold'
+            : 'bg-slate-50 text-slate-600 border-slate-200'
+        }`}
+        title={`Última alteração em ${formattedDate} (${diffDays === 0 ? 'hoje' : `há ${diffDays} dia(s)`})${isAbandoned ? ' - Atenção: Projeto sem atualização recente!' : ''}`}
+      >
+        <Clock className={`w-3 h-3 ${isAbandoned ? 'text-rose-600' : 'text-slate-400'}`} />
+        <span>
+          {isAbandoned ? `⚠️ Sem atualização há ${diffDays}d` : `Alt: ${formattedDate}`}
+        </span>
+      </div>
+    );
+  };
+
   // Drag start handler para HTML5 DnD
   const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData('text/plain', project.id);
@@ -406,6 +440,15 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
                   32 Dias (Risco)
                 </button>
               )}
+              {project.columnId !== 'col_completed' && (
+                <button
+                  onClick={() => handleQuickMove('col_completed')}
+                  className="w-full px-3 py-1 text-left text-slate-600 hover:bg-teal-50 hover:text-teal-700 flex items-center gap-2"
+                >
+                  <span className="w-2 h-2 rounded-full bg-teal-500"></span>
+                  Concluídos / Finalizados
+                </button>
+              )}
 
               <div className="border-t border-slate-100 my-1"></div>
               <button
@@ -423,9 +466,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
         </div>
       </div>
 
-      {/* Seção Central: Controle de KV / Arte Digital */}
-      <div className="mt-2.5 flex items-center gap-1.5 flex-wrap">
-        {renderKvTag()}
+      {/* Seção Central: Controle de KV / Arte Digital e Data da Última Alteração */}
+      <div className="mt-2.5 flex items-center justify-between gap-1.5 flex-wrap">
+        <div>{renderKvTag()}</div>
+        <div>{renderLastUpdateBadge()}</div>
       </div>
 
       {/* Sinalizações Exclusivas para PROAC ICMS: 1) Agenda Viva e 2) Sistema PROAC */}

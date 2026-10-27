@@ -37,6 +37,7 @@ export const COLUMN_NAMES: Record<KanbanColumnId, string> = {
   col_32: '32 Dias (<= 32 dias - Limite Legal de Prorrogação)',
   col_30: '45 Dias (Alerta de Prorrogação)',
   col_risk: '32 Dias (<= 32 dias - Limite Legal de Prorrogação)',
+  col_completed: 'Concluídos / Finalizados',
 };
 
 type NotificationListener = (log: NotificationLog) => void;

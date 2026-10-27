@@ -70,15 +70,25 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ onEditProject }) => {
         </button>
       </div>
 
-      {/* Grid das 4 Colunas Kanban (Exibido na tela quando activeView === 'kanban') */}
+      {/* Grid das 5 Colunas Kanban (Exibido na tela quando activeView === 'kanban') */}
       {activeView === 'kanban' && (
-        <div className="kanban-board-container grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5">
+        <div className="kanban-board-container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
           {columns.map((col) => {
-            const colProjects = filteredProjects.filter((p) => 
-              p.columnId === col.id || 
-              (col.id === 'col_45' && (p.columnId as string) === 'col_30') ||
-              (col.id === 'col_risk' && (p.columnId as string) === 'col_32')
-            );
+            const colProjects = filteredProjects.filter((p) => {
+              if (col.id === 'col_completed') {
+                return p.columnId === 'col_completed' || p.isCompleted;
+              }
+              // Projetos concluídos pertencem exclusivamente à coluna col_completed
+              if (p.isCompleted || p.columnId === 'col_completed') {
+                return false;
+              }
+              return (
+                p.columnId === col.id || 
+                (col.id === 'col_45' && (p.columnId as string) === 'col_30') ||
+                (col.id === 'col_risk' && (p.columnId as string) === 'col_32')
+              );
+            });
+
             return (
               <KanbanColumn
                 key={col.id}

@@ -94,16 +94,6 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Relatório Diário (E-mail)</span>
             </button>
 
-            {/* Botão Rotina Avançar Funil */}
-            <button
-              onClick={handleAdvanceFunnel}
-              disabled={isAdvancingFunnel}
-              title="Executa a rotina de avanço diário do funil com base na data de hoje (janelas 90, 60, 45, 32)"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-quest-800 hover:bg-quest-750 border border-quest-700 text-quest-200 hover:text-white transition-all shadow-xs"
-            >
-              <Play className={`w-3.5 h-3.5 text-emerald-400 ${isAdvancingFunnel ? 'animate-spin' : ''}`} />
-              <span>{isAdvancingFunnel ? 'Avaliando...' : 'Avançar Funil'}</span>
-            </button>
 
             {/* Botão Imprimir Lista / PDF */}
             <button

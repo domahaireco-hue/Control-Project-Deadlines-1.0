@@ -1,6 +1,6 @@
 [
   {
-    "id": "proj_1_ba0b5",
+    "id": "proj_1_st99p",
     "code": "Sem informação Migrada",
     "name": "Dança na Comunidade-Custeio de Oficinas Culturais",
     "client": "Sem informação Migrada",
@@ -16,7 +16,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Emenda 24-25",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "enviado pedido de prorrogação para o março de 2026 em 13 de agosto de 2025",
     "tags": [
@@ -27,11 +27,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.482Z",
-    "updatedAt": "2026-10-26T18:59:40.482Z"
+    "createdAt": "2026-10-27T12:10:23.951Z",
+    "updatedAt": "2026-10-27T12:10:23.951Z"
   },
   {
-    "id": "proj_2_alcno",
+    "id": "proj_2_a0hvs",
     "code": "202300054-DM\n202306146565",
     "name": "Panorama 23",
     "client": "Sem informação Migrada",
@@ -47,7 +47,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Emenda 24-25",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -58,11 +58,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.482Z",
-    "updatedAt": "2026-10-26T18:59:40.482Z"
+    "createdAt": "2026-10-27T12:10:23.951Z",
+    "updatedAt": "2026-10-27T12:10:23.951Z"
   },
   {
-    "id": "proj_3_726ue",
+    "id": "proj_3_elmvx",
     "code": "Sem informação Migrada",
     "name": "Cine na praça na quebrada",
     "client": "Sem informação Migrada",
@@ -78,7 +78,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Emenda 24-25",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Em 27 de outubro - Fabiola e Lucas disseram que não precisa pedir prorrogação",
     "tags": [
@@ -89,11 +89,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.482Z",
-    "updatedAt": "2026-10-26T18:59:40.482Z"
+    "createdAt": "2026-10-27T12:10:23.952Z",
+    "updatedAt": "2026-10-27T12:10:23.952Z"
   },
   {
-    "id": "proj_4_ilw8e",
+    "id": "proj_4_ji9v2",
     "code": "Sem informação Migrada",
     "name": "Cine na praça Mogi",
     "client": "Sem informação Migrada",
@@ -109,7 +109,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Emenda 24-25",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Enviado alteração de espaço. Aprovado\n Em 27 de outubro - Fabiola e Lucas disseram que não precisa pedir prorrogação",
     "tags": [
@@ -120,11 +120,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.482Z",
-    "updatedAt": "2026-10-26T18:59:40.482Z"
+    "createdAt": "2026-10-27T12:10:23.952Z",
+    "updatedAt": "2026-10-27T12:10:23.952Z"
   },
   {
-    "id": "proj_5_igxqz",
+    "id": "proj_5_ab5lu",
     "code": "Sem informação Migrada",
     "name": "Evento Esportivo (Corrida e Caminhada)",
     "client": "ISCF",
@@ -140,7 +140,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Emenda 24-25",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Tk disse que não precisa fazer nada em 1 de dezembro de 2025",
     "tags": [
@@ -151,11 +151,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.482Z",
-    "updatedAt": "2026-10-26T18:59:40.482Z"
+    "createdAt": "2026-10-27T12:10:23.952Z",
+    "updatedAt": "2026-10-27T12:10:23.952Z"
   },
   {
-    "id": "proj_6_k6asc",
+    "id": "proj_6_lqnrw",
     "code": "202300041-DM\n056901",
     "name": "Livro - Cozinha brasileira",
     "client": "Sem informação Migrada",
@@ -171,7 +171,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Emenda 24-25",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -182,11 +182,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.482Z",
-    "updatedAt": "2026-10-26T18:59:40.482Z"
+    "createdAt": "2026-10-27T12:10:23.952Z",
+    "updatedAt": "2026-10-27T12:10:23.952Z"
   },
   {
-    "id": "proj_7_qc83s",
+    "id": "proj_7_7rtf7",
     "code": "2025.267.68306-084932\n021973/2025",
     "name": "Ponto da moda (exposição)- Brasilidades",
     "client": "ISPAC",
@@ -196,7 +196,7 @@
     "targetDate": "2026-10-16",
     "readequationDate": "2026-10-16",
     "readequationNotes": "arte enviada para aprovação em 16 de outubro de 2026",
-    "daysRemaining": -10,
+    "daysRemaining": -11,
     "status": "Desbloqueado",
     "originalStatusColC": "Desbloqueado",
     "isCompleted": false,
@@ -211,11 +211,11 @@
     ],
     "kvStatus": "em_aprovacao",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.482Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_8_6z2ls",
+    "id": "proj_8_ex2om",
     "code": "202526768300- 084929",
     "name": "Cine na praça- Estado - mostra de cinema : cine na praça mudou para cine diadema",
     "client": "ISPAC",
@@ -225,7 +225,7 @@
     "targetDate": "2025-10-27",
     "readequationDate": "2025-10-27",
     "readequationNotes": "Em 7 de agosto Sec respondeu com uma ouutra CI. Tc já fez a parte dele. Esperando lucas enviar a  parte financeira para seguir. data: 7 de agosto.",
-    "daysRemaining": -364,
+    "daysRemaining": -365,
     "status": "Desbloqueado",
     "originalStatusColC": "Desbloqueado",
     "isCompleted": false,
@@ -240,11 +240,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_9_mepdl",
+    "id": "proj_9_uf4ia",
     "code": "Sem informação Migrada",
     "name": "Dança na comunidade?",
     "client": "Sem informação Migrada",
@@ -268,11 +268,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_10_seg98",
+    "id": "proj_10_9dbhn",
     "code": "202526768303- 084930",
     "name": "Concertos Campestres 2025",
     "client": "ISPAC",
@@ -297,11 +297,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_11_zkekc",
+    "id": "proj_11_k9i5j",
     "code": "2025.267.68305- 84931",
     "name": "Contos maravilhosos 2025",
     "client": "ISPAC",
@@ -317,7 +317,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Emenda 24-25",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -328,11 +328,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_12_l96tt",
+    "id": "proj_12_vzwv0",
     "code": "Proposta nº 021973/2025\n025.267.68306-084932",
     "name": "CIne na praça na quebrada federal",
     "client": "Sem informação Migrada",
@@ -357,11 +357,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_13_8arzs",
+    "id": "proj_13_wfm6u",
     "code": "Código do Instrumento          984393         \nNúmero Interno do Órgão        062007/2025",
     "name": "Cine na praça 15 anos federal",
     "client": "Sem informação Migrada",
@@ -386,11 +386,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_14_hfrmz",
+    "id": "proj_14_tl0bi",
     "code": "202206735340-033074",
     "name": "Música de invenção",
     "client": "Sem informação Migrada",
@@ -415,11 +415,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_15_ciuou",
+    "id": "proj_15_tnc6x",
     "code": "202200032-DM - 33180",
     "name": "Livro 100 anos de arte contemporanea",
     "client": "Sem informação Migrada",
@@ -444,11 +444,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_16_ur8v3",
+    "id": "proj_16_yicpd",
     "code": "202306146569/56799",
     "name": "Arte Urbana",
     "client": "Sem informação Migrada",
@@ -473,11 +473,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_17_a2xr2",
+    "id": "proj_17_449ok",
     "code": "202306146567-56801",
     "name": "Livro contos maravilhosos 2023",
     "client": "Sem informação Migrada",
@@ -502,11 +502,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_18_7kvj7",
+    "id": "proj_18_omj6x",
     "code": "202300050-DM\n202306146566\n56802",
     "name": "In Foco",
     "client": "Sem informação Migrada",
@@ -531,11 +531,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_19_9zsrd",
+    "id": "proj_19_j6yyn",
     "code": "2023.061.46565 - Demanda 56804",
     "name": "Dança para todos",
     "client": "Sem informação Migrada",
@@ -560,11 +560,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_20_7q8hk",
+    "id": "proj_20_ln77x",
     "code": "202300042-DM\n202306147075\n056846",
     "name": "Espacinho Cultural",
     "client": "Sem informação Migrada",
@@ -589,11 +589,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_21_jplyn",
+    "id": "proj_21_82r98",
     "code": "202300060-DM\n202306146564\n56899",
     "name": "Núcleo de Moda e design",
     "client": "Sem informação Migrada",
@@ -618,11 +618,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_22_3m2r9",
+    "id": "proj_22_ft307",
     "code": "202300063-DM\n202306146571\n56938",
     "name": "Tradições Gastronomicas",
     "client": "Sem informação Migrada",
@@ -647,11 +647,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_23_3hi5r",
+    "id": "proj_23_03tef",
     "code": "202206140099\n039123",
     "name": "Concertos Campestres 2023",
     "client": "Sem informação Migrada",
@@ -676,11 +676,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.483Z",
-    "updatedAt": "2026-10-26T18:59:40.483Z"
+    "createdAt": "2026-10-27T12:10:23.953Z",
+    "updatedAt": "2026-10-27T12:10:23.953Z"
   },
   {
-    "id": "proj_24_hig31",
+    "id": "proj_24_mcvq3",
     "code": "202626782771\n100603",
     "name": "Arte Urbana",
     "client": "Sem informação Migrada",
@@ -705,11 +705,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_25_6zhsa",
+    "id": "proj_25_ojehq",
     "code": "202626782770\n100602",
     "name": "Ponto da Moda",
     "client": "Sem informação Migrada",
@@ -734,11 +734,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_26_4o0rh",
+    "id": "proj_26_bpfoi",
     "code": "202626782768\n100601",
     "name": "Contos Maravilhosos",
     "client": "Sem informação Migrada",
@@ -763,11 +763,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_27_qub2t",
+    "id": "proj_27_u3g95",
     "code": "202626782767\n100600",
     "name": "Concertos Campestres 2",
     "client": "Sem informação Migrada",
@@ -792,11 +792,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_28_3dikx",
+    "id": "proj_28_kdb4w",
     "code": "202626782765\n100599",
     "name": "Mostra de cinema:Cine na praça",
     "client": "Sem informação Migrada",
@@ -821,11 +821,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_29_l9fzi",
+    "id": "proj_29_upswi",
     "code": "202632679805\n100524",
     "name": "Apoio a Eventos Culturais e Criativos - Cine na Comunidade -",
     "client": "Sem informação Migrada",
@@ -850,11 +850,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_30_lq3dm",
+    "id": "proj_30_kgamu",
     "code": "202632679807\n100525",
     "name": "Apoio a Eventos Culturais e Criativos - Dança na Comunidade",
     "client": "Sem informação Migrada",
@@ -879,11 +879,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_31_4uv31",
+    "id": "proj_31_3m5nx",
     "code": "202601981776\n100580",
     "name": "Apoio a Eventos Culturais - KPOP-Kpop Open Air-Estadual",
     "client": "Sem informação Migrada",
@@ -908,11 +908,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_32_y03jy",
+    "id": "proj_32_d3410",
     "code": "Emenda Federal_Nº da PropostaSICONV 0094172026_ KPOP Open Air_ISPAC",
     "name": "K POP - Cine-ISPAC",
     "client": "Sem informação Migrada",
@@ -937,11 +937,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_33_iiz8l",
+    "id": "proj_33_xi55d",
     "code": "202632679796\n100523",
     "name": "Apoio a Eventos Culturais e Criativos - Arte na Comunidade",
     "client": "Sem informação Migrada",
@@ -966,11 +966,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_34_jg10g",
+    "id": "proj_34_uim5r",
     "code": "202606778628\n100493",
     "name": "Relíquias da Humanidade (Contos Maravilhosos - Bíblicos).Publicação de Livros - Reliquias da Humanidade",
     "client": "Sem informação Migrada",
@@ -995,11 +995,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.484Z",
-    "updatedAt": "2026-10-26T18:59:40.484Z"
+    "createdAt": "2026-10-27T12:10:23.955Z",
+    "updatedAt": "2026-10-27T12:10:23.955Z"
   },
   {
-    "id": "proj_35_k97ru",
+    "id": "proj_35_sx0c2",
     "code": "221656",
     "name": "Cine em Ação",
     "client": "DF/Khronos",
@@ -1015,7 +1015,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1026,11 +1026,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_36_ag4e9",
+    "id": "proj_36_l3zns",
     "code": "183861",
     "name": "Luz e Sombra",
     "client": "ZEPPELIN",
@@ -1046,7 +1046,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1057,11 +1057,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_37_2jwww",
+    "id": "proj_37_bilq8",
     "code": "220892",
     "name": "Cinema para todos",
     "client": "TM",
@@ -1077,7 +1077,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1088,11 +1088,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_38_5et1g",
+    "id": "proj_38_6huke",
     "code": "184044",
     "name": "Núcleo de Cultura - Recanto Musical",
     "client": "ZEPPELIN",
@@ -1108,7 +1108,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1119,11 +1119,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_39_wdwwt",
+    "id": "proj_39_p71lm",
     "code": "212436",
     "name": "Steam XP- Universo Curioso",
     "client": "ID4",
@@ -1139,7 +1139,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1150,11 +1150,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_40_wojn0",
+    "id": "proj_40_jhd0m",
     "code": "184972",
     "name": "Festival de Viola",
     "client": "5FIVE",
@@ -1170,7 +1170,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1181,11 +1181,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_41_zmaw6",
+    "id": "proj_41_ln3ty",
     "code": "182697",
     "name": "Dança na Comunidade - 2ª Edição",
     "client": "COOPCESP",
@@ -1201,7 +1201,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1212,11 +1212,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_42_x1qwo",
+    "id": "proj_42_pzrld",
     "code": "182806",
     "name": "Teatro em formação 2ª edição",
     "client": "COOPCESP",
@@ -1232,7 +1232,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1243,11 +1243,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_43_jgx0v",
+    "id": "proj_43_axi83",
     "code": "184650",
     "name": "Ateliê Criativo",
     "client": "ZEPPELIN",
@@ -1263,7 +1263,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1274,11 +1274,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.956Z"
   },
   {
-    "id": "proj_44_abbwt",
+    "id": "proj_44_gd4xn",
     "code": "184644",
     "name": "Núcleo de Artes Visuais",
     "client": "ZEPPELIN",
@@ -1294,7 +1294,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1305,11 +1305,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.956Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_45_j8kal",
+    "id": "proj_45_sq5fu",
     "code": "204973",
     "name": "Futuro Brilhante Formação Cultural em Iluminação Cênica",
     "client": "5FIVE",
@@ -1325,7 +1325,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1336,11 +1336,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_46_yp913",
+    "id": "proj_46_xi4da",
     "code": "193250",
     "name": "Cine Escola 2ª Edição",
     "client": "MK PJ",
@@ -1356,7 +1356,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada, Não precisa pedir prorrogação",
     "tags": [
@@ -1367,11 +1367,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_47_2uhlh",
+    "id": "proj_47_7muhr",
     "code": "204894",
     "name": "Ponto da Moda Segunda Edição",
     "client": "ZEPPELIN",
@@ -1387,7 +1387,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada, Não precisa pedir prorrogação",
     "tags": [
@@ -1398,11 +1398,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_48_t343f",
+    "id": "proj_48_x9bns",
     "code": "211588",
     "name": "Cinema sobs estrelas",
     "client": "5FIVE",
@@ -1418,7 +1418,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada, Não precisa pedir prorrogação",
     "tags": [
@@ -1429,11 +1429,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_49_imz8v",
+    "id": "proj_49_cxtas",
     "code": "184551",
     "name": "Ponto da Moda",
     "client": "ZEPPELIN",
@@ -1449,7 +1449,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1460,11 +1460,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_50_p4fo8",
+    "id": "proj_50_iz1ro",
     "code": "185362",
     "name": "Lab de Carpintaria",
     "client": "ZEPPELIN",
@@ -1480,7 +1480,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1491,11 +1491,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_51_039nt",
+    "id": "proj_51_b7zxg",
     "code": "183136",
     "name": "Cine na Praça 2ª Edição",
     "client": "COOPCESP",
@@ -1511,7 +1511,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1522,11 +1522,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_52_53nyl",
+    "id": "proj_52_vxlim",
     "code": "193323",
     "name": "Oficina dos Sonhos - Edição 2",
     "client": "ZEPPELIN",
@@ -1542,7 +1542,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1553,11 +1553,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_53_0au2g",
+    "id": "proj_53_uzdi2",
     "code": "193736",
     "name": "Cine na Praça Itinerante",
     "client": "5FIVE",
@@ -1573,7 +1573,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada, Não precisa pedir prorrogação",
     "tags": [
@@ -1584,11 +1584,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_54_qv0lm",
+    "id": "proj_54_etcv3",
     "code": "183980",
     "name": "Green60",
     "client": "ZEPPELIN",
@@ -1604,7 +1604,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada, Não precisa pedir prorrogação",
     "tags": [
@@ -1615,11 +1615,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_55_6gz2g",
+    "id": "proj_55_owy4h",
     "code": "212788",
     "name": "Marcenaria Jovem",
     "client": "IACF",
@@ -1635,7 +1635,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada.",
     "tags": [
@@ -1646,11 +1646,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_56_ur8uc",
+    "id": "proj_56_651ow",
     "code": "231413",
     "name": "Plano Anual de Atividades do Instituto Sao Paulo de Arte e Cultura 2024",
     "client": "ISPAC",
@@ -1666,7 +1666,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1677,11 +1677,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_57_tjbnx",
+    "id": "proj_57_wbo8o",
     "code": "212515",
     "name": "ARMAS & DEFESA; A DEMOCRACIA ENTRE A PROPAGANDA E A REALIDADE",
     "client": "RK PJ",
@@ -1697,7 +1697,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1708,11 +1708,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_58_lnz00",
+    "id": "proj_58_c0f7l",
     "code": "221805",
     "name": "Teatro para todos",
     "client": "MK PJ",
@@ -1728,7 +1728,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "marca deferida. Fabi disse que nãoi precisa prorrogar em 1 de dezembro de 2025.",
     "tags": [
@@ -1739,11 +1739,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_59_gouwq",
+    "id": "proj_59_5el95",
     "code": "242291",
     "name": "Plano Anual de Atividades do Instituto Sao Paulo de Arte e Cultura 2025",
     "client": "ISPAC",
@@ -1759,7 +1759,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada.",
     "tags": [
@@ -1770,11 +1770,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_60_43w3d",
+    "id": "proj_60_vksis",
     "code": "212502",
     "name": "Oficina dos Sonhos - Edição 3",
     "client": "ZEPPELIN",
@@ -1790,7 +1790,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada, Não precisa pedir prorrogação",
     "tags": [
@@ -1801,11 +1801,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_61_2odrd",
+    "id": "proj_61_v9x5e",
     "code": "183306",
     "name": "Mentes Brilhantes - Ano II",
     "client": "COOPCESP",
@@ -1821,7 +1821,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -1832,11 +1832,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_62_i1hka",
+    "id": "proj_62_4mc9d",
     "code": "248264",
     "name": "Cine em movimento",
     "client": "Zeppelin",
@@ -1861,11 +1861,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_63_8pgpc",
+    "id": "proj_63_bgb2t",
     "code": "246712",
     "name": "Move +",
     "client": "Coopcesp",
@@ -1890,11 +1890,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_64_a5uv6",
+    "id": "proj_64_cuzd6",
     "code": "233137",
     "name": "Cinema para todos 2ª",
     "client": "TM",
@@ -1910,7 +1910,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte aprovada.",
     "tags": [
@@ -1921,11 +1921,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_65_k16me",
+    "id": "proj_65_b00qd",
     "code": "245645",
     "name": "Oficina dos Sonhos",
     "client": "IACF",
@@ -1950,11 +1950,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_66_ieqfi",
+    "id": "proj_66_x6qwp",
     "code": "247813",
     "name": "Steam XP- Universo Curioso - 2ª Edição",
     "client": "ID4!",
@@ -1979,11 +1979,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_67_3f8gy",
+    "id": "proj_67_9qhp3",
     "code": "232116",
     "name": "Festival Coreano Rouanet",
     "client": "ALEXA FILMES",
@@ -2008,11 +2008,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.485Z",
-    "updatedAt": "2026-10-26T18:59:40.485Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_68_olih0",
+    "id": "proj_68_p8ncf",
     "code": "233048",
     "name": "Conectar",
     "client": "ISPAC",
@@ -2028,7 +2028,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "Rouanet",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Arte deferida em 10 de outubro",
     "tags": [
@@ -2039,11 +2039,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_69_pw56c",
+    "id": "proj_69_dcpwe",
     "code": "251682",
     "name": "Festa de São João de Diadema",
     "client": "IACF",
@@ -2068,11 +2068,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_70_gldko",
+    "id": "proj_70_mgobj",
     "code": "237981",
     "name": "Natal Brilhante de Amparo",
     "client": "IACF",
@@ -2097,11 +2097,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_71_slc20",
+    "id": "proj_71_jtwds",
     "code": "253170",
     "name": "PLA 26 IACF",
     "client": "IACF",
@@ -2126,11 +2126,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_72_e1qef",
+    "id": "proj_72_vztwg",
     "code": "251874",
     "name": "Plano Anual de Atividades do Instituto Sao Paulo de Arte e Cultura 2026",
     "client": "ISPAC",
@@ -2156,11 +2156,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_73_6s70g",
+    "id": "proj_73_wstlq",
     "code": "252711",
     "name": "The Sound of Magic",
     "client": "ISPAC",
@@ -2185,11 +2185,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_74_c1ddh",
+    "id": "proj_74_4o5mf",
     "code": "251045",
     "name": "Sangue para todas as cores",
     "client": "MCD Prod",
@@ -2214,11 +2214,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_75_864he",
+    "id": "proj_75_e0m2j",
     "code": "255323",
     "name": "Sp Series",
     "client": "Alexa Filmes",
@@ -2243,11 +2243,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_76_hf8mv",
+    "id": "proj_76_mixjc",
     "code": "257241",
     "name": "Koff 2026",
     "client": "5five",
@@ -2273,11 +2273,11 @@
     ],
     "kvStatus": "reprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_77_x9os8",
+    "id": "proj_77_f0pki",
     "code": "2512704",
     "name": "Cine na Praça Itinerante - 2° Edição",
     "client": "5five",
@@ -2301,11 +2301,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_78_oo3oe",
+    "id": "proj_78_1jx73",
     "code": "Sem informação Migrada",
     "name": "Cinema para todos 3ª edição",
     "client": "Tm Comunicação",
@@ -2329,11 +2329,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_79_7mo66",
+    "id": "proj_79_obrs3",
     "code": "Sem informação Migrada",
     "name": "Steam XP 3ª edição",
     "client": "Sem informação Migrada",
@@ -2357,11 +2357,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_80_66xtm",
+    "id": "proj_80_e8utl",
     "code": "244136",
     "name": "Madeira e Design",
     "client": "Conserino Consultoria",
@@ -2386,11 +2386,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_81_e0ygl",
+    "id": "proj_81_dhfka",
     "code": "Sem informação Migrada",
     "name": "PLA 27 - ISPAC",
     "client": "ISPAC",
@@ -2414,11 +2414,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.957Z",
+    "updatedAt": "2026-10-27T12:10:23.957Z"
   },
   {
-    "id": "proj_82_oijut",
+    "id": "proj_82_p8ni4",
     "code": "Sem informação Migrada",
     "name": "Memórias em construção",
     "client": "Zeppelin",
@@ -2442,11 +2442,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.958Z",
+    "updatedAt": "2026-10-27T12:10:23.958Z"
   },
   {
-    "id": "proj_83_g6ao3",
+    "id": "proj_83_gifd0",
     "code": "266380",
     "name": "Steam Xp - Universo Curiosos 3ª edição",
     "client": "ID4!",
@@ -2470,11 +2470,11 @@
     ],
     "kvStatus": "aprovada",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.958Z",
+    "updatedAt": "2026-10-27T12:10:23.958Z"
   },
   {
-    "id": "proj_84_0fu3x",
+    "id": "proj_84_rky9f",
     "code": "Sem informação Migrada",
     "name": "Oficina dos sonhos",
     "client": "Sem informação Migrada",
@@ -2499,11 +2499,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.958Z",
+    "updatedAt": "2026-10-27T12:10:23.958Z"
   },
   {
-    "id": "proj_85_3kbs2",
+    "id": "proj_85_rgd80",
     "code": "Sem informação Migrada",
     "name": "Move +",
     "client": "Sem informação Migrada",
@@ -2528,11 +2528,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_86_ouvml",
+    "id": "proj_86_lf5u5",
     "code": "Sem informação Migrada",
     "name": "OCA",
     "client": "Sem informação Migrada",
@@ -2556,11 +2556,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_87_6a5zh",
+    "id": "proj_87_aik9r",
     "code": "Sem informação Migrada",
     "name": "SP Series Fest",
     "client": "Sem informação Migrada",
@@ -2585,11 +2585,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_88_10j2b",
+    "id": "proj_88_ffvqh",
     "code": "Sem informação Migrada",
     "name": "Festival de Cinema Coreano",
     "client": "Sem informação Migrada",
@@ -2614,11 +2614,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_89_r3lbu",
+    "id": "proj_89_nc6yu",
     "code": "Sem informação Migrada",
     "name": "Lumina",
     "client": "Sem informação Migrada",
@@ -2642,11 +2642,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_90_d29d4",
+    "id": "proj_90_bcucx",
     "code": "Sem informação Migrada",
     "name": "Oficina dos Sonhos 2ª Edição",
     "client": "Sem informação Migrada",
@@ -2671,11 +2671,11 @@
     ],
     "kvStatus": "em_aprovacao",
     "kvSent": true,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_91_1eyj0",
+    "id": "proj_91_6nzir",
     "code": "Sem informação Migrada",
     "name": "Oficina dos Sonhos 2ª Ed.",
     "client": "Sem informação Migrada",
@@ -2700,11 +2700,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_92_1nam5",
+    "id": "proj_92_m1074",
     "code": "Sem informação Migrada",
     "name": "Ponto da Moda",
     "client": "Sem informação Migrada",
@@ -2729,11 +2729,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_93_wue0w",
+    "id": "proj_93_uwlns",
     "code": "Sem informação Migrada",
     "name": "Livro Arte Contemporanea",
     "client": "Sem informação Migrada",
@@ -2758,11 +2758,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_94_nfamq",
+    "id": "proj_94_3bfog",
     "code": "Sem informação Migrada",
     "name": "Mentes Brilhantes",
     "client": "Sem informação Migrada",
@@ -2787,11 +2787,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_95_2jfe4",
+    "id": "proj_95_9hv28",
     "code": "Sem informação Migrada",
     "name": "Comida da Cidade ano 2",
     "client": "Sem informação Migrada",
@@ -2816,11 +2816,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_96_7p4xl",
+    "id": "proj_96_gcsgv",
     "code": "Sem informação Migrada",
     "name": "O som da magia- In concert",
     "client": "Sem informação Migrada",
@@ -2845,11 +2845,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_97_y2epu",
+    "id": "proj_97_h5iop",
     "code": "Sem informação Migrada",
     "name": "Steam XP 2ª edição",
     "client": "Sem informação Migrada",
@@ -2874,11 +2874,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_98_utfvq",
+    "id": "proj_98_ivtvu",
     "code": "Sem informação Migrada",
     "name": "Ateliê Criativo: Formação e Economia Circular",
     "client": "Sem informação Migrada",
@@ -2902,11 +2902,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_99_u0vmy",
+    "id": "proj_99_gzz5u",
     "code": "Sem informação Migrada",
     "name": "Fórum de Impacto | Pro-Mac",
     "client": "Sem informação Migrada",
@@ -2930,11 +2930,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.486Z",
-    "updatedAt": "2026-10-26T18:59:40.486Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_100_0drhq",
+    "id": "proj_100_604yi",
     "code": "Sem informação Migrada",
     "name": "Atelie Criativo ICMS  ICMS MG",
     "client": "Sem informação Migrada",
@@ -2960,11 +2960,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.959Z",
+    "updatedAt": "2026-10-27T12:10:23.959Z"
   },
   {
-    "id": "proj_101_g1hc9",
+    "id": "proj_101_xrwq9",
     "code": "Sem informação Migrada",
     "name": "Cozinha de Talentos",
     "client": "Sem informação Migrada",
@@ -2980,7 +2980,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -2993,11 +2993,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_102_tdhah",
+    "id": "proj_102_a14ol",
     "code": "Sem informação Migrada",
     "name": "Dança na Comunidade",
     "client": "Sem informação Migrada",
@@ -3013,7 +3013,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3026,11 +3026,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_103_kfhjq",
+    "id": "proj_103_an68a",
     "code": "Sem informação Migrada",
     "name": "Festival de Cinema Coreano",
     "client": "Sem informação Migrada",
@@ -3046,7 +3046,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3059,11 +3059,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_104_6f5iy",
+    "id": "proj_104_9t3v7",
     "code": "Sem informação Migrada",
     "name": "Ponto da Moda - 2022",
     "client": "Sem informação Migrada",
@@ -3079,7 +3079,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3092,11 +3092,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_105_fc4b0",
+    "id": "proj_105_wipun",
     "code": "Sem informação Migrada",
     "name": "Art & Design Lab",
     "client": "Sem informação Migrada",
@@ -3112,7 +3112,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3125,11 +3125,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_106_y02hz",
+    "id": "proj_106_qbasp",
     "code": "Sem informação Migrada",
     "name": "Oficina dos Sonhos - 2022",
     "client": "Sem informação Migrada",
@@ -3145,7 +3145,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3158,11 +3158,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_107_9t14l",
+    "id": "proj_107_xst1r",
     "code": "Sem informação Migrada",
     "name": "Escola de Iluminação Cênica",
     "client": "Sem informação Migrada",
@@ -3178,7 +3178,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3191,11 +3191,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_108_woeg9",
+    "id": "proj_108_4n49d",
     "code": "Sem informação Migrada",
     "name": "Steam Girls",
     "client": "Sem informação Migrada",
@@ -3211,7 +3211,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3224,11 +3224,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_109_97nus",
+    "id": "proj_109_4tnz8",
     "code": "Sem informação Migrada",
     "name": "O Teatro na Formação do Jovem",
     "client": "Sem informação Migrada",
@@ -3244,7 +3244,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3257,11 +3257,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_110_udsmp",
+    "id": "proj_110_bg9fv",
     "code": "Sem informação Migrada",
     "name": "Arte de Rua",
     "client": "Sem informação Migrada",
@@ -3277,7 +3277,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3290,11 +3290,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_111_bfpky",
+    "id": "proj_111_adiyf",
     "code": "Sem informação Migrada",
     "name": "Festa do Povo",
     "client": "Sem informação Migrada",
@@ -3310,7 +3310,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3323,11 +3323,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_112_kiue0",
+    "id": "proj_112_crm32",
     "code": "Sem informação Migrada",
     "name": "Carpinteiros do Futuro",
     "client": "Sem informação Migrada",
@@ -3343,7 +3343,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3356,11 +3356,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_113_ikewa",
+    "id": "proj_113_2b16d",
     "code": "Sem informação Migrada",
     "name": "Cine na Praça Itinerante",
     "client": "Sem informação Migrada",
@@ -3376,7 +3376,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3389,11 +3389,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_114_9kuyy",
+    "id": "proj_114_jpg9z",
     "code": "Sem informação Migrada",
     "name": "SP Street Art",
     "client": "Sem informação Migrada",
@@ -3409,7 +3409,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3422,11 +3422,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_115_rja4d",
+    "id": "proj_115_kwel7",
     "code": "Sem informação Migrada",
     "name": "Festival da Viola e Cultura Sertaneja de Itu",
     "client": "Sem informação Migrada",
@@ -3442,7 +3442,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3455,11 +3455,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_116_wsb56",
+    "id": "proj_116_3gn9z",
     "code": "Sem informação Migrada",
     "name": "Festival de Cinema Coreano SP",
     "client": "Sem informação Migrada",
@@ -3475,7 +3475,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3488,11 +3488,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_117_wuyfp",
+    "id": "proj_117_ohxik",
     "code": "Sem informação Migrada",
     "name": "Recanto Musical",
     "client": "Sem informação Migrada",
@@ -3508,7 +3508,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3521,11 +3521,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_118_kwruv",
+    "id": "proj_118_rhy6q",
     "code": "Sem informação Migrada",
     "name": "Breakin Brasil CT",
     "client": "Sem informação Migrada",
@@ -3541,7 +3541,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3554,11 +3554,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_119_if69d",
+    "id": "proj_119_gf5cp",
     "code": "Sem informação Migrada",
     "name": "Tradições Gastronomicas Paulistas",
     "client": "Sem informação Migrada",
@@ -3574,7 +3574,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3587,11 +3587,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_120_speei",
+    "id": "proj_120_wtko0",
     "code": "Sem informação Migrada",
     "name": "CT Breakin' Brasil ano III",
     "client": "Sem informação Migrada",
@@ -3607,7 +3607,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3620,11 +3620,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_121_14mjn",
+    "id": "proj_121_dm8qs",
     "code": "Sem informação Migrada",
     "name": "Cinema para todos",
     "client": "Sem informação Migrada",
@@ -3640,7 +3640,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3653,11 +3653,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_122_j2vqa",
+    "id": "proj_122_boa3p",
     "code": "Sem informação Migrada",
     "name": "Sabor e Cultura",
     "client": "Sem informação Migrada",
@@ -3673,7 +3673,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3686,11 +3686,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_123_x5n6v",
+    "id": "proj_123_6gdvw",
     "code": "Sem informação Migrada",
     "name": "Menino Gourmet/Núcleo de gastronomia",
     "client": "Sem informação Migrada",
@@ -3706,7 +3706,7 @@
     "isCompleted": true,
     "isInTreaty": true,
     "lawMechanism": "PROAC",
-    "columnId": "col_90",
+    "columnId": "col_completed",
     "isManualColumn": false,
     "notes": "Sem informação Migrada",
     "tags": [
@@ -3719,11 +3719,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_124_jmf5k",
+    "id": "proj_124_jdh0p",
     "code": "Sem informação Migrada",
     "name": "Art e Design Lab",
     "client": "Sem informação Migrada",
@@ -3749,11 +3749,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.487Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_125_qxa2l",
+    "id": "proj_125_ijr63",
     "code": "Sem informação Migrada",
     "name": "Atelie Criativo",
     "client": "Sem informação Migrada",
@@ -3780,11 +3780,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.487Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_126_oh6jr",
+    "id": "proj_126_apn45",
     "code": "Sem informação Migrada",
     "name": "Steam XP",
     "client": "Sem informação Migrada",
@@ -3811,11 +3811,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_127_0s7i1",
+    "id": "proj_127_xpldy",
     "code": "Sem informação Migrada",
     "name": "Núcleo de Desenvolvimento Audiovisual",
     "client": "Sem informação Migrada",
@@ -3842,11 +3842,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_128_4i6rl",
+    "id": "proj_128_phive",
     "code": "Sem informação Migrada",
     "name": "Moda Brasileira: Uma Retrospectiva (Ponto da Moda)",
     "client": "Sem informação Migrada",
@@ -3873,11 +3873,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_129_t0d4k",
+    "id": "proj_129_polve",
     "code": "Sem informação Migrada",
     "name": "Arts e Crafts",
     "client": "Sem informação Migrada",
@@ -3904,11 +3904,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_130_7n4k3",
+    "id": "proj_130_6iqfg",
     "code": "Sem informação Migrada",
     "name": "Núcleo de Cultura Digital 2 edição/ Mentes Brilhantes",
     "client": "Sem informação Migrada",
@@ -3935,11 +3935,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_131_jungb",
+    "id": "proj_131_ya2q6",
     "code": "Sem informação Migrada",
     "name": "Comida da Cidade Ano 2",
     "client": "Sem informação Migrada",
@@ -3966,11 +3966,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_132_94vmi",
+    "id": "proj_132_pxfip",
     "code": "Sem informação Migrada",
     "name": "Espacinho Cultural",
     "client": "Sem informação Migrada",
@@ -3997,11 +3997,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_133_lj54w",
+    "id": "proj_133_otj1o",
     "code": "Sem informação Migrada",
     "name": "Mais design 2ª edição - Desktop - Nova odessa",
     "client": "Sem informação Migrada",
@@ -4028,11 +4028,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_134_lstwg",
+    "id": "proj_134_lcrcn",
     "code": "Sem informação Migrada",
     "name": "Mais Design 3ª edição - Sumaré",
     "client": "Sem informação Migrada",
@@ -4059,11 +4059,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_135_m4xuf",
+    "id": "proj_135_dfkuc",
     "code": "Sem informação Migrada",
     "name": "Espacinho MUSICAL",
     "client": "Sem informação Migrada",
@@ -4090,11 +4090,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_136_zu1pa",
+    "id": "proj_136_3ebxk",
     "code": "Sem informação Migrada",
     "name": "Festival cinema coreano 2026",
     "client": "Sem informação Migrada",
@@ -4121,11 +4121,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_137_f2yf2",
+    "id": "proj_137_db4z6",
     "code": "Sem informação Migrada",
     "name": "Festival de Cinema Chines",
     "client": "Sem informação Migrada",
@@ -4152,11 +4152,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_138_8ixld",
+    "id": "proj_138_b31b3",
     "code": "Sem informação Migrada",
     "name": "Dança na Comunidade 2ª Edição",
     "client": "Sem informação Migrada",
@@ -4183,11 +4183,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_139_aipqe",
+    "id": "proj_139_kiquc",
     "code": "Sem informação Migrada",
     "name": "Oficina dos Sonhos",
     "client": "Sem informação Migrada",
@@ -4214,11 +4214,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_140_kavd4",
+    "id": "proj_140_e98cr",
     "code": "Sem informação Migrada",
     "name": "Move +",
     "client": "Sem informação Migrada",
@@ -4245,11 +4245,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_141_oohxu",
+    "id": "proj_141_m12ox",
     "code": "Sem informação Migrada",
     "name": "Cine Star",
     "client": "Sem informação Migrada",
@@ -4276,11 +4276,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_142_2pfr2",
+    "id": "proj_142_86yl3",
     "code": "Sem informação Migrada",
     "name": "Núcleo de Moda Afro",
     "client": "Sem informação Migrada",
@@ -4307,11 +4307,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_143_sosbx",
+    "id": "proj_143_iejp3",
     "code": "Sem informação Migrada",
     "name": "Festival Da Música E Cultura Sertaneja De Itu",
     "client": "Sem informação Migrada",
@@ -4338,11 +4338,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.960Z",
+    "updatedAt": "2026-10-27T12:10:23.960Z"
   },
   {
-    "id": "proj_144_hnk0c",
+    "id": "proj_144_y7b43",
     "code": "Sem informação Migrada",
     "name": "Sabor e Cultura livro",
     "client": "Sem informação Migrada",
@@ -4369,11 +4369,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_145_f4kc6",
+    "id": "proj_145_yirs3",
     "code": "Sem informação Migrada",
     "name": "Lumina 2ª edição",
     "client": "Sem informação Migrada",
@@ -4400,11 +4400,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_146_gvhmn",
+    "id": "proj_146_skc7p",
     "code": "Sem informação Migrada",
     "name": "Futuro Brilhante Escola De Iluminação Cênica 2 Edição",
     "client": "Sem informação Migrada",
@@ -4431,11 +4431,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_147_9wea0",
+    "id": "proj_147_atedo",
     "code": "Sem informação Migrada",
     "name": "Sabores da cidade",
     "client": "Sem informação Migrada",
@@ -4461,11 +4461,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_148_ydjwi",
+    "id": "proj_148_42ewj",
     "code": "Sem informação Migrada",
     "name": "Núcleo de moda e design 2ª edição",
     "client": "Sem informação Migrada",
@@ -4491,11 +4491,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_149_kcl0g",
+    "id": "proj_149_t77qp",
     "code": "Sem informação Migrada",
     "name": "CT brealing Ano IV",
     "client": "Sem informação Migrada",
@@ -4521,11 +4521,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_150_tnzmn",
+    "id": "proj_150_ui0hl",
     "code": "Sem informação Migrada",
     "name": "Cinema pra todos 2ª edição",
     "client": "Sem informação Migrada",
@@ -4551,11 +4551,11 @@
     "kvSent": false,
     "agendaVivaRegistered": false,
     "proacSystemRegistered": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_151_9g1p2",
+    "id": "proj_151_ruab1",
     "code": "Sem informação Migrada",
     "name": "Dente de Leite - Feminino - Bimbo 2025 LPIE",
     "client": "Sem informação Migrada",
@@ -4579,11 +4579,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_152_lc2gp",
+    "id": "proj_152_h2zm8",
     "code": "Sem informação Migrada",
     "name": "2024-VOLEIBOL BARUERI FORMANDO FUTURO - ANO II LPIE",
     "client": "Sem informação Migrada",
@@ -4607,11 +4607,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_153_9ag06",
+    "id": "proj_153_o7212",
     "code": "Sem informação Migrada",
     "name": "2024-MENTES BRILHANTES LPIE",
     "client": "Sem informação Migrada",
@@ -4635,11 +4635,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_154_j7nsh",
+    "id": "proj_154_dik5c",
     "code": "Sem informação Migrada",
     "name": "Dente de Leite - Feminino- ano III",
     "client": "Sem informação Migrada",
@@ -4664,11 +4664,11 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   },
   {
-    "id": "proj_155_i0n3l",
+    "id": "proj_155_zdef0",
     "code": "Sem informação Migrada",
     "name": "Dente de leite 2",
     "client": "Sem informação Migrada",
@@ -4693,7 +4693,7 @@
     ],
     "kvStatus": "nao_enviado",
     "kvSent": false,
-    "createdAt": "2026-10-26T18:59:40.488Z",
-    "updatedAt": "2026-10-26T18:59:40.488Z"
+    "createdAt": "2026-10-27T12:10:23.961Z",
+    "updatedAt": "2026-10-27T12:10:23.961Z"
   }
 ]

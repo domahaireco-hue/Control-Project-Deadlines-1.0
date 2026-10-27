@@ -12,7 +12,9 @@ import {
   FileCheck2, 
   Building2, 
   ShieldAlert,
-  Users
+  Users,
+  ExternalLink,
+  Download
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { DEFAULT_RECIPIENTS } from '@/services/notificationService';
@@ -48,22 +50,6 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({ isOpen, onCl
   const agendaVivaCount = proacProjects.filter((p) => p.agendaVivaRegistered).length;
   const proacSystemCount = proacProjects.filter((p) => p.proacSystemRegistered).length;
 
-  const handleSendEmail = async () => {
-    setIsSending(true);
-    setSendError(null);
-    try {
-      await sendDailyReportEmail();
-      setSendSuccess(true);
-      setTimeout(() => {
-        setSendSuccess(false);
-      }, 5000);
-    } catch (err: unknown) {
-      setSendError('Erro ao disparar e-mail de relatório diário. Tente novamente.');
-    } finally {
-      setIsSending(false);
-    }
-  };
-
   const handlePrintPdf = () => {
     PdfSnapshotService.printKanbanSnapshot({
       company: 'Quest Consult',
@@ -72,6 +58,80 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({ isOpen, onCl
       totalProjects: projects.length,
       criticalCount: risk32.length,
     });
+  };
+
+  const buildEmailContent = () => {
+    const dateFormatted = new Date().toLocaleDateString('pt-BR');
+    const timeFormatted = new Date().toLocaleTimeString('pt-BR');
+    const recipientEmails = DEFAULT_RECIPIENTS.map((r) => r.email).join(',');
+
+    const subject = `📊 [RELATÓRIO DIÁRIO QUEST CONSULT - ${dateFormatted}] Controle Geral de Prazos & Projetos`;
+
+    const criticalList = risk32.length === 0
+      ? '✅ Nenhum projeto em risco crítico hoje.'
+      : risk32.map((p) => `• [${p.code || 'S/C'}] ${p.name} | Vence em: ${p.daysRemaining ?? 'N/D'} dias | Status: ${p.status}`).join('\n');
+
+    const body = `Prezados (Catelani, TK, Lucas e Bruno),
+
+Segue o Relatório Diário Consolidado de Controle de Prazos e Projetos da Quest Consult gerado em ${dateFormatted} às ${timeFormatted}.
+
+📊 RESUMO EXECUTIVO DO KANBAN:
+• Total Geral de Projetos: ${totalProjects}
+• 🔴 32 Dias (Limite Legal de Prorrogação / Risco Crítico): ${risk32.length} projeto(s)
+• 🟠 45 Dias (Alerta de Prorrogação): ${alert45.length} projeto(s)
+• 🔵 60 Dias (Atenção Operacional): ${op60.length} projeto(s)
+• 🟢 90 Dias (Prazo Confortável): ${safe90.length} projeto(s)
+• 🟣 Em Tratativa (Prorrogação Solicitada): ${inTreaty.length} projeto(s)
+• 🏁 Concluídos / Finalizados: ${countCompleted} projeto(s)
+
+🎨 STATUS KV / ARTE DIGITAL:
+• Aprovadas: ${kvApproved}
+• Em Aprovação: ${kvInReview}
+• Pendente de Envio: ${kvPending}
+
+🏛️ CONFORMIDADE PROAC (${proacProjects.length} Projetos):
+• Cadastrado no Agenda Viva: ${agendaVivaCount}/${proacProjects.length}
+• Cadastrado no Sistema PROAC: ${proacSystemCount}/${proacProjects.length}
+
+🚨 PROJETOS EM RISCO CRÍTICO (32 DIAS - AÇÃO IMEDIATA):
+${criticalList}
+
+* O relatório completo em PDF (formato paisagem executivo) foi gerado automaticamente pelo sistema para anexo nesta mensagem.
+
+Atenciosamente,
+Bruno Britto (bruno.britto@questconsult.com.br)
+Quest Consult • Gestão de Prazos & Compliance`;
+
+    return { recipientEmails, subject, body };
+  };
+
+  const handleSendViaGmail = async () => {
+    setIsSending(true);
+    setSendError(null);
+    try {
+      // 1. Baixar/Gerar o PDF paisagem executivo
+      handlePrintPdf();
+
+      // 2. Registrar no log de notificações interno
+      await sendDailyReportEmail();
+
+      // 3. Montar URL direta do Gmail Web logado como bruno.britto@questconsult.com.br
+      const { recipientEmails, subject, body } = buildEmailContent();
+      
+      const gmailUrl = `https://mail.google.com/mail/u/?authuser=bruno.britto@questconsult.com.br&view=cm&fs=1&to=${encodeURIComponent(recipientEmails)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+      
+      // Abrir em nova aba no Chrome
+      window.open(gmailUrl, '_blank');
+
+      setSendSuccess(true);
+      setTimeout(() => {
+        setSendSuccess(false);
+      }, 10000);
+    } catch (err: unknown) {
+      setSendError('Erro ao preparar e-mail no Gmail. Tente novamente.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -217,11 +277,14 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({ isOpen, onCl
 
           {/* Feedback de envio */}
           {sendSuccess && (
-            <div className="p-3 bg-emerald-50 border border-emerald-300 rounded-xl flex items-center gap-2 text-emerald-800 animate-in fade-in">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              <span>
-                <strong>Relatório diário enviado com sucesso!</strong> E-mail disparado para Catelani, TK, Lucas e Bruno Britto.
-              </span>
+            <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl space-y-1 text-emerald-900 animate-in fade-in">
+              <div className="flex items-center gap-2 font-bold text-xs text-emerald-800">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>PDF Gerado & Mensagem aberta no Gmail com sucesso!</span>
+              </div>
+              <p className="text-[11px] text-emerald-700">
+                A nova mensagem no <strong>Gmail (Google Chrome)</strong> foi aberta conectada em <strong>bruno.britto@questconsult.com.br</strong> com os 4 destinatários pré-preenchidos (Catelani, TK, Lucas e Bruno Britto) e o resumo executivo formatado. Basta anexar o PDF gerado e clicar em <strong>Enviar</strong>.
+              </p>
             </div>
           )}
 
@@ -236,19 +299,20 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({ isOpen, onCl
           <div className="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
             <button
               onClick={handlePrintPdf}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-colors"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-colors"
             >
-              <Printer className="w-3.5 h-3.5 text-sky-600" />
-              <span>Imprimir / Gerar PDF (Paisagem)</span>
+              <Printer className="w-3.5 h-3.5 text-slate-600" />
+              <span>Apenas Baixar PDF (Paisagem)</span>
             </button>
 
             <button
-              onClick={handleSendEmail}
+              onClick={handleSendViaGmail}
               disabled={isSending}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2 text-xs font-bold text-white bg-sky-600 hover:bg-sky-500 rounded-lg shadow-sm transition-all"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 rounded-xl shadow-md transition-all active:scale-98"
             >
               <Send className={`w-3.5 h-3.5 ${isSending ? 'animate-spin' : ''}`} />
-              <span>{isSending ? 'Disparando...' : 'Enviar Relatório Diário Agora'}</span>
+              <span>{isSending ? 'Preparando...' : 'Baixar PDF & Enviar via Gmail (Chrome)'}</span>
+              <ExternalLink className="w-3 h-3 text-sky-200" />
             </button>
           </div>
 

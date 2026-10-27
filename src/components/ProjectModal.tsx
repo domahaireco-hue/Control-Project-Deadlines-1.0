@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Project, KanbanColumnId, LawMechanism } from '@/types';
-import { X, Save, Calendar, User, FileText, Tag, CheckCircle2, Building2 } from 'lucide-react';
+import { Project, KanbanColumnId, LawMechanism, KvStatus } from '@/types';
+import { X, Save, Calendar, User, FileText, Tag, CheckCircle2, Building2, HelpCircle, Clock4, XCircle, CalendarCheck2, Building } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { EMPTY_CELL_FALLBACK, calculateDaysRemaining, determineKanbanColumn } from '@/services/spreadsheetService';
 
@@ -32,6 +32,16 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   const [notes, setNotes] = useState('');
   const [isManualColumn, setIsManualColumn] = useState(false);
 
+  // Novos campos
+  const [kvStatus, setKvStatus] = useState<KvStatus>('nao_enviado');
+  const [agendaVivaRegistered, setAgendaVivaRegistered] = useState(false);
+  const [proacSystemRegistered, setProacSystemRegistered] = useState(false);
+  const [isInTreaty, setIsInTreaty] = useState(false);
+
+  const isProac = lawMechanism === 'PROAC' || 
+    (lawMechanism && lawMechanism.toUpperCase().includes('PROAC')) ||
+    (lawMechanism && lawMechanism.toUpperCase().includes('ICMS'));
+
   useEffect(() => {
     if (projectToEdit) {
       setName(projectToEdit.name || '');
@@ -46,6 +56,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       setColumnId(projectToEdit.columnId || 'col_90');
       setNotes(projectToEdit.notes === EMPTY_CELL_FALLBACK ? '' : projectToEdit.notes || '');
       setIsManualColumn(projectToEdit.isManualColumn || false);
+      setKvStatus(projectToEdit.kvStatus || 'nao_enviado');
+      setAgendaVivaRegistered(projectToEdit.agendaVivaRegistered || false);
+      setProacSystemRegistered(projectToEdit.proacSystemRegistered || false);
+      setIsInTreaty(projectToEdit.isInTreaty || false);
     } else {
       setName('');
       setCode('');
@@ -59,10 +73,13 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       setColumnId('col_90');
       setNotes('');
       setIsManualColumn(false);
+      setKvStatus('nao_enviado');
+      setAgendaVivaRegistered(false);
+      setProacSystemRegistered(false);
+      setIsInTreaty(false);
     }
   }, [projectToEdit, isOpen]);
 
-  // Se o usuário altera a data de entrega e não selecionou manualmente outra coluna, calcula automaticamente
   const handleTargetDateChange = (val: string) => {
     setTargetDate(val);
     if (!isManualColumn && val) {
@@ -81,6 +98,14 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     const calculatedDays = targetDate ? calculateDaysRemaining(targetDate) : null;
     const finalColumn = columnId;
 
+    const baseTags = projectToEdit?.tags ? [...projectToEdit.tags] : [lawMechanism];
+    if (isInTreaty && !baseTags.includes('Projetos em Tratativa')) {
+      baseTags.push('Projetos em Tratativa');
+    } else if (!isInTreaty) {
+      const idx = baseTags.indexOf('Projetos em Tratativa');
+      if (idx !== -1) baseTags.splice(idx, 1);
+    }
+
     if (projectToEdit) {
       updateProject(projectToEdit.id, {
         name: name.trim(),
@@ -96,6 +121,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         columnId: finalColumn,
         isManualColumn,
         notes: notes.trim() || EMPTY_CELL_FALLBACK,
+        kvStatus,
+        kvSent: kvStatus !== 'nao_enviado',
+        agendaVivaRegistered: isProac ? agendaVivaRegistered : undefined,
+        proacSystemRegistered: isProac ? proacSystemRegistered : undefined,
+        isInTreaty,
+        tags: baseTags,
       });
     } else {
       addProject({
@@ -112,7 +143,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         columnId: finalColumn,
         isManualColumn,
         notes: notes.trim() || EMPTY_CELL_FALLBACK,
-        tags: [lawMechanism],
+        tags: baseTags,
+        kvStatus,
+        kvSent: kvStatus !== 'nao_enviado',
+        agendaVivaRegistered: isProac ? agendaVivaRegistered : undefined,
+        proacSystemRegistered: isProac ? proacSystemRegistered : undefined,
+        isInTreaty,
       });
     }
 
@@ -123,7 +159,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in duration-200">
+      <div className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in duration-200 my-8">
         
         {/* Header Modal */}
         <div className="bg-quest-900 text-white px-6 py-4 flex items-center justify-between border-b border-quest-800">
@@ -144,7 +180,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         </div>
 
         {/* Formulário */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
           
           {/* Nome do Projeto */}
           <div>
@@ -196,6 +232,92 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </div>
           </div>
 
+          {/* Seção Nova: KV / Arte Digital */}
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+              <span>Aprovação de KV / Arte Digital</span>
+            </h4>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Status de KV / Arte Digital
+                </label>
+                <select
+                  value={kvStatus}
+                  onChange={(e) => setKvStatus(e.target.value as KvStatus)}
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white font-medium"
+                >
+                  <option value="nao_enviado">⚪ Não Enviada (Pendente de Envio)</option>
+                  <option value="em_aprovacao">🟡 Enviada / Em Aprovação</option>
+                  <option value="aprovada">🟢 Aprovada (Baixa Concedida)</option>
+                  <option value="reprovada">🔴 Reprovada</option>
+                </select>
+              </div>
+
+              <div className="flex items-center pt-5">
+                <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-700">
+                  <input
+                    type="checkbox"
+                    checked={kvStatus !== 'nao_enviado'}
+                    onChange={(e) => setKvStatus(e.target.checked ? 'em_aprovacao' : 'nao_enviado')}
+                    className="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500"
+                  />
+                  <span>Arte já foi enviada para aprovação</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          {/* Seção Nova: Sinalizações Específicas para PROAC ICMS */}
+          {isProac && (
+            <div className="p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-2">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900 flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5 text-amber-700" />
+                <span>Sinalizações Obrigatórias PROAC ICMS</span>
+              </h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <label className="flex items-center gap-2 p-2 bg-white rounded-lg border border-amber-200 cursor-pointer text-xs font-semibold text-slate-800 hover:border-amber-400 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={agendaVivaRegistered}
+                    onChange={(e) => setAgendaVivaRegistered(e.target.checked)}
+                    className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                  />
+                  <span>1) Cadastrado no Agenda Viva</span>
+                </label>
+
+                <label className="flex items-center gap-2 p-2 bg-white rounded-lg border border-amber-200 cursor-pointer text-xs font-semibold text-slate-800 hover:border-amber-400 transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={proacSystemRegistered}
+                    onChange={(e) => setProacSystemRegistered(e.target.checked)}
+                    className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                  />
+                  <span>2) Cadastrado no Sistema do PROAC</span>
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* Flag de Projeto em Tratativa */}
+          <div className="p-3 bg-purple-50/70 border border-purple-200 rounded-xl flex items-center justify-between">
+            <div>
+              <p className="text-xs font-bold text-purple-950">Projeto em Tratativa / Prestação de Contas</p>
+              <p className="text-[11px] text-purple-700">Não precisa pedir prorrogação (prestação de contas apresentada / em análise).</p>
+            </div>
+            <label className="inline-flex items-center gap-2 cursor-pointer text-xs font-bold text-purple-900">
+              <input
+                type="checkbox"
+                checked={isInTreaty}
+                onChange={(e) => setIsInTreaty(e.target.checked)}
+                className="w-4 h-4 text-purple-600 rounded border-purple-300 focus:ring-purple-500"
+              />
+              <span>Em Tratativa</span>
+            </label>
+          </div>
+
           {/* Grid: Cliente/Proponente e Patrocinador */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -225,7 +347,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </div>
           </div>
 
-          {/* Grid: Responsável e Status */}
+          {/* Grid: Responsável e Status (Coluna C) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -242,20 +364,15 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Status Atual
+                Status Atual (Coluna C da Planilha)
               </label>
-              <select
+              <input
+                type="text"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white"
-              >
-                <option value="Em Execução">Em Execução</option>
-                <option value="No prazo">No prazo</option>
-                <option value="Desbloqueado">Desbloqueado</option>
-                <option value="Atrasado">Atrasado</option>
-                <option value="Prestação de Contas Apresentada">Prestação de Contas Apresentada</option>
-                <option value="Finalizado">Finalizado</option>
-              </select>
+                placeholder="Ex: Desbloqueado, Em Execução, Prestação de Contas Apresentada..."
+                className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none"
+              />
             </div>
           </div>
 
@@ -289,7 +406,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           {/* Coluna Kanban */}
           <div>
             <label className="block text-xs font-semibold text-slate-700 mb-1">
-              Coluna do Kanban (Janela Temporal)
+              Coluna do Kanban (Janela Temporal: 90, 60, 45, 32 Dias)
             </label>
             <select
               value={columnId}
@@ -297,7 +414,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 setColumnId(e.target.value as KanbanColumnId);
                 setIsManualColumn(true);
               }}
-              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white"
+              className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white font-medium"
             >
               {columns.map((c) => (
                 <option key={c.id} value={c.id}>

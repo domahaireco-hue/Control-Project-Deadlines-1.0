@@ -8,12 +8,14 @@ import { ProjectModal } from '@/components/ProjectModal';
 import { UploadModal } from '@/components/UploadModal';
 import { NotificationDrawer } from '@/components/NotificationDrawer';
 import { NotificationToast } from '@/components/NotificationToast';
+import { DailyReportModal } from '@/components/DailyReportModal';
 import { Project } from '@/types';
 
 export default function HomePage() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isNotificationDrawerOpen, setIsNotificationDrawerOpen] = useState(false);
+  const [isDailyReportOpen, setIsDailyReportOpen] = useState(false);
   const [projectToEdit, setProjectToEdit] = useState<Project | null>(null);
 
   const handleOpenNewProject = () => {
@@ -33,13 +35,14 @@ export default function HomePage() {
         onOpenUpload={() => setIsUploadOpen(true)}
         onOpenNewProject={handleOpenNewProject}
         onOpenNotifications={() => setIsNotificationDrawerOpen(true)}
+        onOpenDailyReport={() => setIsDailyReportOpen(true)}
       />
 
       {/* Visão de Métricas, KPIs e Filtros por Mecanismo/Aba */}
       <MetricsOverview />
 
       {/* Área Principal do Kanban Board com as 4 Colunas */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
         <KanbanBoard onEditProject={handleEditProject} />
       </main>
 
@@ -53,13 +56,19 @@ export default function HomePage() {
         projectToEdit={projectToEdit}
       />
 
+      {/* Modal de Disparo Diário de Relatório por E-mail (Catelani, TK, Lucas, Bruno Britto) */}
+      <DailyReportModal
+        isOpen={isDailyReportOpen}
+        onClose={() => setIsDailyReportOpen(false)}
+      />
+
       {/* Modal de Upload e Importação de Planilha */}
       <UploadModal
         isOpen={isUploadOpen}
         onClose={() => setIsUploadOpen(false)}
       />
 
-      {/* Drawer de Notificações de E-mail (3 Destinatários) */}
+      {/* Drawer de Notificações de E-mail (4 Destinatários) */}
       <NotificationDrawer
         isOpen={isNotificationDrawerOpen}
         onClose={() => setIsNotificationDrawerOpen(false)}

@@ -53,7 +53,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5 uppercase tracking-wider">
               <Users className="w-4 h-4 text-sky-600" />
-              Destinatários Fixos Configurados (3)
+              Destinatários Oficiais Configurados ({DEFAULT_RECIPIENTS.length})
             </span>
             <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
               Ativo

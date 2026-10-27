@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
-import { Project, KanbanColumnConfig, KanbanColumnId, CardMoveEvent, NotificationLog, ImportResult } from '@/types';
+import { Project, KanbanColumnConfig, KanbanColumnId, CardMoveEvent, NotificationLog, ImportResult, KvStatus } from '@/types';
 import { notificationService } from '@/services/notificationService';
 import { FunnelService, FunnelAdvanceResult } from '@/services/funnelService';
 import { parseSpreadsheetBuffer } from '@/services/spreadsheetService';
@@ -11,7 +11,7 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
   {
     id: 'col_90',
     title: '90 Dias',
-    subtitle: 'Vencimento em torno de 90 dias ou superior',
+    subtitle: 'Vencimento em torno de 90 dias ou superior (> 60 dias)',
     badgeLabel: 'Prazo Seguro',
     minDays: 61,
     accentColor: '#10b981', // emerald
@@ -23,9 +23,9 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
   {
     id: 'col_60',
     title: '60 Dias',
-    subtitle: 'Vencimento em torno de 60 dias (31 a 60)',
+    subtitle: 'Vencimento entre 46 e 60 dias restantes',
     badgeLabel: 'Atenção Operacional',
-    minDays: 31,
+    minDays: 46,
     maxDays: 60,
     accentColor: '#0284c7', // sky
     lightBg: 'bg-sky-50/60',
@@ -34,12 +34,12 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
     headerBg: 'bg-gradient-to-r from-sky-600 to-blue-700 text-white',
   },
   {
-    id: 'col_30',
-    title: '30 Dias',
-    subtitle: 'Vencimento próximo em 30 dias (16 a 30)',
-    badgeLabel: 'Alerta de Entrega',
-    minDays: 16,
-    maxDays: 30,
+    id: 'col_45',
+    title: '45 Dias',
+    subtitle: 'Alerta para preparar prorrogação (33 a 45 dias)',
+    badgeLabel: 'Alerta Prorrogação',
+    minDays: 33,
+    maxDays: 45,
     accentColor: '#f59e0b', // amber
     lightBg: 'bg-amber-50/60',
     borderClass: 'border-amber-200',
@@ -48,10 +48,10 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
   },
   {
     id: 'col_risk',
-    title: 'Risco (15 Dias)',
-    subtitle: 'Crítico: 15 dias ou menos restantes / vencidos',
+    title: '32 Dias (Risco)',
+    subtitle: 'Limite legal para pedir prorrogação (<= 32 dias)',
     badgeLabel: 'Ação Imediata',
-    maxDays: 15,
+    maxDays: 32,
     accentColor: '#ef4444', // red
     lightBg: 'bg-red-50/60',
     borderClass: 'border-red-200',
@@ -60,6 +60,8 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
   },
 ];
 
+export type TreatyFilter = 'ALL' | 'ACTIVE' | 'TREATY' | 'COMPLETED';
+
 interface ProjectContextType {
   projects: Project[];
   columns: KanbanColumnConfig[];
@@ -67,6 +69,8 @@ interface ProjectContextType {
   setSelectedMechanism: (mech: string) => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
+  treatyFilter: TreatyFilter;
+  setTreatyFilter: (tf: TreatyFilter) => void;
   filteredProjects: Project[];
   availableMechanisms: string[];
   historyLogs: NotificationLog[];
@@ -75,17 +79,30 @@ interface ProjectContextType {
   dismissToast: () => void;
   // Ações
   moveCard: (cardId: string, toColumn: KanbanColumnId, reason?: string) => Promise<void>;
+  updateKvStatus: (cardId: string, status: KvStatus) => void;
+  toggleProacField: (cardId: string, field: 'agendaViva' | 'proacSystem') => void;
+  toggleTreaty: (cardId: string) => void;
+  toggleCompleted: (cardId: string) => void;
   addProject: (newProj: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateProject: (id: string, updates: Partial<Project>) => void;
   deleteProject: (id: string) => void;
   importSpreadsheet: (buffer: ArrayBuffer) => ImportResult;
   runFunnelAdvance: (force?: boolean) => Promise<FunnelAdvanceResult>;
+  sendDailyReportEmail: () => Promise<{ log: NotificationLog; summary: any }>;
   resetToDefault: () => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
-const LOCAL_STORAGE_KEY = 'quest_deadline_control_projects_v1';
+const LOCAL_STORAGE_KEY = 'quest_deadline_control_projects_v3';
+
+// Normaliza colunas legadas se existirem
+function normalizeColumn(col: string): KanbanColumnId {
+  if (col === 'col_30') return 'col_45';
+  if (col === 'col_32') return 'col_risk';
+  if (col === 'col_90' || col === 'col_60' || col === 'col_45' || col === 'col_risk') return col;
+  return 'col_90';
+}
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>(() => {
@@ -94,17 +111,26 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const cached = localStorage.getItem(LOCAL_STORAGE_KEY);
         if (cached) {
           const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.map((p: Project) => ({
+              ...p,
+              columnId: normalizeColumn(p.columnId),
+            }));
+          }
         }
       } catch (err) {
         console.warn('Erro ao carregar do cache local:', err);
       }
     }
-    return initialProjectsData as Project[];
+    return (initialProjectsData as Project[]).map((p) => ({
+      ...p,
+      columnId: normalizeColumn(p.columnId),
+    }));
   });
 
   const [selectedMechanism, setSelectedMechanism] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [treatyFilter, setTreatyFilter] = useState<TreatyFilter>('ALL');
   const [historyLogs, setHistoryLogs] = useState<NotificationLog[]>([]);
   const [isAdvancingFunnel, setIsAdvancingFunnel] = useState<boolean>(false);
   const [activeToast, setActiveToast] = useState<NotificationLog | null>(null);
@@ -144,7 +170,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return ['Todos', ...Array.from(set).sort()];
   }, [projects]);
 
-  // Filtra projetos por mecanismo e termo de busca
+  // Filtra projetos por mecanismo, filtro de tratativa/concluídos e termo de busca
   const filteredProjects = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return projects.filter((p) => {
@@ -152,46 +178,57 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (selectedMechanism !== 'Todos' && p.lawMechanism !== selectedMechanism) {
         return false;
       }
-      // Filtro de busca
+      // Filtro de status / tratativa / concluído
+      if (treatyFilter === 'ACTIVE' && (p.isCompleted || (p.isInTreaty && !p.status.includes('Prorrogação')))) {
+        return false;
+      }
+      if (treatyFilter === 'TREATY' && (!p.isInTreaty || p.isCompleted)) {
+        return false;
+      }
+      if (treatyFilter === 'COMPLETED' && !p.isCompleted) {
+        return false;
+      }
+      // Filtro de busca textual
       if (!q) return true;
-      const matchName = p.name.toLowerCase().includes(q);
-      const matchCode = p.code.toLowerCase().includes(q);
-      const matchClient = p.client.toLowerCase().includes(q);
-      const matchSponsor = p.sponsor.toLowerCase().includes(q);
-      const matchResponsible = p.responsible.toLowerCase().includes(q);
-      const matchStatus = p.status.toLowerCase().includes(q);
-      return matchName || matchCode || matchClient || matchSponsor || matchResponsible || matchStatus;
+      const matchName = (p.name || '').toLowerCase().includes(q);
+      const matchCode = (p.code || '').toLowerCase().includes(q);
+      const matchClient = (p.client || '').toLowerCase().includes(q);
+      const matchSponsor = (p.sponsor || '').toLowerCase().includes(q);
+      const matchResponsible = (p.responsible || '').toLowerCase().includes(q);
+      const matchStatus = (p.status || '').toLowerCase().includes(q);
+      const matchNotes = (p.notes || '').toLowerCase().includes(q);
+      const matchReadeq = (p.readequationNotes || '').toLowerCase().includes(q);
+      return matchName || matchCode || matchClient || matchSponsor || matchResponsible || matchStatus || matchNotes || matchReadeq;
     });
-  }, [projects, selectedMechanism, searchQuery]);
+  }, [projects, selectedMechanism, treatyFilter, searchQuery]);
 
   // Movimentação de Card (Drag and Drop ou Manual)
   const moveCard = useCallback(
     async (cardId: string, toColumn: KanbanColumnId, reason?: string) => {
+      const normalizedTo = normalizeColumn(toColumn);
       const project = projects.find((p) => p.id === cardId);
-      if (!project || project.columnId === toColumn) return;
+      if (!project || project.columnId === normalizedTo) return;
 
       const fromColumn = project.columnId;
 
-      // Atualiza o estado
       setProjects((prev) =>
         prev.map((p) =>
           p.id === cardId
             ? {
                 ...p,
-                columnId: toColumn,
-                isManualColumn: true, // Trava manual do usuário
+                columnId: normalizedTo,
+                isManualColumn: true,
                 updatedAt: new Date().toISOString(),
               }
             : p
         )
       );
 
-      // Dispara evento para o NotificationService
       const moveEvent: CardMoveEvent = {
         cardId,
         projectName: project.name,
         fromColumn,
-        toColumn,
+        toColumn: normalizedTo,
         timestamp: new Date().toISOString(),
         movedBy: 'Usuário (Painel Kanban Quest)',
         reason: reason || 'Movimentação manual de ajuste operacional',
@@ -202,12 +239,89 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [projects]
   );
 
+  // Atualização rápida de KV / Arte Digital
+  const updateKvStatus = useCallback((cardId: string, status: KvStatus) => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== cardId) return p;
+        const sent = status !== 'nao_enviado';
+        return {
+          ...p,
+          kvStatus: status,
+          kvSent: sent,
+          updatedAt: new Date().toISOString(),
+        };
+      })
+    );
+  }, []);
+
+  // Alternar sinalização PROAC ICMS (Agenda Viva ou Sistema PROAC)
+  const toggleProacField = useCallback((cardId: string, field: 'agendaViva' | 'proacSystem') => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== cardId) return p;
+        if (field === 'agendaViva') {
+          return {
+            ...p,
+            agendaVivaRegistered: !p.agendaVivaRegistered,
+            updatedAt: new Date().toISOString(),
+          };
+        } else {
+          return {
+            ...p,
+            proacSystemRegistered: !p.proacSystemRegistered,
+            updatedAt: new Date().toISOString(),
+          };
+        }
+      })
+    );
+  }, []);
+
+  // Alternar se projeto está em tratativa
+  const toggleTreaty = useCallback((cardId: string) => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== cardId) return p;
+        const newInTreaty = !p.isInTreaty;
+        let newTags = [...p.tags];
+        if (newInTreaty && !newTags.includes('Projetos em Tratativa')) {
+          newTags.push('Projetos em Tratativa');
+        } else if (!newInTreaty) {
+          newTags = newTags.filter((t) => t !== 'Projetos em Tratativa');
+        }
+        return {
+          ...p,
+          isInTreaty: newInTreaty,
+          tags: newTags,
+          updatedAt: new Date().toISOString(),
+        };
+      })
+    );
+  }, []);
+
+  // Alternar se projeto está concluído
+  const toggleCompleted = useCallback((cardId: string) => {
+    setProjects((prev) =>
+      prev.map((p) => {
+        if (p.id !== cardId) return p;
+        const newCompleted = !p.isCompleted;
+        return {
+          ...p,
+          isCompleted: newCompleted,
+          isInTreaty: newCompleted ? true : p.isInTreaty,
+          updatedAt: new Date().toISOString(),
+        };
+      })
+    );
+  }, []);
+
   // Adicionar novo projeto manualmente
   const addProject = useCallback(
     (newProjData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => {
       const newId = `proj_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
       const newProj: Project = {
         ...newProjData,
+        columnId: normalizeColumn(newProjData.columnId),
         id: newId,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -254,10 +368,19 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [projects]
   );
 
-  // Restaurar dados originais da planilha anexada
+  // Disparo de Relatório Geral Diário por e-mail para os 4 destinatários
+  const sendDailyReportEmail = useCallback(async () => {
+    return await notificationService.sendDailySummaryReport(projects);
+  }, [projects]);
+
+  // Restaurar dados originais da planilha Quest Consult
   const resetToDefault = useCallback(() => {
-    if (confirm('Deseja restaurar a base de dados original da planilha Quest Consult?')) {
-      setProjects(initialProjectsData as Project[]);
+    if (confirm('Deseja restaurar a base de dados original da planilha Quest Consult com a Coluna C atualizada?')) {
+      const fresh = (initialProjectsData as Project[]).map((p) => ({
+        ...p,
+        columnId: normalizeColumn(p.columnId),
+      }));
+      setProjects(fresh);
       if (typeof window !== 'undefined') {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
       }
@@ -273,6 +396,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSelectedMechanism,
         searchQuery,
         setSearchQuery,
+        treatyFilter,
+        setTreatyFilter,
         filteredProjects,
         availableMechanisms,
         historyLogs,
@@ -280,11 +405,16 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         activeToast,
         dismissToast,
         moveCard,
+        updateKvStatus,
+        toggleProacField,
+        toggleTreaty,
+        toggleCompleted,
         addProject,
         updateProject,
         deleteProject,
         importSpreadsheet,
         runFunnelAdvance,
+        sendDailyReportEmail,
         resetToDefault,
       }}
     >

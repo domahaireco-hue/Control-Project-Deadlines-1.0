@@ -74,7 +74,11 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ onEditProject }) => {
       {activeView === 'kanban' && (
         <div className="kanban-board-container grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3.5">
           {columns.map((col) => {
-            const colProjects = filteredProjects.filter((p) => p.columnId === col.id);
+            const colProjects = filteredProjects.filter((p) => 
+              p.columnId === col.id || 
+              (col.id === 'col_45' && (p.columnId as string) === 'col_30') ||
+              (col.id === 'col_risk' && (p.columnId as string) === 'col_32')
+            );
             return (
               <KanbanColumn
                 key={col.id}

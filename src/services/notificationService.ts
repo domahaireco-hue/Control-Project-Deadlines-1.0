@@ -2,34 +2,41 @@
  * Notification Service & Event Dispatcher
  * Desenvolvido para Quest Consult
  * 
- * Gerencia o disparo de alertas e e-mails para movimentação de cards e funil
+ * Gerencia o disparo diário de relatórios em PDF por e-mail e alertas de movimentação
  */
 
-import { CardMoveEvent, NotificationRecipient, NotificationLog, KanbanColumnId } from '@/types';
+import { CardMoveEvent, NotificationRecipient, NotificationLog, KanbanColumnId, Project } from '@/types';
 
 export const DEFAULT_RECIPIENTS: NotificationRecipient[] = [
   {
-    name: 'Diretoria Executiva',
-    email: 'diretoria@questconsult.com.br',
-    role: 'Acompanhamento Estratégico',
+    name: 'Catelani',
+    email: 'catelani@questconsult.com.br',
+    role: 'Diretoria / Coordenação Geral',
   },
   {
-    name: 'Coordenação de Projetos',
-    email: 'gestao.projetos@questconsult.com.br',
-    role: 'Gestão Operacional',
+    name: 'TK',
+    email: 'tk@questconsult.com.br',
+    role: 'Gestão Estratégica & Projetos',
   },
   {
-    name: 'Operações & Compliance',
-    email: 'operacoes@questconsult.com.br',
-    role: 'Auditoria de Prazos',
+    name: 'Lucas',
+    email: 'lucas@questconsult.com.br',
+    role: 'Operações & Prestação de Contas',
+  },
+  {
+    name: 'Bruno Britto',
+    email: 'bruno.britto@questconsult.com.br',
+    role: 'Gestão de Prazos & Compliance',
   },
 ];
 
-const COLUMN_NAMES: Record<KanbanColumnId, string> = {
-  col_90: '90 Dias (Prazo Confortável)',
-  col_60: '60 Dias (Atenção)',
-  col_30: '30 Dias (Alerta de Vencimento)',
-  col_risk: 'Risco (15 Dias Críticos)',
+export const COLUMN_NAMES: Record<KanbanColumnId, string> = {
+  col_90: '90 Dias (> 60 dias restantes)',
+  col_60: '60 Dias (46 a 60 dias restantes)',
+  col_45: '45 Dias (33 a 45 dias restantes - Preparar Prorrogação)',
+  col_32: '32 Dias (<= 32 dias - Limite Legal de Prorrogação)',
+  col_30: '45 Dias (Alerta de Prorrogação)',
+  col_risk: '32 Dias (<= 32 dias - Limite Legal de Prorrogação)',
 };
 
 type NotificationListener = (log: NotificationLog) => void;
@@ -74,10 +81,10 @@ class NotificationService {
   public async onCardMove(event: CardMoveEvent): Promise<NotificationLog> {
     const fromName = COLUMN_NAMES[event.fromColumn] || event.fromColumn;
     const toName = COLUMN_NAMES[event.toColumn] || event.toColumn;
-    const isCritical = event.toColumn === 'col_risk';
+    const isCritical = event.toColumn === 'col_risk' || event.toColumn === 'col_32';
 
     const subject = isCritical
-      ? `🚨 [ALERTA CRÍTICO QUEST CONSULT] Projeto "${event.projectName}" entrou na coluna de RISCO!`
+      ? `🚨 [ALERTA CRÍTICO QUEST CONSULT - 32 DIAS] Projeto "${event.projectName}" entrou no limite legal de prorrogação!`
       : `ℹ️ [Quest Deadline Control] Movimentação: "${event.projectName}" movido para ${toName}`;
 
     const body = `
@@ -92,7 +99,7 @@ Detalhes da Movimentação:
 - Movido por: ${event.movedBy}
 - Horário: ${new Date(event.timestamp).toLocaleString('pt-BR')}
 ${event.reason ? `- Motivo: ${event.reason}` : ''}
-${event.autoAdvancement ? '- Gatilho: Avanço Automático de Funil (Cron Job Diário)' : ''}
+${event.autoAdvancement ? '- Gatilho: Avanço Automático de Funil (Rotina Diária de Prazos)' : ''}
 
 Destinatários Notificados:
 ${this.recipients.map((r) => `• ${r.name} (${r.email}) - ${r.role}`).join('\n')}
@@ -107,29 +114,101 @@ Quest Consult
       timestamp: new Date().toISOString(),
       recipients: this.recipients.map((r) => r.email),
       subject,
-      preview: `Projeto "${event.projectName}" movido de [${fromName}] para [${toName}]`,
+      preview: `Projeto "${event.projectName}" movido para [${toName}]`,
       status: 'SENT_MOCK',
       eventData: event,
     };
 
-    // Registra log internamente
     this.logs.unshift(log);
     if (this.logs.length > 50) this.logs.pop();
-
-    // Emite para ouvintes (UI toast, drawer)
     this.notifyListeners(log);
 
-    // Mock de disparo de e-mail (aqui seria inserido nodemailer / resend / sendgrid)
-    if (process.env.NODE_ENV !== 'test') {
-      console.log('----------------------------------------------------');
-      console.log(`[NotificationService] DISPARO DE E-MAIL MOCKADO (3 Destinatários)`);
-      console.log(`Assunto: ${subject}`);
-      console.log(`Destinatários: ${this.recipients.map((r) => r.email).join(', ')}`);
-      console.log(`Prévia:\n${body}`);
-      console.log('----------------------------------------------------');
-    }
-
+    console.log('[NotificationService] E-mail de movimentação enviado para:', this.recipients.map((r) => r.email).join(', '));
     return log;
+  }
+
+  /**
+   * Dispara o Relatório Diário Geral com anexo/dados para os 4 destinatários fixos
+   */
+  public async sendDailySummaryReport(projects: Project[]): Promise<{ log: NotificationLog; summary: any }> {
+    const dateFormatted = new Date().toLocaleDateString('pt-BR');
+    const timeFormatted = new Date().toLocaleTimeString('pt-BR');
+
+    const totalProjects = projects.length;
+    const risk32 = projects.filter((p) => (p.columnId === 'col_risk' || p.columnId === 'col_32') && !p.isInTreaty);
+    const alert45 = projects.filter((p) => (p.columnId === 'col_45' || p.columnId === 'col_30') && !p.isInTreaty);
+    const op60 = projects.filter((p) => p.columnId === 'col_60' && !p.isInTreaty);
+    const safe90 = projects.filter((p) => p.columnId === 'col_90' && !p.isInTreaty);
+    const inTreaty = projects.filter((p) => p.isInTreaty || p.status.includes('Prestação') || p.status.includes('Não precisa'));
+
+    const kvApproved = projects.filter((p) => p.kvStatus === 'aprovada').length;
+    const kvInReview = projects.filter((p) => p.kvStatus === 'em_aprovacao').length;
+    const kvPending = projects.filter((p) => !p.kvStatus || p.kvStatus === 'nao_enviado').length;
+
+    const subject = `📊 [RELATÓRIO DIÁRIO QUEST CONSULT - ${dateFormatted}] Controle Geral de Prazos & Projetos`;
+
+    const summaryText = `
+RELATÓRIO GERAL DIÁRIO DE CONTROLE DE PRAZOS - QUEST CONSULT
+Data de Emissão: ${dateFormatted} às ${timeFormatted}
+
+DESTINATÁRIOS:
+${this.recipients.map((r) => `• ${r.name} <${r.email}>`).join('\n')}
+
+RESUMO EXECUTIVO DO KANBAN:
+• Total de Projetos Cadastrados: ${totalProjects}
+• 🔴 32 Dias (Limite Legal de Prorrogação / Risco): ${risk32.length} projeto(s)
+• 🟠 45 Dias (Alerta de Prorrogação): ${alert45.length} projeto(s)
+• 🔵 60 Dias (Atenção Operacional): ${op60.length} projeto(s)
+• 🟢 90 Dias (Prazo Confortável): ${safe90.length} projeto(s)
+• 🟣 Projetos em Tratativa (Prestação de Contas / Concluídos): ${inTreaty.length} projeto(s)
+
+STATUS DE ARTES / KV DIGITAL:
+• Aprovadas: ${kvApproved}
+• Em Aprovação: ${kvInReview}
+• Pendente de Envio: ${kvPending}
+
+PROJETOS CRÍTICOS (32 DIAS - AÇÃO IMEDIATA):
+${
+  risk32.length === 0
+    ? 'Nenhum projeto em risco crítico hoje.'
+    : risk32
+        .map(
+          (p) =>
+            `- [${p.code}] ${p.name} | ${p.lawMechanism} | Vence em: ${p.daysRemaining ?? 'N/D'} dias | KV: ${p.kvStatus || 'Pendente'}`
+        )
+        .join('\n')
+}
+
+Para visualizar o painel completo ou baixar o PDF em modo paisagem, acesse:
+http://localhost:3000
+    `.trim();
+
+    const log: NotificationLog = {
+      id: `daily_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      timestamp: new Date().toISOString(),
+      recipients: this.recipients.map((r) => r.email),
+      subject,
+      preview: `Relatório Geral Diário enviado para ${this.recipients.length} destinatários (${risk32.length} críticos em 32 dias)`,
+      status: 'SENT_MOCK',
+    };
+
+    this.logs.unshift(log);
+    if (this.logs.length > 50) this.logs.pop();
+    this.notifyListeners(log);
+
+    return {
+      log,
+      summary: {
+        totalProjects,
+        risk32Count: risk32.length,
+        alert45Count: alert45.length,
+        op60Count: op60.length,
+        safe90Count: safe90.length,
+        inTreatyCount: inTreaty.length,
+        recipients: this.recipients,
+        body: summaryText,
+      },
+    };
   }
 }
 

@@ -3,7 +3,9 @@
  * Desenvolvido para Quest Consult
  */
 
-export type KanbanColumnId = 'col_90' | 'col_60' | 'col_30' | 'col_risk';
+export type KanbanColumnId = 'col_90' | 'col_60' | 'col_45' | 'col_32' | 'col_30' | 'col_risk';
+
+export type KvStatus = 'nao_enviado' | 'em_aprovacao' | 'aprovada' | 'reprovada';
 
 export type LawMechanism = 
   | 'Rouanet' 
@@ -32,6 +34,16 @@ export interface Project {
   isManualColumn: boolean;           // True se movido manualmente pelo usuário (trava auto-avanço)
   notes: string;                     // Observações adicionais
   tags: string[];                    // Marcadores e etiquetas
+  // Novos campos solicitados:
+  kvStatus?: KvStatus;               // Controle se KV/Arte Digital foi enviada, aprovada, em aprovação ou reprovada
+  kvSent?: boolean;                  // Se KV/Arte já foi enviada para aprovação
+  agendaVivaRegistered?: boolean;    // PROAC ICMS: 1) Se já foi cadastrado no Agenda Viva
+  proacSystemRegistered?: boolean;   // PROAC ICMS: 2) Se já foi cadastrado no sistema do PROAC
+  isInTreaty?: boolean;              // Projetos em tratativa (prorrogação solicitada, diligência, etc.)
+  isCompleted?: boolean;             // Projetos Concluídos (prestação de contas apresentada, não precisa pedir prorrogação, etc.)
+  readequationDate?: string | null;  // Data extraída da coluna Data da Readequação
+  readequationNotes?: string;        // Anotações da coluna Data da Readequação
+  originalStatusColC?: string;       // Status original extraído da Coluna C da planilha
   createdAt: string;
   updatedAt: string;
 }

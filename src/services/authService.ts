@@ -8,41 +8,6 @@
 
 import { AuthUser } from '@/types';
 
-export interface TeamMemberProfile {
-  email: string;
-  name: string;
-  role: string;
-  avatarInitials: string;
-}
-
-// Perfis públicos apenas para atalhos de preenchimento na interface (sem credenciais)
-export const QUEST_TEAM_MEMBERS: TeamMemberProfile[] = [
-  {
-    email: 'catelani@questconsult.com.br',
-    name: 'Thiago Catelani',
-    role: 'Diretoria / Coordenação Geral',
-    avatarInitials: 'TC',
-  },
-  {
-    email: 'tk@questconsult.com.br',
-    name: 'Thiago Kling',
-    role: 'Gestão Estratégica & Projetos',
-    avatarInitials: 'TK',
-  },
-  {
-    email: 'lucas@questconsult.com.br',
-    name: 'Lucas',
-    role: 'Operações & Prestação de Contas',
-    avatarInitials: 'LU',
-  },
-  {
-    email: 'bruno.britto@questconsult.com.br',
-    name: 'Bruno Britto',
-    role: 'Gestão de Prazos & Compliance',
-    avatarInitials: 'BB',
-  },
-];
-
 export class AuthService {
   /**
    * Dispara autenticação segura para o servidor
@@ -124,12 +89,5 @@ export class AuthService {
     } catch (err) {
       console.error('Erro ao encerrar sessão no servidor:', err);
     }
-  }
-
-  /**
-   * Retorna os membros da equipe para exibição nos atalhos visuais
-   */
-  public static getTeamMembers(): TeamMemberProfile[] {
-    return QUEST_TEAM_MEMBERS;
   }
 }

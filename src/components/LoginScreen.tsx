@@ -8,13 +8,9 @@ import {
   ShieldCheck, 
   Eye, 
   EyeOff, 
-  AlertCircle,
-  Building2,
-  CheckCircle2,
-  UserCheck
+  AlertCircle 
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
-import { QUEST_TEAM_MEMBERS } from '@/services/authService';
 
 export const LoginScreen: React.FC = () => {
   const { login, isLoading } = useAuth();
@@ -31,11 +27,6 @@ export const LoginScreen: React.FC = () => {
     if (!res.success) {
       setErrorMessage(res.error || 'Credenciais inválidas.');
     }
-  };
-
-  const handleSelectQuickUser = (userEmail: string) => {
-    setEmail(userEmail);
-    setErrorMessage(null);
   };
 
   return (
@@ -155,38 +146,6 @@ export const LoginScreen: React.FC = () => {
               )}
             </button>
           </form>
-
-          {/* Seleção Rápida de Usuário Quest Consult */}
-          <div className="mt-6 pt-5 border-t border-slate-800">
-            <p className="text-[11px] font-bold text-slate-400 mb-2.5 uppercase tracking-wider flex items-center gap-1.5">
-              <UserCheck className="w-3.5 h-3.5 text-sky-400" />
-              <span>Usuários Cadastrados</span>
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {QUEST_TEAM_MEMBERS.map((member) => (
-                <button
-                  key={member.email}
-                  type="button"
-                  onClick={() => handleSelectQuickUser(member.email)}
-                  className={`p-2 rounded-xl border text-left transition-all ${
-                    email.toLowerCase() === member.email.toLowerCase()
-                      ? 'bg-sky-950/60 border-sky-500 text-white shadow-2xs'
-                      : 'bg-slate-950/40 border-slate-850 hover:bg-slate-800/60 text-slate-300'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px] font-bold text-sky-300 shrink-0">
-                      {member.avatarInitials}
-                    </div>
-                    <div className="truncate">
-                      <p className="text-xs font-bold truncate">{member.name}</p>
-                      <p className="text-[10px] text-slate-400 truncate">{member.email.split('@')[0]}</p>
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
 
         </div>
 

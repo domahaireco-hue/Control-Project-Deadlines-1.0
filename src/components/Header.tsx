@@ -6,13 +6,12 @@ import {
   Plus, 
   Bell, 
   Play, 
-  RotateCcw,
-  Printer,
-  Mail,
-  Send,
-  LogOut,
-  UserCheck,
-  Trash2
+  Printer, 
+  Mail, 
+  Send, 
+  LogOut, 
+  UserCheck, 
+  Trash2 
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { useAuth } from '@/context/AuthContext';
@@ -31,7 +30,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenNotifications,
   onOpenDailyReport,
 }) => {
-  const { projects, historyLogs, isAdvancingFunnel, runFunnelAdvance, resetToDefault, clearAllProjects, syncStatus } = useProjects();
+  const { projects, historyLogs, isAdvancingFunnel, runFunnelAdvance, clearAllProjects, syncStatus } = useProjects();
   const { user, logout } = useAuth();
   const isBrunoAdmin = user?.email?.toLowerCase().includes('bruno.britto') || user?.id === 'usr_bruno';
 
@@ -179,15 +178,6 @@ export const Header: React.FC<HeaderProps> = ({
                   {historyLogs.length}
                 </span>
               )}
-            </button>
-
-            {/* Botão Restaurar Base */}
-            <button
-              onClick={resetToDefault}
-              title="Restaurar base de projetos padrão da planilha Quest Consult"
-              className="p-2 rounded-lg bg-quest-800 hover:bg-quest-700 text-quest-400 hover:text-red-300 border border-quest-700 transition-all"
-            >
-              <RotateCcw className="w-4 h-4" />
             </button>
 
             {/* Perfil do Usuário Logado & Logout */}

@@ -62,11 +62,13 @@ export const Header: React.FC<HeaderProps> = ({
           
           {/* Logo & Identidade Corporativa Quest Consult */}
           <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-emerald-400 p-0.5 shadow-md flex items-center justify-center">
-              <div className="w-full h-full bg-quest-900 rounded-[10px] flex items-center justify-center">
-                <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-sky-400 to-emerald-300 bg-clip-text text-transparent">
-                  Q
-                </span>
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-emerald-400 p-0.5 shadow-md flex items-center justify-center overflow-hidden shrink-0">
+              <div className="w-full h-full bg-quest-900 rounded-[10px] flex items-center justify-center overflow-hidden p-1">
+                <img 
+                  src="/logo.avif" 
+                  alt="Quest Consult" 
+                  className="w-full h-full object-contain drop-shadow-sm"
+                />
               </div>
             </div>
             <div>

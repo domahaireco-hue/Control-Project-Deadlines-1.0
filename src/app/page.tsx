@@ -25,9 +25,13 @@ export default function HomePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen w-full bg-slate-950 flex flex-col items-center justify-center p-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-400 p-0.5 animate-pulse mb-3">
-          <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-            <span className="font-black text-xl text-sky-400">Q</span>
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-sky-500 to-emerald-400 p-0.5 animate-pulse mb-3 overflow-hidden">
+          <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center p-2">
+            <img 
+              src="/logo.avif" 
+              alt="Quest Consult" 
+              className="w-full h-full object-contain"
+            />
           </div>
         </div>
         <p className="text-xs text-slate-400 font-medium">Validando autenticação Quest Consult...</p>

@@ -44,11 +44,13 @@ export const LoginScreen: React.FC = () => {
           
           {/* Logo e Cabeçalho */}
           <div className="text-center mb-7">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-emerald-400 p-0.5 shadow-lg shadow-sky-500/20 mb-3">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                <span className="font-black text-2xl tracking-tight bg-gradient-to-r from-sky-400 to-emerald-300 bg-clip-text text-transparent">
-                  Q
-                </span>
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-emerald-400 p-0.5 shadow-lg shadow-sky-500/20 mb-3 overflow-hidden">
+              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center overflow-hidden p-2">
+                <img 
+                  src="/logo.avif" 
+                  alt="Quest Consult" 
+                  className="w-full h-full object-contain drop-shadow"
+                />
               </div>
             </div>
             

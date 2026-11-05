@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS public.projects (
   readequation_date TEXT,
   readequation_notes TEXT DEFAULT '',
   original_status_col_c TEXT DEFAULT '',
+  amendment_type TEXT,
+  last_treaty_alert_at TIMESTAMPTZ,
   history JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -107,4 +109,10 @@ BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.projects;
   END IF;
 END $$;
+
+-- 7. Migrações e Colunas Adicionais (Executadas com segurança sem perda de dados)
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS amendment_type TEXT;
+ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS last_treaty_alert_at TIMESTAMPTZ;
+
+
 

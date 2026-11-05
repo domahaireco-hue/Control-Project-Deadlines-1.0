@@ -33,6 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const { projects, historyLogs, isAdvancingFunnel, runFunnelAdvance, resetToDefault, clearAllProjects, syncStatus } = useProjects();
   const { user, logout } = useAuth();
+  const isBrunoAdmin = user?.email?.toLowerCase().includes('bruno.britto') || user?.id === 'usr_bruno';
 
   const handleAdvanceFunnel = async () => {
     const res = await runFunnelAdvance(false);
@@ -57,7 +58,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="bg-quest-900 border-b border-quest-800 text-white shadow-lg sticky top-0 z-30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+      <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           
           {/* Logo & Identidade Corporativa Quest Consult */}
@@ -154,15 +155,17 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Novo Projeto</span>
             </button>
 
-            {/* Botão Limpar Base para Nova Importação */}
-            <button
-              onClick={clearAllProjects}
-              title="Limpar todos os projetos para importar a planilha atualizada"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-950/70 hover:bg-rose-900 border border-rose-800/80 text-rose-300 hover:text-white shadow-xs transition-all"
-            >
-              <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-              <span>Limpar Base</span>
-            </button>
+            {/* Botão Limpar Base para Nova Importação (Exclusivo Administrador Bruno Britto) */}
+            {isBrunoAdmin && (
+              <button
+                onClick={clearAllProjects}
+                title="Limpar todos os projetos para importar a planilha atualizada (Exclusivo Administrador)"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-950/70 hover:bg-rose-900 border border-rose-800/80 text-rose-300 hover:text-white shadow-xs transition-all"
+              >
+                <Trash2 className="w-3.5 h-3.5 text-rose-400" />
+                <span>Limpar Base</span>
+              </button>
+            )}
 
             {/* Botão Notificações */}
             <button

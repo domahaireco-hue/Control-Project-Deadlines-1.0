@@ -63,8 +63,8 @@ export default function HomePage() {
       {/* Visão de Métricas, KPIs e Filtros por Mecanismo/Aba */}
       <MetricsOverview />
 
-      {/* Área Principal do Kanban Board com as 4 Colunas */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
+      {/* Área Principal do Kanban Board com as 6 Colunas Ampliadas (Tela Cheia) */}
+      <main className="flex-1 w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-4">
         <KanbanBoard onEditProject={handleEditProject} />
       </main>
 

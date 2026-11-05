@@ -22,6 +22,7 @@ import {
   Building
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
+import { AgentMailService } from '@/services/agentMailService';
 
 interface ProjectCardProps {
   project: Project;
@@ -292,6 +293,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
             <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">
               {project.lawMechanism || 'Geral'}
             </span>
+            {project.amendmentType && (
+              <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200" title="Classificação da Emenda">
+                {project.amendmentType}
+              </span>
+            )}
             {project.code && project.code !== 'Sem informação Migrada' && (
               <span className="text-[9.5px] font-mono text-slate-500 truncate max-w-[120px]" title={project.code}>
                 #{project.code.split('\n')[0]}
@@ -512,9 +518,21 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
       )}
 
       {/* Linha Inferior: Quantidade de Dias para Vencer e Edição Rápida */}
-      <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100">
-        <div>
+      <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100 gap-1.5 flex-wrap">
+        <div className="flex items-center gap-1.5 flex-wrap">
           {renderDaysBadge()}
+          {((project.daysRemaining !== null && project.daysRemaining <= 45) || project.columnId === 'col_risk' || project.columnId === 'col_treaty') && (
+            <a
+              href={AgentMailService.generateWhatsAppUrl(project)}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition-colors shrink-0"
+              title="Disparar alerta individual para WhatsApp 11 99243-4262"
+            >
+              <span>📲 WhatsApp</span>
+            </a>
+          )}
         </div>
 
         <button

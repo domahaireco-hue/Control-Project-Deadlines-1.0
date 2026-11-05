@@ -32,6 +32,8 @@ export interface DbProjectRow {
   readequation_date: string | null;
   readequation_notes: string;
   original_status_col_c: string;
+  amendment_type?: string | null;
+  last_treaty_alert_at?: string | null;
   history: any;
   created_at: string;
   updated_at: string;
@@ -66,6 +68,8 @@ export function projectFromDb(row: DbProjectRow): Project {
     readequationDate: row.readequation_date || null,
     readequationNotes: row.readequation_notes || '',
     originalStatusColC: row.original_status_col_c || '',
+    amendmentType: row.amendment_type || (row.law_mechanism?.includes('Emenda') ? row.law_mechanism : undefined),
+    lastTreatyAlertAt: row.last_treaty_alert_at || undefined,
     history: Array.isArray(row.history) ? row.history : [],
     createdAt: row.created_at || new Date().toISOString(),
     updatedAt: row.updated_at || new Date().toISOString(),
@@ -101,6 +105,8 @@ export function projectToDb(p: Project): DbProjectRow {
     readequation_date: p.readequationDate || null,
     readequation_notes: p.readequationNotes || '',
     original_status_col_c: p.originalStatusColC || '',
+    amendment_type: p.amendmentType || null,
+    last_treaty_alert_at: p.lastTreatyAlertAt || null,
     history: Array.isArray(p.history) ? p.history : [],
     created_at: p.createdAt || new Date().toISOString(),
     updated_at: p.updatedAt || new Date().toISOString(),

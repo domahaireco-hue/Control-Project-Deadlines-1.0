@@ -61,6 +61,8 @@ export interface Project {
   readequationDate?: string | null;  // Data extraída da coluna Data da Readequação
   readequationNotes?: string;        // Anotações da coluna Data da Readequação
   originalStatusColC?: string;       // Status original extraído da Coluna C da planilha
+  amendmentType?: string;            // Tipo/Classificação da Emenda (ex: 'Emenda 2026', 'Emenda 24-25', 'Federal', 'Estadual', 'Municipal')
+  lastTreatyAlertAt?: string;        // Timestamp do último alerta de tratativa enviado via AgentMail (72h)
   history?: ProjectHistoryEntry[];   // Histórico de alterações e auditoria de ajustes
   createdAt: string;
   updatedAt: string;

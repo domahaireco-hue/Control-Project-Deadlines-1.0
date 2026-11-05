@@ -6,6 +6,7 @@ import { notificationService } from '@/services/notificationService';
 import { FunnelService, FunnelAdvanceResult } from '@/services/funnelService';
 import { parseSpreadsheetBuffer } from '@/services/spreadsheetService';
 import { ProjectService } from '@/services/projectService';
+import { AgentMailService } from '@/services/agentMailService';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import initialProjectsData from '@/data/initialProjects.json';
@@ -112,7 +113,7 @@ interface ProjectContextType {
   toggleProacField: (cardId: string, field: 'agendaViva' | 'proacSystem') => void;
   toggleTreaty: (cardId: string) => void;
   toggleCompleted: (cardId: string) => void;
-  addProjectHistoryNote: (cardId: string, noteText: string) => void;
+  addProjectHistoryNote: (cardId: string, noteText: string, newStatus?: string) => void;
   addProject: (newProj: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateProject: (id: string, updates: Partial<Project>, logNote?: string) => void;
   deleteProject: (id: string) => void;
@@ -362,6 +363,11 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ProjectService.saveProject(updatedProject);
       }
 
+      // Dispara alerta imediato via AgentMail para catelani@questconsult.com.br se entrou em tratativa
+      if (isMovingToTreaty) {
+        AgentMailService.sendTreatyImmediateAlert(updatedProject, getActiveUserName());
+      }
+
       const moveEvent: CardMoveEvent = {
         cardId,
         projectName: project.name,
@@ -479,6 +485,10 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (updatedProj && isSupabaseConfigured) {
       ProjectService.saveProject(updatedProj);
     }
+
+    if (updatedProj && (updatedProj as Project).isInTreaty) {
+      AgentMailService.sendTreatyImmediateAlert(updatedProj as Project, getActiveUserName());
+    }
   }, [getActiveUserName]);
 
   // Alternar se projeto está concluído
@@ -517,18 +527,24 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [getActiveUserName]);
 
-  // Adicionar anotação manual ao histórico do projeto
-  const addProjectHistoryNote = useCallback((cardId: string, noteText: string) => {
-    if (!noteText.trim()) return;
+  // Adicionar anotação manual ao histórico do projeto E atualizar status/observação
+  const addProjectHistoryNote = useCallback((cardId: string, noteText: string, newStatus?: string) => {
+    if (!noteText.trim() && !newStatus?.trim()) return;
     const now = new Date().toISOString();
     let updatedProj: Project | null = null;
+    const trimmedNote = noteText.trim();
+    const trimmedStatus = newStatus?.trim();
+
+    const actionText = trimmedStatus 
+      ? `Atualização de Status: "${trimmedStatus}"` 
+      : 'Nova Anotação / Atualização de Acompanhamento';
 
     const historyEntry: ProjectHistoryEntry = {
       id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       timestamp: now,
       user: getActiveUserName(),
-      action: 'Anotação / Observação Registrada',
-      details: noteText.trim(),
+      action: actionText,
+      details: trimmedNote || actionText,
     };
 
     setProjects((prev) =>
@@ -536,6 +552,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         if (p.id !== cardId) return p;
         updatedProj = {
           ...p,
+          notes: trimmedNote || p.notes,
+          status: trimmedStatus || p.status,
           history: [historyEntry, ...(p.history || [])],
           updatedAt: now,
         };
@@ -624,6 +642,10 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (updatedProj && isSupabaseConfigured) {
       ProjectService.saveProject(updatedProj);
     }
+
+    if (updatedProj && (updatedProj as Project).isInTreaty) {
+      AgentMailService.sendTreatyImmediateAlert(updatedProj as Project, getActiveUserName());
+    }
   }, [getActiveUserName]);
 
   // Excluir projeto
@@ -660,9 +682,15 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [projects]
   );
 
-  // Limpar toda a base de projetos para importação limpa
+  // Limpar toda a base de projetos para importação limpa (Exclusivo Administrador Bruno Britto)
   const clearAllProjects = useCallback((): boolean => {
-    if (confirm('Tem certeza de que deseja limpar todos os projetos cadastrados? A base ficará zerada para você importar a planilha atualizada.')) {
+    const isBrunoAdmin = user?.email?.toLowerCase().includes('bruno.britto') || user?.id === 'usr_bruno';
+    if (!isBrunoAdmin) {
+      alert('Acesso negado: O recurso "Limpar Base" é restrito exclusivamente ao Administrador Bruno Britto.');
+      return false;
+    }
+
+    if (confirm('Atenção Administrador Bruno Britto:\n\nTem certeza de que deseja limpar todos os projetos cadastrados? A base ficará zerada para você importar a planilha atualizada.')) {
       setProjects([]);
       if (typeof window !== 'undefined') {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([]));
@@ -673,7 +701,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       return true;
     }
     return false;
-  }, []);
+  }, [user]);
 
   // Executar Avanço Automático do Funil
   const runFunnelAdvance = useCallback(

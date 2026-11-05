@@ -271,6 +271,11 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
 
                           <td className="p-1 border border-slate-300 text-slate-700 leading-tight">
                             <span className="font-semibold text-slate-800">{proj.lawMechanism || 'Geral'}</span>
+                            {proj.amendmentType && (
+                              <span className="block text-[8px] font-bold text-indigo-700 bg-indigo-50 rounded px-1 py-0.2 mt-0.5 border border-indigo-200">
+                                {proj.amendmentType}
+                              </span>
+                            )}
                             {proj.code && proj.code !== EMPTY_CELL_FALLBACK && (
                               <span className="block text-[8.5px] font-mono text-slate-500 truncate max-w-[110px]">
                                 #{proj.code.split('\n')[0]}
@@ -279,7 +284,7 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
                           </td>
 
                           <td className="p-1 border border-slate-300 text-slate-700 text-[9.5px] font-medium leading-tight">
-                            {proj.status || 'Em Execução'}
+                            <div className="font-bold text-slate-900">{proj.status || 'Em Execução'}</div>
                             {proj.isCompleted && (
                               <span className="block text-[8px] font-bold text-teal-800 uppercase">
                                 [Concluído]
@@ -291,9 +296,14 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
                               </span>
                             )}
                             {proj.readequationNotes && (
-                              <span className="block text-[8px] font-semibold text-indigo-800">
+                              <div className="text-[8px] font-semibold text-indigo-800 mt-0.5">
                                 Readeq: {proj.readequationNotes}
-                              </span>
+                              </div>
+                            )}
+                            {proj.notes && proj.notes !== EMPTY_CELL_FALLBACK && (
+                              <div className="text-[8.5px] font-normal text-slate-700 mt-0.5 bg-slate-100/90 p-1 rounded border border-slate-200">
+                                <strong className="text-slate-900 font-semibold">Obs/Atualização:</strong> {proj.notes}
+                              </div>
                             )}
                           </td>
 

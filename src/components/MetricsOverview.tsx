@@ -43,8 +43,8 @@ export const MetricsOverview: React.FC = () => {
   const kvPending = projects.filter((p) => !p.kvStatus || p.kvStatus === 'nao_enviado').length;
 
   return (
-    <div className="bg-white border-b border-quest-200 py-3.5 px-4 sm:px-6 lg:px-8 shadow-xs no-print">
-      <div className="max-w-7xl mx-auto space-y-3.5">
+    <div className="bg-white border-b border-quest-200 py-3 px-2 sm:px-4 lg:px-6 shadow-xs no-print">
+      <div className="w-full max-w-[1920px] mx-auto space-y-3">
         
         {/* KPI Cards (Janelas 90, 60, 45, 32 Dias, Tratativa e Concluídos) - Visualização Estatística (Não clicáveis) */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-2.5 select-none">

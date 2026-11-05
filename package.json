@@ -6,13 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed:supabase": "node scripts/seed-supabase.mjs"
   },
   "engines": {
     "node": ">=18.18.0"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
+    "@supabase/supabase-js": "^2.119.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "lucide-react": "^0.453.0",

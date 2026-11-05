@@ -31,7 +31,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenNotifications,
   onOpenDailyReport,
 }) => {
-  const { projects, historyLogs, isAdvancingFunnel, runFunnelAdvance, resetToDefault, clearAllProjects } = useProjects();
+  const { projects, historyLogs, isAdvancingFunnel, runFunnelAdvance, resetToDefault, clearAllProjects, syncStatus } = useProjects();
   const { user, logout } = useAuth();
 
   const handleAdvanceFunnel = async () => {
@@ -77,6 +77,30 @@ export const Header: React.FC<HeaderProps> = ({
                 <span className="px-2 py-0.5 text-[10px] font-semibold bg-sky-950 border border-sky-800 text-sky-300 rounded-full">
                   Prazos v1.2
                 </span>
+                {syncStatus === 'synced' && (
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold bg-emerald-950/90 border border-emerald-600/80 text-emerald-300 rounded-full shadow-xs" title="Conectado ao Supabase com Sincronização em Tempo Real para toda a equipe">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Supabase Nuvem</span>
+                  </span>
+                )}
+                {syncStatus === 'syncing' && (
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold bg-amber-950/90 border border-amber-600/80 text-amber-300 rounded-full" title="Sincronizando dados com o Supabase...">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                    <span>Sincronizando...</span>
+                  </span>
+                )}
+                {syncStatus === 'local' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-quest-800 border border-quest-700 text-quest-300 rounded-full" title="Modo Local. Adicione as chaves no .env.local para ativar sincronização no Supabase">
+                    <span className="w-1.5 h-1.5 rounded-full bg-quest-400"></span>
+                    <span>Modo Local</span>
+                  </span>
+                )}
+                {syncStatus === 'error' && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold bg-rose-950/90 border border-rose-800 text-rose-300 rounded-full" title="Erro ao comunicar com o Supabase. Verifique credenciais e tabela SQL">
+                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                    <span>Supabase Offline</span>
+                  </span>
+                )}
               </div>
               <p className="text-xs text-quest-400 flex items-center gap-1.5 mt-0.5">
                 <span>Quest Deadline Control</span>

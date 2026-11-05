@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { notificationService, DEFAULT_RECIPIENTS } from '@/services/notificationService';
+import { ProjectService } from '@/services/projectService';
+import { isSupabaseAdminConfigured } from '@/lib/supabaseAdmin';
 import initialProjectsData from '@/data/initialProjects.json';
 import { Project } from '@/types';
 
@@ -15,6 +17,10 @@ export async function POST(request: NextRequest) {
       }
     } catch {
       // Sem body JSON
+    }
+
+    if (projects.length === 0 && isSupabaseAdminConfigured) {
+      projects = await ProjectService.serverFetchAllProjects();
     }
 
     if (projects.length === 0) {

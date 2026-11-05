@@ -5,6 +5,8 @@ import { Project, KanbanColumnConfig, KanbanColumnId, CardMoveEvent, Notificatio
 import { notificationService } from '@/services/notificationService';
 import { FunnelService, FunnelAdvanceResult } from '@/services/funnelService';
 import { parseSpreadsheetBuffer } from '@/services/spreadsheetService';
+import { ProjectService } from '@/services/projectService';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import initialProjectsData from '@/data/initialProjects.json';
 
@@ -84,6 +86,7 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
 ];
 
 export type TreatyFilter = 'ALL' | 'ACTIVE' | 'TREATY' | 'COMPLETED';
+export type SyncStatus = 'synced' | 'syncing' | 'local' | 'error';
 
 interface ProjectContextType {
   projects: Project[];
@@ -100,6 +103,9 @@ interface ProjectContextType {
   isAdvancingFunnel: boolean;
   activeToast: NotificationLog | null;
   dismissToast: () => void;
+  // Supabase & Sincronização
+  syncStatus: SyncStatus;
+  isSupabaseConnected: boolean;
   // Ações
   moveCard: (cardId: string, toColumn: KanbanColumnId, reason?: string) => Promise<void>;
   updateKvStatus: (cardId: string, status: KvStatus) => void;
@@ -135,6 +141,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const { user } = useAuth();
   const getActiveUserName = useCallback(() => user?.name || 'Equipe Quest', [user]);
 
+  // Carregamento inicial síncrono para SSR / Hidratação rápida
   const [projects, setProjects] = useState<Project[]>(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -158,6 +165,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   });
 
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>(
+    isSupabaseConfigured ? 'syncing' : 'local'
+  );
   const [selectedMechanism, setSelectedMechanism] = useState<string>('Todos');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [treatyFilter, setTreatyFilter] = useState<TreatyFilter>('ALL');
@@ -165,7 +175,92 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isAdvancingFunnel, setIsAdvancingFunnel] = useState<boolean>(false);
   const [activeToast, setActiveToast] = useState<NotificationLog | null>(null);
 
-  // Salva no localStorage quando mudar
+  // =========================================================================
+  // INTEGRAÇÃO SUPABASE: Carregamento Inicial + Assinatura Realtime Multi-User
+  // =========================================================================
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setSyncStatus('local');
+      return;
+    }
+
+    let isMounted = true;
+    setSyncStatus('syncing');
+
+    // 1. Busca dados centralizados no Supabase PostgreSQL
+    ProjectService.fetchAllProjects()
+      .then(async ({ data, error }) => {
+        if (!isMounted) return;
+
+        if (error) {
+          console.warn('[Supabase] Falha ao consultar tabela projects:', error.message);
+          setSyncStatus('error');
+          return;
+        }
+
+        if (Array.isArray(data) && data.length > 0) {
+          setProjects(
+            data.map((p) => ({
+              ...p,
+              columnId: normalizeColumn(p.columnId, p.isCompleted, p.isInTreaty),
+            }))
+          );
+          setSyncStatus('synced');
+        } else {
+          // Se o banco estiver vazio, faz auto-seed da base padrão Quest Consult
+          console.log('[Supabase] Tabela vazia detectada. Executando seed inicial automático...');
+          const initialNormalized = (initialProjectsData as Project[]).map((p) => ({
+            ...p,
+            columnId: normalizeColumn(p.columnId, p.isCompleted, p.isInTreaty),
+          }));
+
+          const res = await ProjectService.saveProjectsBatch(initialNormalized);
+          if (isMounted) {
+            if (res.success) {
+              setProjects(initialNormalized);
+              setSyncStatus('synced');
+            } else {
+              setSyncStatus('error');
+            }
+          }
+        }
+      })
+      .catch((err) => {
+        if (isMounted) {
+          console.error('[Supabase] Erro de rede ou credenciais:', err);
+          setSyncStatus('error');
+        }
+      });
+
+    // 2. Conecta ao canal Realtime do Supabase (escuta mudanças feitas por outros membros)
+    const unsubscribeRealtime = ProjectService.subscribeToRealtimeChanges((change) => {
+      if (!isMounted) return;
+
+      if (change.eventType === 'DELETE' && change.oldId) {
+        setProjects((prev) => prev.filter((p) => p.id !== change.oldId));
+      } else if (change.project) {
+        const incoming = {
+          ...change.project,
+          columnId: normalizeColumn(change.project.columnId, change.project.isCompleted, change.project.isInTreaty),
+        };
+        setProjects((prev) => {
+          const exists = prev.some((p) => p.id === incoming.id);
+          if (exists) {
+            return prev.map((p) => (p.id === incoming.id ? incoming : p));
+          } else {
+            return [incoming, ...prev];
+          }
+        });
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      if (unsubscribeRealtime) unsubscribeRealtime();
+    };
+  }, []);
+
+  // Mantém backup local no localStorage sempre atualizado
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -204,11 +299,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const filteredProjects = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return projects.filter((p) => {
-      // Filtro de mecanismo
       if (selectedMechanism !== 'Todos' && p.lawMechanism !== selectedMechanism) {
         return false;
       }
-      // Filtro de status / tratativa / concluído
       if (treatyFilter === 'ACTIVE' && (p.isCompleted || (p.isInTreaty && !p.status.includes('Prorrogação')))) {
         return false;
       }
@@ -218,7 +311,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (treatyFilter === 'COMPLETED' && !p.isCompleted) {
         return false;
       }
-      // Filtro de busca textual
       if (!q) return true;
       const matchName = (p.name || '').toLowerCase().includes(q);
       const matchCode = (p.code || '').toLowerCase().includes(q);
@@ -232,7 +324,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     });
   }, [projects, selectedMechanism, treatyFilter, searchQuery]);
 
-  // Movimentação de Card (Drag and Drop ou Manual)
+  // Movimentação de Card (Drag and Drop ou Manual) com persistência em nuvem
   const moveCard = useCallback(
     async (cardId: string, toColumn: KanbanColumnId, reason?: string) => {
       const normalizedTo = normalizeColumn(toColumn);
@@ -252,21 +344,23 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         details: reason || 'Movimentação manual no quadro Kanban',
       };
 
-      setProjects((prev) =>
-        prev.map((p) =>
-          p.id === cardId
-            ? {
-                ...p,
-                columnId: normalizedTo,
-                isCompleted: isMovingToCompleted,
-                isInTreaty: isMovingToCompleted ? true : (isMovingToTreaty ? true : false),
-                isManualColumn: true,
-                history: [historyEntry, ...(p.history || [])],
-                updatedAt: now,
-              }
-            : p
-        )
-      );
+      const updatedProject: Project = {
+        ...project,
+        columnId: normalizedTo,
+        isCompleted: isMovingToCompleted,
+        isInTreaty: isMovingToCompleted ? true : (isMovingToTreaty ? true : false),
+        isManualColumn: true,
+        history: [historyEntry, ...(project.history || [])],
+        updatedAt: now,
+      };
+
+      // Atualização otimista local
+      setProjects((prev) => prev.map((p) => (p.id === cardId ? updatedProject : p)));
+
+      // Persistência no Supabase
+      if (isSupabaseConfigured) {
+        ProjectService.saveProject(updatedProject);
+      }
 
       const moveEvent: CardMoveEvent = {
         cardId,
@@ -274,18 +368,20 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         fromColumn,
         toColumn: normalizedTo,
         timestamp: now,
-        movedBy: 'Usuário (Painel Kanban Quest)',
+        movedBy: `${getActiveUserName()} (Painel Kanban Quest)`,
         reason: reason || 'Movimentação manual de ajuste operacional',
       };
 
       await notificationService.onCardMove(moveEvent);
     },
-    [projects]
+    [projects, getActiveUserName]
   );
 
   // Atualização rápida de KV / Arte Digital
   const updateKvStatus = useCallback((cardId: string, status: KvStatus) => {
     const now = new Date().toISOString();
+    let updatedProj: Project | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== cardId) return p;
@@ -297,20 +393,27 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           action: 'Atualização de KV / Arte Digital',
           details: `Status alterado de "${p.kvStatus || 'nao_enviado'}" para "${status}"`,
         };
-        return {
+        updatedProj = {
           ...p,
           kvStatus: status,
           kvSent: sent,
           history: [historyEntry, ...(p.history || [])],
           updatedAt: now,
         };
+        return updatedProj;
       })
     );
-  }, []);
+
+    if (updatedProj && isSupabaseConfigured) {
+      ProjectService.saveProject(updatedProj);
+    }
+  }, [getActiveUserName]);
 
   // Alternar sinalização PROAC ICMS (Agenda Viva ou Sistema PROAC)
   const toggleProacField = useCallback((cardId: string, field: 'agendaViva' | 'proacSystem') => {
     const now = new Date().toISOString();
+    let updatedProj: Project | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== cardId) return p;
@@ -324,20 +427,27 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           action: `PROAC: ${fieldName}`,
           details: `${fieldName} marcado como ${newVal ? 'Cadastrado' : 'Pendente'}`,
         };
-        return {
+        updatedProj = {
           ...p,
           agendaVivaRegistered: isAgenda ? newVal : p.agendaVivaRegistered,
           proacSystemRegistered: !isAgenda ? newVal : p.proacSystemRegistered,
           history: [historyEntry, ...(p.history || [])],
           updatedAt: now,
         };
+        return updatedProj;
       })
     );
-  }, []);
+
+    if (updatedProj && isSupabaseConfigured) {
+      ProjectService.saveProject(updatedProj);
+    }
+  }, [getActiveUserName]);
 
   // Alternar se projeto está em tratativa
   const toggleTreaty = useCallback((cardId: string) => {
     const now = new Date().toISOString();
+    let updatedProj: Project | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== cardId) return p;
@@ -355,20 +465,27 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           action: newInTreaty ? 'Marcado como Em Tratativa' : 'Removido de Tratativa',
           details: newInTreaty ? 'Projeto em prorrogação ou prestação de contas' : 'Retornado ao fluxo normal',
         };
-        return {
+        updatedProj = {
           ...p,
           isInTreaty: newInTreaty,
           tags: newTags,
           history: [historyEntry, ...(p.history || [])],
           updatedAt: now,
         };
+        return updatedProj;
       })
     );
-  }, []);
+
+    if (updatedProj && isSupabaseConfigured) {
+      ProjectService.saveProject(updatedProj);
+    }
+  }, [getActiveUserName]);
 
   // Alternar se projeto está concluído
   const toggleCompleted = useCallback((cardId: string) => {
     const now = new Date().toISOString();
+    let updatedProj: Project | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== cardId) return p;
@@ -383,7 +500,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
             ? 'Movido para Concluídos / Finalizados (Prestação de Contas Apresentada)' 
             : 'Removido de Concluídos e retornado para fluxo de prazos',
         };
-        return {
+        updatedProj = {
           ...p,
           isCompleted: newCompleted,
           isInTreaty: newCompleted ? true : p.isInTreaty,
@@ -391,14 +508,21 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           history: [historyEntry, ...(p.history || [])],
           updatedAt: now,
         };
+        return updatedProj;
       })
     );
-  }, []);
+
+    if (updatedProj && isSupabaseConfigured) {
+      ProjectService.saveProject(updatedProj);
+    }
+  }, [getActiveUserName]);
 
   // Adicionar anotação manual ao histórico do projeto
   const addProjectHistoryNote = useCallback((cardId: string, noteText: string) => {
     if (!noteText.trim()) return;
     const now = new Date().toISOString();
+    let updatedProj: Project | null = null;
+
     const historyEntry: ProjectHistoryEntry = {
       id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       timestamp: now,
@@ -406,18 +530,23 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       action: 'Anotação / Observação Registrada',
       details: noteText.trim(),
     };
+
     setProjects((prev) =>
-      prev.map((p) =>
-        p.id === cardId
-          ? {
-              ...p,
-              history: [historyEntry, ...(p.history || [])],
-              updatedAt: now,
-            }
-          : p
-      )
+      prev.map((p) => {
+        if (p.id !== cardId) return p;
+        updatedProj = {
+          ...p,
+          history: [historyEntry, ...(p.history || [])],
+          updatedAt: now,
+        };
+        return updatedProj;
+      })
     );
-  }, []);
+
+    if (updatedProj && isSupabaseConfigured) {
+      ProjectService.saveProject(updatedProj);
+    }
+  }, [getActiveUserName]);
 
   // Adicionar novo projeto manualmente
   const addProject = useCallback(
@@ -439,14 +568,21 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         createdAt: now,
         updatedAt: now,
       };
+
       setProjects((prev) => [newProj, ...prev]);
+
+      if (isSupabaseConfigured) {
+        ProjectService.saveProject(newProj);
+      }
     },
-    []
+    [getActiveUserName]
   );
 
   // Editar projeto existente com registro detalhado de histórico
   const updateProject = useCallback((id: string, updates: Partial<Project>, logNote?: string) => {
     const now = new Date().toISOString();
+    let updatedProj: Project | null = null;
+
     setProjects((prev) =>
       prev.map((p) => {
         if (p.id !== id) return p;
@@ -458,7 +594,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           targetCol = 'col_90';
         }
 
-        // Mapeia mudanças para histórico
         const changes: { field: string; from: any; to: any }[] = [];
         (Object.keys(updates) as (keyof Project)[]).forEach((key) => {
           if (key !== 'updatedAt' && key !== 'history' && updates[key] !== undefined && updates[key] !== (p as any)[key]) {
@@ -475,20 +610,28 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           changes,
         };
 
-        return {
+        updatedProj = {
           ...p,
           ...updates,
           columnId: targetCol,
           history: [historyEntry, ...(p.history || [])],
           updatedAt: now,
         };
+        return updatedProj;
       })
     );
-  }, []);
+
+    if (updatedProj && isSupabaseConfigured) {
+      ProjectService.saveProject(updatedProj);
+    }
+  }, [getActiveUserName]);
 
   // Excluir projeto
   const deleteProject = useCallback((id: string) => {
     setProjects((prev) => prev.filter((p) => p.id !== id));
+    if (isSupabaseConfigured) {
+      ProjectService.deleteProject(id);
+    }
   }, []);
 
   // Importar Planilha Excel (.xlsx / .csv) com opção de substituir base
@@ -497,9 +640,21 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const baseProjects = replaceAll ? [] : projects;
       const { projects: updatedList, result } = parseSpreadsheetBuffer(buffer, baseProjects);
       setProjects(updatedList);
+      
       if (typeof window !== 'undefined') {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedList));
       }
+
+      if (isSupabaseConfigured) {
+        if (replaceAll) {
+          ProjectService.clearAllProjects().then(() => {
+            ProjectService.saveProjectsBatch(updatedList);
+          });
+        } else {
+          ProjectService.saveProjectsBatch(updatedList);
+        }
+      }
+
       return result;
     },
     [projects]
@@ -511,6 +666,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setProjects([]);
       if (typeof window !== 'undefined') {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify([]));
+      }
+      if (isSupabaseConfigured) {
+        ProjectService.clearAllProjects();
       }
       return true;
     }
@@ -524,6 +682,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         const { updatedProjects, result } = await FunnelService.checkAndAdvanceFunnel(projects, force);
         setProjects(updatedProjects);
+        if (isSupabaseConfigured) {
+          await ProjectService.saveProjectsBatch(updatedProjects);
+        }
         return result;
       } finally {
         setIsAdvancingFunnel(false);
@@ -539,7 +700,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Restaurar dados originais da planilha Quest Consult
   const resetToDefault = useCallback(() => {
-    if (confirm('Deseja restaurar a base de dados original da planilha Quest Consult com a Coluna C atualizada?')) {
+    if (confirm('Deseja restaurar a base de dados original da planilha Quest Consult?')) {
       const fresh = (initialProjectsData as Project[]).map((p) => ({
         ...p,
         columnId: normalizeColumn(p.columnId, p.isCompleted, p.isInTreaty),
@@ -547,6 +708,11 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setProjects(fresh);
       if (typeof window !== 'undefined') {
         localStorage.removeItem(LOCAL_STORAGE_KEY);
+      }
+      if (isSupabaseConfigured) {
+        ProjectService.clearAllProjects().then(() => {
+          ProjectService.saveProjectsBatch(fresh);
+        });
       }
     }
   }, []);
@@ -568,6 +734,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         isAdvancingFunnel,
         activeToast,
         dismissToast,
+        syncStatus,
+        isSupabaseConnected: isSupabaseConfigured && syncStatus === 'synced',
         moveCard,
         updateKvStatus,
         toggleProacField,

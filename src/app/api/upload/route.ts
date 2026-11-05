@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { parseSpreadsheetBuffer } from '@/services/spreadsheetService';
+import { ProjectService } from '@/services/projectService';
+import { isSupabaseAdminConfigured } from '@/lib/supabaseAdmin';
 import initialProjectsData from '@/data/initialProjects.json';
 import { Project } from '@/types';
 
@@ -16,9 +18,21 @@ export async function POST(request: NextRequest) {
     }
 
     const arrayBuffer = await file.arrayBuffer();
-    // Usa a base de dados padrão como referência para upsert
-    const currentList = initialProjectsData as Project[];
+
+    let currentList: Project[] = [];
+    if (isSupabaseAdminConfigured) {
+      currentList = await ProjectService.serverFetchAllProjects();
+    }
+    if (currentList.length === 0) {
+      currentList = initialProjectsData as Project[];
+    }
+
     const { projects, result } = parseSpreadsheetBuffer(arrayBuffer, currentList);
+
+    // Se o Supabase estiver ativo no servidor, persiste as alterações na nuvem
+    if (isSupabaseAdminConfigured) {
+      await ProjectService.serverSaveProjectsBatch(projects);
+    }
 
     return NextResponse.json({
       success: true,

@@ -32,10 +32,6 @@ export const MetricsOverview: React.FC = () => {
     availableMechanisms,
     addCustomLaw,
     deleteTable,
-    incentiveLaws,
-    selectedIncentiveLaw,
-    setSelectedIncentiveLaw,
-    getProjectsCountByLaw,
     treatyFilter,
     setTreatyFilter
   } = useProjects();
@@ -176,9 +172,6 @@ export const MetricsOverview: React.FC = () => {
 
             {/* Tabelas / Abas de Origem */}
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-0.5 hidden sm:inline">
-                Tabela:
-              </span>
               {availableMechanisms.map((mech) => {
                 const isSelected = selectedMechanism === mech;
                 const countForMech = mech === 'Todos' || mech === 'Todas'
@@ -286,38 +279,16 @@ export const MetricsOverview: React.FC = () => {
             {/* Separador Vertical */}
             <div className="h-5 w-px bg-slate-200 hidden sm:block shrink-0 mx-1"></div>
 
-            {/* Leis de Incentivo: Filtro e Gestão Completa */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              <span className="text-[10px] font-bold text-indigo-900 uppercase tracking-wider mr-0.5 hidden xl:inline">
-                Lei:
-              </span>
-              <select
-                value={selectedIncentiveLaw}
-                onChange={(e) => setSelectedIncentiveLaw(e.target.value)}
-                className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-indigo-200 bg-indigo-50/70 text-indigo-950 hover:bg-indigo-50 focus:outline-none focus:ring-1 focus:ring-indigo-400 cursor-pointer shadow-2xs max-w-[210px] truncate"
-                title="Filtrar por Lei de Incentivo"
-              >
-                <option value="Todas">Todas as Leis ({projects.length})</option>
-                {incentiveLaws.map((law) => {
-                  const count = getProjectsCountByLaw(law);
-                  return (
-                    <option key={law} value={law}>
-                      {law} ({count})
-                    </option>
-                  );
-                })}
-              </select>
-
-              <button
-                type="button"
-                onClick={() => setIsLawsModalOpen(true)}
-                title="Gerenciar Leis de Incentivo (adicionar novas ou excluir leis sem projetos vinculados)"
-                className="px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs shrink-0"
-              >
-                <Scale className="w-3.5 h-3.5" />
-                <span>Gerenciar Leis</span>
-              </button>
-            </div>
+            {/* Leis de Incentivo: Botão de Gestão */}
+            <button
+              type="button"
+              onClick={() => setIsLawsModalOpen(true)}
+              title="Gerenciar Leis de Incentivo (adicionar novas ou excluir leis sem projetos vinculados)"
+              className="px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs shrink-0"
+            >
+              <Scale className="w-3.5 h-3.5" />
+              <span>Gerenciar Leis</span>
+            </button>
 
           </div>
 

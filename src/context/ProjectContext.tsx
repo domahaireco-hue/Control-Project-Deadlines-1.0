@@ -117,7 +117,7 @@ interface ProjectContextType {
   addProject: (newProj: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updateProject: (id: string, updates: Partial<Project>, logNote?: string) => void;
   deleteProject: (id: string) => void;
-  importSpreadsheet: (buffer: ArrayBuffer, replaceAll?: boolean) => ImportResult;
+  importSpreadsheet: (buffer: ArrayBuffer, replaceAll?: boolean) => Promise<ImportResult>;
   clearAllProjects: () => boolean;
   runFunnelAdvance: (force?: boolean) => Promise<FunnelAdvanceResult>;
   sendDailyReportEmail: () => Promise<{ log: NotificationLog; summary: any }>;
@@ -658,23 +658,28 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Importar Planilha Excel (.xlsx / .csv) com opção de substituir base
   const importSpreadsheet = useCallback(
-    (buffer: ArrayBuffer, replaceAll: boolean = false): ImportResult => {
+    async (buffer: ArrayBuffer, replaceAll: boolean = false): Promise<ImportResult> => {
       const baseProjects = replaceAll ? [] : projects;
       const { projects: updatedList, result } = parseSpreadsheetBuffer(buffer, baseProjects);
+
+      // Sincronização obrigatória e estrita com o Supabase: sem fallback
+      if (isSupabaseConfigured) {
+        if (replaceAll) {
+          const clearRes = await ProjectService.clearAllProjects();
+          if (!clearRes.success) {
+            throw new Error(clearRes.error || 'Falha ao limpar base anterior no Supabase.');
+          }
+        }
+        const saveRes = await ProjectService.saveProjectsBatch(updatedList);
+        if (!saveRes.success) {
+          throw new Error(saveRes.error || 'Falha ao sincronizar dados com o Supabase.');
+        }
+      }
+
       setProjects(updatedList);
       
       if (typeof window !== 'undefined') {
         localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedList));
-      }
-
-      if (isSupabaseConfigured) {
-        if (replaceAll) {
-          ProjectService.clearAllProjects().then(() => {
-            ProjectService.saveProjectsBatch(updatedList);
-          });
-        } else {
-          ProjectService.saveProjectsBatch(updatedList);
-        }
       }
 
       return result;

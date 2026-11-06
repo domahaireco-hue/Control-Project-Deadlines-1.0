@@ -27,6 +27,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => 
   const [loading, setLoading] = useState(false);
   const [cleanBeforeImport, setCleanBeforeImport] = useState(true);
   const [result, setResult] = useState<ImportResult | null>(null);
+  const [importError, setImportError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
 
   const processFile = async (file: File) => {
@@ -38,15 +39,17 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => 
     setFileName(file.name);
     setLoading(true);
     setResult(null);
+    setImportError(null);
 
     try {
       const buffer = await file.arrayBuffer();
-      // Executa o parser do spreadsheetService passando flag de substituição
-      const importStats = importSpreadsheet(buffer, cleanBeforeImport);
+      // Executa a importação estrita para o Supabase (sem fallback silencioso)
+      const importStats = await importSpreadsheet(buffer, cleanBeforeImport);
       setResult(importStats);
-    } catch (err: unknown) {
-      console.error('Erro ao importar planilha:', err);
-      alert('Falha ao processar o arquivo. Verifique se o formato está corrompido.');
+    } catch (err: any) {
+      console.error('Erro na importação de projetos:', err);
+      const msg = err?.message || 'Falha ao processar o arquivo. Verifique se os dados estão corretos.';
+      setImportError(msg);
     } finally {
       setLoading(false);
     }
@@ -81,6 +84,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => 
 
   const handleResetAndClose = () => {
     setResult(null);
+    setImportError(null);
     setFileName(null);
     onClose();
   };
@@ -125,6 +129,32 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => 
               <li>A coluna Kanban é calculada com base na data de vencimento restante.</li>
             </ul>
           </div>
+
+          {/* Mensagem de Erro na Importação (Sem fallback silencioso) */}
+          {importError && (
+            <div className="border border-rose-300 bg-rose-50 rounded-xl p-4 space-y-2.5 animate-in fade-in duration-200">
+              <div className="flex items-start gap-2.5 text-rose-900 font-bold text-xs">
+                <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-bold text-rose-800">Falha ao salvar no banco de dados (Supabase)</p>
+                  <p className="text-xs font-normal text-rose-700 mt-1 whitespace-pre-wrap">{importError}</p>
+                </div>
+              </div>
+
+              {(importError.includes('amendment_type') || importError.includes('Schema') || importError.includes('Coluna')) && (
+                <div className="bg-white/90 border border-rose-200 rounded-lg p-3 text-[11px] text-slate-700 mt-2">
+                  <p className="font-bold text-rose-900 mb-1">Como resolver no Supabase:</p>
+                  <p className="text-slate-600 mb-1.5">
+                    O banco de dados não possui as colunas necessárias. Execute o comando SQL abaixo no <strong>SQL Editor</strong> do Supabase para atualizar a tabela:
+                  </p>
+                  <code className="block bg-slate-900 text-sky-300 p-2.5 rounded text-[11px] font-mono select-all overflow-x-auto">
+                    ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS amendment_type TEXT;<br />
+                    ALTER TABLE public.projects ADD COLUMN IF NOT EXISTS last_treaty_alert_at TIMESTAMPTZ;
+                  </code>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Opção para Limpar / Substituir Base */}
           {!result && (

@@ -44,15 +44,12 @@ export const LoginScreen: React.FC = () => {
           
           {/* Logo e Cabeçalho (Versão Horizontal sem Borda) */}
           <div className="text-center mb-7">
-            <div className="flex items-center justify-center gap-2.5 mb-2 select-none">
+            <div className="flex items-center justify-center mb-3 select-none">
               <img 
                 src="/logo.png" 
                 alt="Quest" 
-                className="h-10 sm:h-12 w-auto object-contain drop-shadow-md"
+                className="h-12 sm:h-14 w-auto object-contain drop-shadow-md"
               />
-              <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                CONSULT
-              </span>
             </div>
             
             <p className="text-xs text-slate-400 font-medium mt-1">

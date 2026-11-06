@@ -25,15 +25,12 @@ export default function HomePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen w-full bg-slate-950 flex flex-col items-center justify-center p-4">
-        <div className="flex items-center justify-center gap-2 mb-3 animate-pulse select-none">
+        <div className="flex items-center justify-center mb-3 animate-pulse select-none">
           <img 
             src="/logo.png" 
             alt="Quest" 
-            className="h-10 w-auto object-contain"
+            className="h-10 sm:h-12 w-auto object-contain"
           />
-          <span className="text-2xl font-bold tracking-tight text-white">
-            CONSULT
-          </span>
         </div>
         <p className="text-xs text-slate-400 font-medium">Validando autenticação Quest Consult...</p>
       </div>

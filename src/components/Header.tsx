@@ -60,17 +60,14 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           
-          {/* Logo & Identidade Corporativa Quest Consult (Versão Horizontal sem Borda) */}
+          {/* Logo & Identidade Corporativa (Versão Horizontal sem Borda) */}
           <div className="flex items-center space-x-3.5">
-            <h1 className="flex items-center gap-2 select-none">
+            <h1 className="flex items-center select-none">
               <img 
                 src="/logo.png" 
                 alt="Quest" 
                 className="h-8 sm:h-9 w-auto object-contain shrink-0 drop-shadow-xs hover:opacity-95 transition-opacity"
               />
-              <span className="text-xl font-bold tracking-tight text-white">
-                CONSULT
-              </span>
             </h1>
             <div className="h-6 w-px bg-quest-800 hidden sm:block"></div>
             <div>

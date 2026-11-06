@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { IncentiveLawsModal } from '@/components/IncentiveLawsModal';
+import { TablesModal } from '@/components/TablesModal';
 
 export const MetricsOverview: React.FC = () => {
   const { 
@@ -30,6 +31,7 @@ export const MetricsOverview: React.FC = () => {
     setSearchQuery,
     availableMechanisms,
     addCustomLaw,
+    deleteTable,
     incentiveLaws,
     selectedIncentiveLaw,
     setSelectedIncentiveLaw,
@@ -40,6 +42,7 @@ export const MetricsOverview: React.FC = () => {
 
   const [isAddingTable, setIsAddingTable] = useState(false);
   const [newTableName, setNewTableName] = useState('');
+  const [isTablesModalOpen, setIsTablesModalOpen] = useState(false);
   const [isLawsModalOpen, setIsLawsModalOpen] = useState(false);
 
   const handleSaveNewTable = (e: React.FormEvent) => {
@@ -181,6 +184,7 @@ export const MetricsOverview: React.FC = () => {
                 const countForMech = mech === 'Todos' || mech === 'Todas'
                   ? projects.length 
                   : projects.filter((p) => p.lawMechanism === mech).length;
+                const canQuickDelete = countForMech === 0 && mech !== 'Todos' && mech !== 'Todas';
 
                 return (
                   <button
@@ -200,6 +204,24 @@ export const MetricsOverview: React.FC = () => {
                     >
                       {countForMech}
                     </span>
+                    {canQuickDelete && (
+                      <span
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          if (confirm(`Deseja excluir a tabela vazia "${mech}"?`)) {
+                            await deleteTable(mech);
+                          }
+                        }}
+                        className={`ml-0.5 -mr-1 px-1 py-0.2 rounded text-[11px] font-black leading-none transition-colors ${
+                          isSelected
+                            ? 'hover:bg-quest-800 text-quest-300 hover:text-rose-300'
+                            : 'hover:bg-quest-300 text-quest-400 hover:text-rose-600'
+                        }`}
+                        title={`Excluir tabela vazia "${mech}"`}
+                      >
+                        ×
+                      </span>
+                    )}
                   </button>
                 );
               })}
@@ -248,6 +270,17 @@ export const MetricsOverview: React.FC = () => {
                   <span>Nova Tabela</span>
                 </button>
               )}
+
+              {/* Botão de Gestão de Tabelas */}
+              <button
+                type="button"
+                onClick={() => setIsTablesModalOpen(true)}
+                title="Gerenciar lista de Tabelas (cadastrar novas ou excluir tabelas)"
+                className="px-2 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1 border border-quest-200 hover:border-sky-400 text-quest-700 hover:text-sky-700 bg-white hover:bg-sky-50/50 shadow-2xs shrink-0"
+              >
+                <Layers className="w-3.5 h-3.5 text-sky-600" />
+                <span>Gerenciar</span>
+              </button>
             </div>
 
             {/* Separador Vertical */}
@@ -311,6 +344,12 @@ export const MetricsOverview: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Modal de Gestão de Tabelas */}
+      <TablesModal
+        isOpen={isTablesModalOpen}
+        onClose={() => setIsTablesModalOpen(false)}
+      />
 
       {/* Modal de Gestão de Leis de Incentivo */}
       <IncentiveLawsModal

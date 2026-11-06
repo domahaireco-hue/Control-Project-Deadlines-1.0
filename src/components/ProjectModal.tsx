@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { IncentiveLawsModal } from '@/components/IncentiveLawsModal';
+import { TablesModal } from '@/components/TablesModal';
 import { EMPTY_CELL_FALLBACK, calculateDaysRemaining, determineKanbanColumn } from '@/services/spreadsheetService';
 import { AgentMailService } from '@/services/agentMailService';
 
@@ -74,7 +75,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   const [isAddingNewLawInModal, setIsAddingNewLawInModal] = useState(false);
   const [newLawModalInput, setNewLawModalInput] = useState('');
 
-  // Tabela customizada inline
+  // Modal de Gestão de Tabelas e cadastro inline de Tabela
+  const [isTablesManagerOpen, setIsTablesManagerOpen] = useState(false);
   const [isAddingNewTableInModal, setIsAddingNewTableInModal] = useState(false);
   const [newTableModalInput, setNewTableModalInput] = useState('');
 
@@ -477,15 +479,26 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 <label className="block text-xs font-semibold text-slate-700">
                   Tabela (Aba de Origem)
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setIsAddingNewTableInModal(!isAddingNewTableInModal)}
-                  className="text-[11px] font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors"
-                  title="Cadastrar uma nova Tabela de projetos"
-                >
-                  <Plus className="w-3 h-3" />
-                  <span>Nova Tabela</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddingNewTableInModal(!isAddingNewTableInModal)}
+                    className="text-[11px] font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors"
+                    title="Cadastrar uma nova Tabela de projetos"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Nova Tabela</span>
+                  </button>
+                  <span className="text-slate-300">|</span>
+                  <button
+                    type="button"
+                    onClick={() => setIsTablesManagerOpen(true)}
+                    className="text-[11px] font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors underline"
+                    title="Gerenciar lista de Tabelas (cadastrar novas ou excluir tabelas)"
+                  >
+                    <span>Gerenciar Tabelas</span>
+                  </button>
+                </div>
               </div>
 
               {isAddingNewTableInModal && (
@@ -964,6 +977,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         )}
 
       </div>
+
+      {/* Modal de Gerenciamento Completo de Tabelas */}
+      <TablesModal
+        isOpen={isTablesManagerOpen}
+        onClose={() => setIsTablesManagerOpen(false)}
+      />
 
       {/* Modal de Gerenciamento Completo de Leis de Incentivo */}
       <IncentiveLawsModal

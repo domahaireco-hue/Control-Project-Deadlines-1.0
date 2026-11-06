@@ -115,6 +115,9 @@ interface ProjectContextType {
   selectedTable: string;
   setSelectedTable: (table: string) => void;
   availableTables: string[];
+  addTable: (name: string) => { success: boolean; error?: string };
+  deleteTable: (name: string, targetTableForProjects?: string) => Promise<{ success: boolean; error?: string }>;
+  getProjectsCountByTable: (name: string) => number;
   // Leis de Incentivo
   incentiveLaws: string[];
   selectedIncentiveLaw: string;
@@ -443,21 +446,127 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return ['Todos', ...Array.from(set).sort()];
   }, [projects, customLaws]);
 
+  // Conta projetos vinculados a uma Tabela
+  const getProjectsCountByTable = useCallback(
+    (name: string): number => {
+      const lower = name.trim().toLowerCase();
+      if (lower === 'todos' || lower === 'todas') return projects.length;
+      return projects.filter(
+        (p) => (p.lawMechanism || '').trim().toLowerCase() === lower
+      ).length;
+    },
+    [projects]
+  );
+
   // Cadastrar nova Tabela de projetos
-  const addCustomLaw = useCallback((name: string): boolean => {
-    const trimmed = name.trim();
-    if (!trimmed || trimmed.toLowerCase() === 'todos') {
-      return false;
-    }
-    const alreadyExists = availableMechanisms.some(
-      (m) => m.toLowerCase() === trimmed.toLowerCase()
-    );
-    if (alreadyExists) {
-      return false;
-    }
-    setCustomLaws((prev) => Array.from(new Set([...prev, trimmed])));
-    return true;
-  }, [availableMechanisms]);
+  const addTable = useCallback(
+    (name: string): { success: boolean; error?: string } => {
+      const trimmed = name.trim();
+      if (!trimmed || trimmed.toLowerCase() === 'todos' || trimmed.toLowerCase() === 'todas') {
+        return { success: false, error: 'O nome da Tabela não pode ser vazio ou genérico.' };
+      }
+      const alreadyExists = availableMechanisms.some(
+        (m) => m.toLowerCase() === trimmed.toLowerCase()
+      );
+      if (alreadyExists) {
+        return { success: false, error: `A Tabela "${trimmed}" já está cadastrada.` };
+      }
+      setCustomLaws((prev) => Array.from(new Set([...prev, trimmed])));
+      return { success: true };
+    },
+    [availableMechanisms]
+  );
+
+  // Manter compatibilidade com addCustomLaw
+  const addCustomLaw = useCallback(
+    (name: string): boolean => {
+      return addTable(name).success;
+    },
+    [addTable]
+  );
+
+  // Excluir Tabela de projetos (permite exclusão direta se 0 projetos, ou migração segura de projetos vinculados)
+  const deleteTable = useCallback(
+    async (
+      name: string,
+      targetTableForProjects?: string
+    ): Promise<{ success: boolean; error?: string }> => {
+      const trimmed = name.trim();
+      if (!trimmed || trimmed.toLowerCase() === 'todos' || trimmed.toLowerCase() === 'todas') {
+        return { success: false, error: 'Não é possível excluir esta opção reservada do sistema.' };
+      }
+
+      const linkedProjects = projects.filter(
+        (p) => (p.lawMechanism || '').trim().toLowerCase() === trimmed.toLowerCase()
+      );
+
+      // Se houver projetos e nenhuma tabela de destino foi indicada
+      if (linkedProjects.length > 0 && !targetTableForProjects) {
+        return {
+          success: false,
+          error: `Não é possível excluir a Tabela "${trimmed}" pois existem ${linkedProjects.length} projeto(s) vinculados a ela. Mova os projetos para outra tabela antes de excluir.`,
+        };
+      }
+
+      // Se houver projetos e foi indicada tabela de destino
+      if (linkedProjects.length > 0 && targetTableForProjects) {
+        const destTrimmed = targetTableForProjects.trim();
+        if (destTrimmed.toLowerCase() === trimmed.toLowerCase()) {
+          return { success: false, error: 'A tabela de destino deve ser diferente da tabela a ser excluída.' };
+        }
+
+        const now = new Date().toISOString();
+        const updatedLinkedProjects = linkedProjects.map((p) => ({
+          ...p,
+          lawMechanism: destTrimmed,
+          updatedAt: now,
+          history: [
+            ...(p.history || []),
+            {
+              id: `hist_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+              timestamp: now,
+              user: 'Sistema',
+              action: `Transferência de Tabela de "${trimmed}" para "${destTrimmed}"`,
+              details: `Projeto migrado automaticamente para "${destTrimmed}" devido à exclusão da tabela original.`,
+            },
+          ],
+        }));
+
+        setProjects((prev) =>
+          prev.map((p) => {
+            if ((p.lawMechanism || '').trim().toLowerCase() === trimmed.toLowerCase()) {
+              return {
+                ...p,
+                lawMechanism: destTrimmed,
+                updatedAt: now,
+              };
+            }
+            return p;
+          })
+        );
+
+        // Salva projetos atualizados no banco (Supabase)
+        try {
+          await ProjectService.saveProjectsBatch(updatedLinkedProjects);
+        } catch (err: any) {
+          console.error('[ProjectContext] Erro ao sincronizar migração de projetos no Supabase:', err);
+        }
+      }
+
+      // Remove de customLaws
+      setCustomLaws((prev) =>
+        prev.filter((l) => l.trim().toLowerCase() !== trimmed.toLowerCase())
+      );
+
+      // Se a tabela excluída estava selecionada no filtro, volta para "Todos"
+      if (selectedMechanism.trim().toLowerCase() === trimmed.toLowerCase()) {
+        setSelectedMechanism('Todos');
+      }
+
+      return { success: true };
+    },
+    [projects, selectedMechanism]
+  );
 
   // Filtra projetos por Tabela, Lei de Incentivo, Status de Tratativa e Termo de Busca
   const filteredProjects = useMemo(() => {
@@ -935,6 +1044,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setSelectedTable: setSelectedMechanism,
         availableTables: availableMechanisms,
         availableMechanisms,
+        addTable,
+        deleteTable,
+        getProjectsCountByTable,
         // Leis de Incentivo
         incentiveLaws,
         selectedIncentiveLaw,

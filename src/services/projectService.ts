@@ -40,9 +40,40 @@ export interface DbProjectRow {
 }
 
 /**
+ * Estado interno de compatibilidade com colunas recentes do Supabase.
+ * Inicia como true. Caso o schema do Supabase ainda não tenha as colunas novas,
+ * ativa automaticamente o fallback tolerante a falhas (sem erro 400).
+ */
+let hasNewColumnsSupport = true;
+
+const NEW_COLUMNS_TO_STRIP: (keyof DbProjectRow)[] = ['amendment_type', 'last_treaty_alert_at'];
+
+function sanitizeRowForDb(row: DbProjectRow): Partial<DbProjectRow> {
+  if (hasNewColumnsSupport) return row;
+  const sanitized = { ...row };
+  for (const col of NEW_COLUMNS_TO_STRIP) {
+    delete sanitized[col];
+  }
+  return sanitized;
+}
+
+function isMissingColumnError(error: any): boolean {
+  if (!error) return false;
+  return (
+    error.code === 'PGRST204' ||
+    (typeof error.message === 'string' && (error.message.includes('schema cache') || error.message.includes('amendment_type') || error.message.includes('last_treaty_alert_at')))
+  );
+}
+
+/**
  * Converte registro do banco (snake_case) para a entidade de domínio Project (camelCase)
  */
 export function projectFromDb(row: DbProjectRow): Project {
+  // Extrai amendmentType do campo dedicado ou da tag de contingência
+  const tagAmendment = Array.isArray(row.tags) 
+    ? row.tags.find((t: any) => typeof t === 'string' && t.startsWith('emenda:'))?.replace('emenda:', '')
+    : undefined;
+
   return {
     id: row.id,
     code: row.code || 'Sem informação Migrada',
@@ -68,7 +99,7 @@ export function projectFromDb(row: DbProjectRow): Project {
     readequationDate: row.readequation_date || null,
     readequationNotes: row.readequation_notes || '',
     originalStatusColC: row.original_status_col_c || '',
-    amendmentType: row.amendment_type || (row.law_mechanism?.includes('Emenda') ? row.law_mechanism : undefined),
+    amendmentType: row.amendment_type || tagAmendment || (row.law_mechanism?.includes('Emenda') ? row.law_mechanism : undefined),
     lastTreatyAlertAt: row.last_treaty_alert_at || undefined,
     history: Array.isArray(row.history) ? row.history : [],
     createdAt: row.created_at || new Date().toISOString(),
@@ -80,6 +111,13 @@ export function projectFromDb(row: DbProjectRow): Project {
  * Converte entidade de domínio Project (camelCase) para o formato do Supabase (snake_case)
  */
 export function projectToDb(p: Project): DbProjectRow {
+  // Preserva amendmentType nas tags para compatibilidade caso a coluna ainda não exista
+  let tags = Array.isArray(p.tags) ? [...p.tags] : [];
+  if (p.amendmentType) {
+    tags = tags.filter((t) => typeof t !== 'string' || !t.startsWith('emenda:'));
+    tags.push(`emenda:${p.amendmentType}`);
+  }
+
   return {
     id: p.id,
     code: p.code || 'Sem informação Migrada',
@@ -95,7 +133,7 @@ export function projectToDb(p: Project): DbProjectRow {
     column_id: p.columnId || 'col_90',
     is_manual_column: Boolean(p.isManualColumn),
     notes: p.notes || '',
-    tags: Array.isArray(p.tags) ? p.tags : [],
+    tags,
     kv_status: p.kvStatus || 'nao_enviado',
     kv_sent: Boolean(p.kvSent),
     agenda_viva_registered: Boolean(p.agendaVivaRegistered),
@@ -152,10 +190,21 @@ export class ProjectService {
     }
 
     try {
-      const row = projectToDb(project);
-      const { error } = await supabase
+      let row = sanitizeRowForDb(projectToDb(project));
+      let { error } = await supabase
         .from('projects')
         .upsert(row, { onConflict: 'id' });
+
+      // Fallback automático caso o banco de dados ainda não tenha as colunas recentes
+      if (error && hasNewColumnsSupport && isMissingColumnError(error)) {
+        console.warn('[ProjectService] Colunas recentes ainda não migradas no Supabase. Executando fallback compatível...');
+        hasNewColumnsSupport = false;
+        row = sanitizeRowForDb(projectToDb(project));
+        const retry = await supabase
+          .from('projects')
+          .upsert(row, { onConflict: 'id' });
+        error = retry.error;
+      }
 
       if (error) {
         console.error('[ProjectService] Erro ao salvar projeto:', error);
@@ -185,22 +234,34 @@ export class ProjectService {
     }
 
     try {
-      const rows = projects.map(projectToDb);
       // Processa em blocos de 100 para evitar payload excessivo
       const CHUNK_SIZE = 100;
       let total = 0;
 
-      for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
-        const chunk = rows.slice(i, i + CHUNK_SIZE);
-        const { error } = await supabase
+      for (let i = 0; i < projects.length; i += CHUNK_SIZE) {
+        const chunkProjects = projects.slice(i, i + CHUNK_SIZE);
+        let chunkRows = chunkProjects.map(projectToDb).map(sanitizeRowForDb);
+
+        let { error } = await supabase
           .from('projects')
-          .upsert(chunk, { onConflict: 'id' });
+          .upsert(chunkRows, { onConflict: 'id' });
+
+        // Fallback automático para o lote caso o banco ainda não tenha as colunas recentes
+        if (error && hasNewColumnsSupport && isMissingColumnError(error)) {
+          console.warn('[ProjectService] Colunas recentes ainda não migradas no Supabase. Executando fallback em lote compatível...');
+          hasNewColumnsSupport = false;
+          chunkRows = chunkProjects.map(projectToDb).map(sanitizeRowForDb);
+          const retry = await supabase
+            .from('projects')
+            .upsert(chunkRows, { onConflict: 'id' });
+          error = retry.error;
+        }
 
         if (error) {
           console.error(`[ProjectService] Erro ao salvar bloco ${i / CHUNK_SIZE}:`, error);
           return { success: false, insertedOrUpdated: total, error: error.message };
         }
-        total += chunk.length;
+        total += chunkRows.length;
       }
 
       return { success: true, insertedOrUpdated: total };
@@ -346,14 +407,24 @@ export class ProjectService {
     if (!admin || projects.length === 0) return false;
 
     try {
-      const rows = projects.map(projectToDb);
       const CHUNK_SIZE = 100;
 
-      for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
-        const chunk = rows.slice(i, i + CHUNK_SIZE);
-        const { error } = await admin
+      for (let i = 0; i < projects.length; i += CHUNK_SIZE) {
+        const chunkProjects = projects.slice(i, i + CHUNK_SIZE);
+        let chunkRows = chunkProjects.map(projectToDb).map(sanitizeRowForDb);
+
+        let { error } = await admin
           .from('projects')
-          .upsert(chunk, { onConflict: 'id' });
+          .upsert(chunkRows, { onConflict: 'id' });
+
+        if (error && hasNewColumnsSupport && isMissingColumnError(error)) {
+          hasNewColumnsSupport = false;
+          chunkRows = chunkProjects.map(projectToDb).map(sanitizeRowForDb);
+          const retry = await admin
+            .from('projects')
+            .upsert(chunkRows, { onConflict: 'id' });
+          error = retry.error;
+        }
 
         if (error) {
           console.error('[ServerProjectService] Erro ao salvar bloco:', error);

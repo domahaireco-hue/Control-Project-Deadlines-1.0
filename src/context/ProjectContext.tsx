@@ -119,6 +119,7 @@ interface ProjectContextType {
   deleteProject: (id: string) => void;
   importSpreadsheet: (buffer: ArrayBuffer, replaceAll?: boolean) => Promise<ImportResult>;
   clearAllProjects: () => boolean;
+  addCustomLaw: (name: string) => boolean;
   runFunnelAdvance: (force?: boolean) => Promise<FunnelAdvanceResult>;
   sendDailyReportEmail: () => Promise<{ log: NotificationLog; summary: any }>;
   resetToDefault: () => void;
@@ -285,7 +286,29 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setActiveToast(null);
   }, []);
 
-  // Extrai lista única de mecanismos/leis
+  // Leis e Mecanismos customizados cadastrados pelo usuário (persistidos localmente)
+  const CUSTOM_LAWS_STORAGE_KEY = 'quest_custom_laws_v1';
+  const [customLaws, setCustomLaws] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const saved = localStorage.getItem(CUSTOM_LAWS_STORAGE_KEY);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(CUSTOM_LAWS_STORAGE_KEY, JSON.stringify(customLaws));
+      } catch (err) {
+        console.warn('Erro ao salvar leis no localStorage:', err);
+      }
+    }
+  }, [customLaws]);
+
+  // Extrai lista única de mecanismos/leis (projetos + leis customizadas)
   const availableMechanisms = useMemo(() => {
     const set = new Set<string>();
     projects.forEach((p) => {
@@ -293,8 +316,30 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         set.add(p.lawMechanism);
       }
     });
+    customLaws.forEach((law) => {
+      if (law && law.trim()) {
+        set.add(law.trim());
+      }
+    });
     return ['Todos', ...Array.from(set).sort()];
-  }, [projects]);
+  }, [projects, customLaws]);
+
+  // Cadastrar nova lei de incentivo ou mecanismo
+  const addCustomLaw = useCallback((name: string): boolean => {
+    const trimmed = name.trim();
+    if (!trimmed || trimmed.toLowerCase() === 'todos') {
+      return false;
+    }
+    // Evita duplicidade case-insensitive
+    const alreadyExists = availableMechanisms.some(
+      (m) => m.toLowerCase() === trimmed.toLowerCase()
+    );
+    if (alreadyExists) {
+      return false;
+    }
+    setCustomLaws((prev) => Array.from(new Set([...prev, trimmed])));
+    return true;
+  }, [availableMechanisms]);
 
   // Filtra projetos por mecanismo, filtro de tratativa/concluídos e termo de busca
   const filteredProjects = useMemo(() => {
@@ -780,6 +825,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         deleteProject,
         importSpreadsheet,
         clearAllProjects,
+        addCustomLaw,
         runFunnelAdvance,
         sendDailyReportEmail,
         resetToDefault,

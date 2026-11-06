@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Search, 
   X, 
@@ -12,7 +12,9 @@ import {
   Filter,
   FileCheck2,
   CalendarCheck2,
-  HelpCircle
+  HelpCircle,
+  Plus,
+  Check
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 
@@ -25,9 +27,28 @@ export const MetricsOverview: React.FC = () => {
     searchQuery, 
     setSearchQuery,
     availableMechanisms,
+    addCustomLaw,
     treatyFilter,
     setTreatyFilter
   } = useProjects();
+
+  const [isAddingLaw, setIsAddingLaw] = useState(false);
+  const [newLawName, setNewLawName] = useState('');
+
+  const handleSaveNewLaw = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = newLawName.trim();
+    if (!trimmed) return;
+
+    const success = addCustomLaw(trimmed);
+    if (success) {
+      setSelectedMechanism(trimmed);
+      setIsAddingLaw(false);
+      setNewLawName('');
+    } else {
+      alert(`A lei "${trimmed}" já está cadastrada ou o nome é inválido.`);
+    }
+  };
 
   // Contadores por coluna ajustadas (90, 60, 45, 32)
   const countCompleted = projects.filter((p) => p.isCompleted).length;
@@ -172,6 +193,51 @@ export const MetricsOverview: React.FC = () => {
                   </button>
                 );
               })}
+
+              {/* Botão e Formulário para Cadastrar Nova Lei */}
+              {isAddingLaw ? (
+                <form
+                  onSubmit={handleSaveNewLaw}
+                  className="flex items-center gap-1 bg-white border border-sky-400 rounded-lg p-0.5 shadow-2xs animate-in fade-in duration-150"
+                >
+                  <input
+                    type="text"
+                    value={newLawName}
+                    onChange={(e) => setNewLawName(e.target.value)}
+                    placeholder="Nome da nova lei..."
+                    autoFocus
+                    className="px-2 py-0.5 text-xs text-slate-800 placeholder:text-slate-400 outline-none w-32 sm:w-36 font-medium bg-transparent"
+                  />
+                  <button
+                    type="submit"
+                    title="Adicionar Lei"
+                    className="p-1 rounded text-emerald-600 hover:bg-emerald-50 transition-colors"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingLaw(false);
+                      setNewLawName('');
+                    }}
+                    title="Cancelar"
+                    className="p-1 rounded text-slate-400 hover:bg-slate-100 transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsAddingLaw(true)}
+                  title="Cadastrar nova Lei ou Mecanismo de Incentivo"
+                  className="px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border border-dashed border-quest-300 hover:border-sky-500 text-quest-600 hover:text-sky-600 bg-white hover:bg-sky-50/50 shadow-2xs group"
+                >
+                  <Plus className="w-3.5 h-3.5 text-quest-400 group-hover:text-sky-600 transition-colors" />
+                  <span>Nova Lei</span>
+                </button>
+              )}
             </div>
           </div>
 

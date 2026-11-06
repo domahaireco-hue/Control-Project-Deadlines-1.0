@@ -38,7 +38,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   onClose,
   projectToEdit,
 }) => {
-  const { addProject, updateProject, addProjectHistoryNote, columns, availableMechanisms } = useProjects();
+  const { addProject, updateProject, addProjectHistoryNote, columns, availableMechanisms, addCustomLaw } = useProjects();
 
   const [activeTab, setActiveTab] = useState<'details' | 'history'>('details');
   const [newHistoryNote, setNewHistoryNote] = useState('');
@@ -57,6 +57,19 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   const [columnId, setColumnId] = useState<KanbanColumnId>('col_90');
   const [notes, setNotes] = useState('');
   const [isManualColumn, setIsManualColumn] = useState(false);
+
+  // Nova lei customizada via modal
+  const [isAddingNewLawInModal, setIsAddingNewLawInModal] = useState(false);
+  const [newLawModalInput, setNewLawModalInput] = useState('');
+
+  const handleAddNewLawInModal = () => {
+    const trimmed = newLawModalInput.trim();
+    if (!trimmed) return;
+    addCustomLaw(trimmed);
+    setLawMechanism(trimmed);
+    setIsAddingNewLawInModal(false);
+    setNewLawModalInput('');
+  };
 
   // Classificação / Tipo de Emenda
   const [amendmentType, setAmendmentType] = useState('Emenda 2026');
@@ -430,9 +443,57 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Mecanismo / Lei de Incentivo
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700">
+                  Mecanismo / Lei de Incentivo
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsAddingNewLawInModal(!isAddingNewLawInModal)}
+                  className="text-[11px] font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors"
+                  title="Cadastrar uma nova Lei ou Mecanismo"
+                >
+                  <Plus className="w-3 h-3" />
+                  <span>Nova Lei</span>
+                </button>
+              </div>
+
+              {isAddingNewLawInModal && (
+                <div className="flex items-center gap-1.5 mb-2 animate-in fade-in duration-150">
+                  <input
+                    type="text"
+                    value={newLawModalInput}
+                    onChange={(e) => setNewLawModalInput(e.target.value)}
+                    placeholder="Nome da nova lei..."
+                    autoFocus
+                    className="flex-1 px-2.5 py-1.5 text-xs border border-sky-400 rounded-lg outline-none font-medium bg-sky-50/50"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddNewLawInModal();
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddNewLawInModal}
+                    className="px-2.5 py-1.5 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white rounded-lg shadow-xs"
+                  >
+                    Adicionar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsAddingNewLawInModal(false);
+                      setNewLawModalInput('');
+                    }}
+                    className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
               <select
                 value={lawMechanism}
                 onChange={(e) => setLawMechanism(e.target.value as LawMechanism)}

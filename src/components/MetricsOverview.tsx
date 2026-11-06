@@ -14,9 +14,11 @@ import {
   CalendarCheck2,
   HelpCircle,
   Plus,
-  Check
+  Check,
+  Scale
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
+import { IncentiveLawsModal } from '@/components/IncentiveLawsModal';
 
 export const MetricsOverview: React.FC = () => {
   const { 
@@ -28,25 +30,30 @@ export const MetricsOverview: React.FC = () => {
     setSearchQuery,
     availableMechanisms,
     addCustomLaw,
+    incentiveLaws,
+    selectedIncentiveLaw,
+    setSelectedIncentiveLaw,
+    getProjectsCountByLaw,
     treatyFilter,
     setTreatyFilter
   } = useProjects();
 
-  const [isAddingLaw, setIsAddingLaw] = useState(false);
-  const [newLawName, setNewLawName] = useState('');
+  const [isAddingTable, setIsAddingTable] = useState(false);
+  const [newTableName, setNewTableName] = useState('');
+  const [isLawsModalOpen, setIsLawsModalOpen] = useState(false);
 
-  const handleSaveNewLaw = (e: React.FormEvent) => {
+  const handleSaveNewTable = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = newLawName.trim();
+    const trimmed = newTableName.trim();
     if (!trimmed) return;
 
     const success = addCustomLaw(trimmed);
     if (success) {
       setSelectedMechanism(trimmed);
-      setIsAddingLaw(false);
-      setNewLawName('');
+      setIsAddingTable(false);
+      setNewTableName('');
     } else {
-      alert(`A lei "${trimmed}" já está cadastrada ou o nome é inválido.`);
+      alert(`A tabela "${trimmed}" já está cadastrada ou o nome é inválido.`);
     }
   };
 
@@ -162,13 +169,16 @@ export const MetricsOverview: React.FC = () => {
         {/* Linha de Filtros: Filtro de Tratativa/Concluídos, Mecanismos/Abas e Campo de Pesquisa */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 pt-1">
           
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 lg:pb-0 scrollbar-none flex-wrap">
 
-            {/* Mecanismos / Abas */}
-            <div className="flex items-center gap-1.5">
+            {/* Tabelas / Abas de Origem */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mr-0.5 hidden sm:inline">
+                Tabela:
+              </span>
               {availableMechanisms.map((mech) => {
                 const isSelected = selectedMechanism === mech;
-                const countForMech = mech === 'Todos' 
+                const countForMech = mech === 'Todos' || mech === 'Todas'
                   ? projects.length 
                   : projects.filter((p) => p.lawMechanism === mech).length;
 
@@ -182,7 +192,7 @@ export const MetricsOverview: React.FC = () => {
                         : 'bg-quest-100 hover:bg-quest-200 text-quest-700'
                     }`}
                   >
-                    <span>{mech}</span>
+                    <span>{mech === 'Todos' ? 'Todas' : mech}</span>
                     <span
                       className={`px-1.5 py-0.2 rounded-full text-[10px] ${
                         isSelected ? 'bg-quest-700 text-white' : 'bg-quest-200 text-quest-600'
@@ -194,23 +204,23 @@ export const MetricsOverview: React.FC = () => {
                 );
               })}
 
-              {/* Botão e Formulário para Cadastrar Nova Lei */}
-              {isAddingLaw ? (
+              {/* Botão e Formulário para Cadastrar Nova Tabela */}
+              {isAddingTable ? (
                 <form
-                  onSubmit={handleSaveNewLaw}
+                  onSubmit={handleSaveNewTable}
                   className="flex items-center gap-1 bg-white border border-sky-400 rounded-lg p-0.5 shadow-2xs animate-in fade-in duration-150"
                 >
                   <input
                     type="text"
-                    value={newLawName}
-                    onChange={(e) => setNewLawName(e.target.value)}
-                    placeholder="Nome da nova lei..."
+                    value={newTableName}
+                    onChange={(e) => setNewTableName(e.target.value)}
+                    placeholder="Nome da tabela..."
                     autoFocus
-                    className="px-2 py-0.5 text-xs text-slate-800 placeholder:text-slate-400 outline-none w-32 sm:w-36 font-medium bg-transparent"
+                    className="px-2 py-0.5 text-xs text-slate-800 placeholder:text-slate-400 outline-none w-28 sm:w-32 font-medium bg-transparent"
                   />
                   <button
                     type="submit"
-                    title="Adicionar Lei"
+                    title="Adicionar Tabela"
                     className="p-1 rounded text-emerald-600 hover:bg-emerald-50 transition-colors"
                   >
                     <Check className="w-3.5 h-3.5" />
@@ -218,8 +228,8 @@ export const MetricsOverview: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setIsAddingLaw(false);
-                      setNewLawName('');
+                      setIsAddingTable(false);
+                      setNewTableName('');
                     }}
                     title="Cancelar"
                     className="p-1 rounded text-slate-400 hover:bg-slate-100 transition-colors"
@@ -230,15 +240,52 @@ export const MetricsOverview: React.FC = () => {
               ) : (
                 <button
                   type="button"
-                  onClick={() => setIsAddingLaw(true)}
-                  title="Cadastrar nova Lei ou Mecanismo de Incentivo"
-                  className="px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 border border-dashed border-quest-300 hover:border-sky-500 text-quest-600 hover:text-sky-600 bg-white hover:bg-sky-50/50 shadow-2xs group"
+                  onClick={() => setIsAddingTable(true)}
+                  title="Cadastrar nova Tabela de Projetos"
+                  className="px-2 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1 border border-dashed border-quest-300 hover:border-sky-500 text-quest-600 hover:text-sky-600 bg-white hover:bg-sky-50/50 shadow-2xs group"
                 >
                   <Plus className="w-3.5 h-3.5 text-quest-400 group-hover:text-sky-600 transition-colors" />
-                  <span>Nova Lei</span>
+                  <span>Nova Tabela</span>
                 </button>
               )}
             </div>
+
+            {/* Separador Vertical */}
+            <div className="h-5 w-px bg-slate-200 hidden sm:block shrink-0 mx-1"></div>
+
+            {/* Leis de Incentivo: Filtro e Gestão Completa */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="text-[10px] font-bold text-indigo-900 uppercase tracking-wider mr-0.5 hidden xl:inline">
+                Lei:
+              </span>
+              <select
+                value={selectedIncentiveLaw}
+                onChange={(e) => setSelectedIncentiveLaw(e.target.value)}
+                className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-indigo-200 bg-indigo-50/70 text-indigo-950 hover:bg-indigo-50 focus:outline-none focus:ring-1 focus:ring-indigo-400 cursor-pointer shadow-2xs max-w-[210px] truncate"
+                title="Filtrar por Lei de Incentivo"
+              >
+                <option value="Todas">Todas as Leis ({projects.length})</option>
+                {incentiveLaws.map((law) => {
+                  const count = getProjectsCountByLaw(law);
+                  return (
+                    <option key={law} value={law}>
+                      {law} ({count})
+                    </option>
+                  );
+                })}
+              </select>
+
+              <button
+                type="button"
+                onClick={() => setIsLawsModalOpen(true)}
+                title="Gerenciar Leis de Incentivo (adicionar novas ou excluir leis sem projetos vinculados)"
+                className="px-2.5 py-1 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs shrink-0"
+              >
+                <Scale className="w-3.5 h-3.5" />
+                <span>Gerenciar Leis</span>
+              </button>
+            </div>
+
           </div>
 
           {/* Campo de Busca Rápida */}
@@ -264,6 +311,12 @@ export const MetricsOverview: React.FC = () => {
         </div>
 
       </div>
+
+      {/* Modal de Gestão de Leis de Incentivo */}
+      <IncentiveLawsModal
+        isOpen={isLawsModalOpen}
+        onClose={() => setIsLawsModalOpen(false)}
+      />
     </div>
   );
 };

@@ -89,11 +89,39 @@ export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
 export type TreatyFilter = 'ALL' | 'ACTIVE' | 'TREATY' | 'COMPLETED';
 export type SyncStatus = 'synced' | 'syncing' | 'local' | 'error';
 
+export const DEFAULT_INCENTIVE_LAWS: string[] = [
+  'Emenda 2026',
+  'Emenda 24-25',
+  'Emenda Federal',
+  'Emenda Estadual',
+  'Emenda Municipal',
+  'Emenda Especial (PIX)',
+  'Lei Rouanet (Artigo 18)',
+  'Lei Rouanet (Artigo 26)',
+  'PROAC ICMS',
+  'PROAC Editais',
+  'PROMAC São Paulo',
+  'Lei Federal do Esporte',
+  'Lei Estadual do Esporte',
+  'MG - ICMS Cultural',
+];
+
 interface ProjectContextType {
   projects: Project[];
   columns: KanbanColumnConfig[];
+  // Tabelas (Abas de Origem)
   selectedMechanism: string;
   setSelectedMechanism: (mech: string) => void;
+  selectedTable: string;
+  setSelectedTable: (table: string) => void;
+  availableTables: string[];
+  // Leis de Incentivo
+  incentiveLaws: string[];
+  selectedIncentiveLaw: string;
+  setSelectedIncentiveLaw: (law: string) => void;
+  addIncentiveLaw: (name: string) => { success: boolean; error?: string };
+  deleteIncentiveLaw: (name: string) => { success: boolean; error?: string };
+  getProjectsCountByLaw: (name: string) => number;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
   treatyFilter: TreatyFilter;
@@ -286,7 +314,98 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setActiveToast(null);
   }, []);
 
-  // Leis e Mecanismos customizados cadastrados pelo usuário (persistidos localmente)
+  // =========================================================================
+  // LEIS DE INCENTIVO (Adicionar, Excluir com validação de projetos vinculados)
+  // =========================================================================
+  const INCENTIVE_LAWS_STORAGE_KEY = 'quest_incentive_laws_v3';
+  const [storedIncentiveLaws, setStoredIncentiveLaws] = useState<string[]>(() => {
+    if (typeof window === 'undefined') return DEFAULT_INCENTIVE_LAWS;
+    try {
+      const saved = localStorage.getItem(INCENTIVE_LAWS_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return DEFAULT_INCENTIVE_LAWS;
+  });
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(INCENTIVE_LAWS_STORAGE_KEY, JSON.stringify(storedIncentiveLaws));
+      } catch (err) {
+        console.warn('Erro ao salvar leis no localStorage:', err);
+      }
+    }
+  }, [storedIncentiveLaws]);
+
+  // Lista consolidada de Leis de Incentivo (cadastradas + existentes em projetos)
+  const incentiveLaws = useMemo(() => {
+    const set = new Set<string>(storedIncentiveLaws);
+    projects.forEach((p) => {
+      if (p.amendmentType && p.amendmentType.trim()) {
+        set.add(p.amendmentType.trim());
+      }
+    });
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'));
+  }, [storedIncentiveLaws, projects]);
+
+  const [selectedIncentiveLaw, setSelectedIncentiveLaw] = useState<string>('Todas');
+
+  // Conta projetos vinculados a uma lei
+  const getProjectsCountByLaw = useCallback(
+    (name: string): number => {
+      const lower = name.trim().toLowerCase();
+      return projects.filter(
+        (p) => (p.amendmentType || '').trim().toLowerCase() === lower
+      ).length;
+    },
+    [projects]
+  );
+
+  // Cadastrar nova Lei de Incentivo
+  const addIncentiveLaw = useCallback(
+    (name: string): { success: boolean; error?: string } => {
+      const trimmed = name.trim();
+      if (!trimmed || trimmed.toLowerCase() === 'todas' || trimmed.toLowerCase() === 'todos') {
+        return { success: false, error: 'O nome da Lei de Incentivo não pode ser vazio ou genérico.' };
+      }
+      const alreadyExists = incentiveLaws.some(
+        (l) => l.toLowerCase() === trimmed.toLowerCase()
+      );
+      if (alreadyExists) {
+        return { success: false, error: `A Lei de Incentivo "${trimmed}" já está cadastrada.` };
+      }
+      setStoredIncentiveLaws((prev) => Array.from(new Set([...prev, trimmed])));
+      return { success: true };
+    },
+    [incentiveLaws]
+  );
+
+  // Excluir Lei de Incentivo (apenas se nenhum projeto vinculado)
+  const deleteIncentiveLaw = useCallback(
+    (name: string): { success: boolean; error?: string } => {
+      const trimmed = name.trim();
+      const count = getProjectsCountByLaw(trimmed);
+      if (count > 0) {
+        return {
+          success: false,
+          error: `Não é possível excluir a Lei de Incentivo "${trimmed}" pois existem ${count} projeto(s) vinculados a ela. Altere ou remova os projetos antes de excluir.`,
+        };
+      }
+      setStoredIncentiveLaws((prev) =>
+        prev.filter((l) => l.toLowerCase() !== trimmed.toLowerCase())
+      );
+      if (selectedIncentiveLaw.toLowerCase() === trimmed.toLowerCase()) {
+        setSelectedIncentiveLaw('Todas');
+      }
+      return { success: true };
+    },
+    [getProjectsCountByLaw, selectedIncentiveLaw]
+  );
+
+  // Tabelas customizadas cadastradas pelo usuário (persistidas localmente)
   const CUSTOM_LAWS_STORAGE_KEY = 'quest_custom_laws_v1';
   const [customLaws, setCustomLaws] = useState<string[]>(() => {
     if (typeof window === 'undefined') return [];
@@ -303,12 +422,12 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         localStorage.setItem(CUSTOM_LAWS_STORAGE_KEY, JSON.stringify(customLaws));
       } catch (err) {
-        console.warn('Erro ao salvar leis no localStorage:', err);
+        console.warn('Erro ao salvar tabelas no localStorage:', err);
       }
     }
   }, [customLaws]);
 
-  // Extrai lista única de mecanismos/leis (projetos + leis customizadas)
+  // Extrai lista única de Tabelas (projetos + tabelas customizadas)
   const availableMechanisms = useMemo(() => {
     const set = new Set<string>();
     projects.forEach((p) => {
@@ -324,13 +443,12 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return ['Todos', ...Array.from(set).sort()];
   }, [projects, customLaws]);
 
-  // Cadastrar nova lei de incentivo ou mecanismo
+  // Cadastrar nova Tabela de projetos
   const addCustomLaw = useCallback((name: string): boolean => {
     const trimmed = name.trim();
     if (!trimmed || trimmed.toLowerCase() === 'todos') {
       return false;
     }
-    // Evita duplicidade case-insensitive
     const alreadyExists = availableMechanisms.some(
       (m) => m.toLowerCase() === trimmed.toLowerCase()
     );
@@ -341,13 +459,21 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return true;
   }, [availableMechanisms]);
 
-  // Filtra projetos por mecanismo, filtro de tratativa/concluídos e termo de busca
+  // Filtra projetos por Tabela, Lei de Incentivo, Status de Tratativa e Termo de Busca
   const filteredProjects = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return projects.filter((p) => {
-      if (selectedMechanism !== 'Todos' && p.lawMechanism !== selectedMechanism) {
+      // 1. Filtro por Tabela (Abas de Origem)
+      if (selectedMechanism !== 'Todos' && selectedMechanism !== 'Todas' && p.lawMechanism !== selectedMechanism) {
         return false;
       }
+      // 2. Filtro por Lei de Incentivo
+      if (selectedIncentiveLaw !== 'Todas' && selectedIncentiveLaw !== 'Todos') {
+        if ((p.amendmentType || '').trim().toLowerCase() !== selectedIncentiveLaw.trim().toLowerCase()) {
+          return false;
+        }
+      }
+      // 3. Filtro de Tratativa / Concluídos
       if (treatyFilter === 'ACTIVE' && (p.isCompleted || (p.isInTreaty && !p.status.includes('Prorrogação')))) {
         return false;
       }
@@ -357,6 +483,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (treatyFilter === 'COMPLETED' && !p.isCompleted) {
         return false;
       }
+      // 4. Termo de Busca
       if (!q) return true;
       const matchName = (p.name || '').toLowerCase().includes(q);
       const matchCode = (p.code || '').toLowerCase().includes(q);
@@ -364,11 +491,12 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const matchSponsor = (p.sponsor || '').toLowerCase().includes(q);
       const matchResponsible = (p.responsible || '').toLowerCase().includes(q);
       const matchStatus = (p.status || '').toLowerCase().includes(q);
+      const matchLaw = (p.amendmentType || '').toLowerCase().includes(q);
       const matchNotes = (p.notes || '').toLowerCase().includes(q);
       const matchReadeq = (p.readequationNotes || '').toLowerCase().includes(q);
-      return matchName || matchCode || matchClient || matchSponsor || matchResponsible || matchStatus || matchNotes || matchReadeq;
+      return matchName || matchCode || matchClient || matchSponsor || matchResponsible || matchStatus || matchLaw || matchNotes || matchReadeq;
     });
-  }, [projects, selectedMechanism, treatyFilter, searchQuery]);
+  }, [projects, selectedMechanism, selectedIncentiveLaw, treatyFilter, searchQuery]);
 
   // Movimentação de Card (Drag and Drop ou Manual) com persistência em nuvem
   const moveCard = useCallback(
@@ -800,14 +928,25 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       value={{
         projects,
         columns: KANBAN_COLUMNS,
+        // Tabelas (Abas de Origem)
         selectedMechanism,
         setSelectedMechanism,
+        selectedTable: selectedMechanism,
+        setSelectedTable: setSelectedMechanism,
+        availableTables: availableMechanisms,
+        availableMechanisms,
+        // Leis de Incentivo
+        incentiveLaws,
+        selectedIncentiveLaw,
+        setSelectedIncentiveLaw,
+        addIncentiveLaw,
+        deleteIncentiveLaw,
+        getProjectsCountByLaw,
         searchQuery,
         setSearchQuery,
         treatyFilter,
         setTreatyFilter,
         filteredProjects,
-        availableMechanisms,
         historyLogs,
         isAdvancingFunnel,
         activeToast,

@@ -290,11 +290,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
       <div className="flex items-start justify-between gap-1.5">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-1 flex-wrap">
-            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200">
+            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 border border-slate-200" title={`Tabela (Aba de Origem): ${project.lawMechanism || 'Geral'}`}>
               {project.lawMechanism || 'Geral'}
             </span>
             {project.amendmentType && (
-              <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200" title="Classificação da Emenda">
+              <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded bg-indigo-50 text-indigo-700 border border-indigo-200" title={`Lei de Incentivo: ${project.amendmentType}`}>
                 {project.amendmentType}
               </span>
             )}

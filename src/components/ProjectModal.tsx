@@ -21,9 +21,11 @@ import {
   Plus,
   AlertTriangle,
   Send,
-  MessageCircle
+  MessageCircle,
+  Scale
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
+import { IncentiveLawsModal } from '@/components/IncentiveLawsModal';
 import { EMPTY_CELL_FALLBACK, calculateDaysRemaining, determineKanbanColumn } from '@/services/spreadsheetService';
 import { AgentMailService } from '@/services/agentMailService';
 
@@ -38,7 +40,16 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   onClose,
   projectToEdit,
 }) => {
-  const { addProject, updateProject, addProjectHistoryNote, columns, availableMechanisms, addCustomLaw } = useProjects();
+  const { 
+    addProject, 
+    updateProject, 
+    addProjectHistoryNote, 
+    columns, 
+    availableMechanisms, 
+    addCustomLaw,
+    incentiveLaws,
+    addIncentiveLaw 
+  } = useProjects();
 
   const [activeTab, setActiveTab] = useState<'details' | 'history'>('details');
   const [newHistoryNote, setNewHistoryNote] = useState('');
@@ -58,17 +69,35 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   const [notes, setNotes] = useState('');
   const [isManualColumn, setIsManualColumn] = useState(false);
 
-  // Nova lei customizada via modal
+  // Modal de Gestão de Leis e cadastro inline de Lei de Incentivo
+  const [isLawsManagerOpen, setIsLawsManagerOpen] = useState(false);
   const [isAddingNewLawInModal, setIsAddingNewLawInModal] = useState(false);
   const [newLawModalInput, setNewLawModalInput] = useState('');
+
+  // Tabela customizada inline
+  const [isAddingNewTableInModal, setIsAddingNewTableInModal] = useState(false);
+  const [newTableModalInput, setNewTableModalInput] = useState('');
 
   const handleAddNewLawInModal = () => {
     const trimmed = newLawModalInput.trim();
     if (!trimmed) return;
+    const res = addIncentiveLaw(trimmed);
+    if (res.success) {
+      setAmendmentType(trimmed);
+      setIsAddingNewLawInModal(false);
+      setNewLawModalInput('');
+    } else {
+      alert(res.error || 'Erro ao cadastrar lei de incentivo.');
+    }
+  };
+
+  const handleAddNewTableInModal = () => {
+    const trimmed = newTableModalInput.trim();
+    if (!trimmed) return;
     addCustomLaw(trimmed);
     setLawMechanism(trimmed);
-    setIsAddingNewLawInModal(false);
-    setNewLawModalInput('');
+    setIsAddingNewTableInModal(false);
+    setNewTableModalInput('');
   };
 
   // Classificação / Tipo de Emenda
@@ -107,7 +136,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       setAgendaVivaRegistered(projectToEdit.agendaVivaRegistered || false);
       setProacSystemRegistered(projectToEdit.proacSystemRegistered || false);
       setIsInTreaty(projectToEdit.isInTreaty || false);
-      setAmendmentType(projectToEdit.amendmentType || (projectToEdit.lawMechanism?.includes('Emenda') ? projectToEdit.lawMechanism : 'Emenda 2026'));
+      setAmendmentType(projectToEdit.amendmentType || '');
       setCustomAmendment('');
       setActiveTab('details');
       setNewHistoryNote('');
@@ -130,7 +159,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
       setAgendaVivaRegistered(false);
       setProacSystemRegistered(false);
       setIsInTreaty(false);
-      setAmendmentType('Emenda 2026');
+      setAmendmentType('');
       setCustomAmendment('');
       setActiveTab('details');
       setNewHistoryNote('');
@@ -172,9 +201,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
     const calculatedDays = targetDate ? calculateDaysRemaining(targetDate) : null;
     const finalColumn = columnId;
 
-    const finalAmendmentType = isEmenda
-      ? (amendmentType === 'Outro' ? customAmendment.trim() || 'Emenda Geral' : amendmentType)
-      : undefined;
+    const finalAmendmentType = amendmentType === 'Outro'
+      ? (customAmendment.trim() || undefined)
+      : (amendmentType.trim() || undefined);
 
     const baseTags = projectToEdit?.tags ? [...projectToEdit.tags] : [lawMechanism];
     if (finalAmendmentType && !baseTags.includes(finalAmendmentType)) {
@@ -442,41 +471,42 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               />
             </div>
 
+            {/* Campo: Tabela (Aba de Origem) */}
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-xs font-semibold text-slate-700">
-                  Mecanismo / Lei de Incentivo
+                  Tabela (Aba de Origem)
                 </label>
                 <button
                   type="button"
-                  onClick={() => setIsAddingNewLawInModal(!isAddingNewLawInModal)}
+                  onClick={() => setIsAddingNewTableInModal(!isAddingNewTableInModal)}
                   className="text-[11px] font-bold text-sky-600 hover:text-sky-700 flex items-center gap-1 transition-colors"
-                  title="Cadastrar uma nova Lei ou Mecanismo"
+                  title="Cadastrar uma nova Tabela de projetos"
                 >
                   <Plus className="w-3 h-3" />
-                  <span>Nova Lei</span>
+                  <span>Nova Tabela</span>
                 </button>
               </div>
 
-              {isAddingNewLawInModal && (
+              {isAddingNewTableInModal && (
                 <div className="flex items-center gap-1.5 mb-2 animate-in fade-in duration-150">
                   <input
                     type="text"
-                    value={newLawModalInput}
-                    onChange={(e) => setNewLawModalInput(e.target.value)}
-                    placeholder="Nome da nova lei..."
+                    value={newTableModalInput}
+                    onChange={(e) => setNewTableModalInput(e.target.value)}
+                    placeholder="Nome da tabela..."
                     autoFocus
                     className="flex-1 px-2.5 py-1.5 text-xs border border-sky-400 rounded-lg outline-none font-medium bg-sky-50/50"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
-                        handleAddNewLawInModal();
+                        handleAddNewTableInModal();
                       }
                     }}
                   />
                   <button
                     type="button"
-                    onClick={handleAddNewLawInModal}
+                    onClick={handleAddNewTableInModal}
                     className="px-2.5 py-1.5 text-xs font-bold bg-sky-600 hover:bg-sky-500 text-white rounded-lg shadow-xs"
                   >
                     Adicionar
@@ -484,8 +514,8 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                   <button
                     type="button"
                     onClick={() => {
-                      setIsAddingNewLawInModal(false);
-                      setNewLawModalInput('');
+                      setIsAddingNewTableInModal(false);
+                      setNewTableModalInput('');
                     }}
                     className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
                   >
@@ -500,7 +530,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white font-medium"
               >
                 {availableMechanisms
-                  .filter((m) => m !== 'Todos')
+                  .filter((m) => m !== 'Todos' && m !== 'Todas')
                   .map((m) => (
                     <option key={m} value={m}>
                       {m}
@@ -510,41 +540,99 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
             </div>
           </div>
 
-          {/* Caixa para separar tipos de emendas (Solicitada) */}
-          {(isEmenda || lawMechanism.includes('Emenda')) && (
-            <div className="p-3 bg-indigo-50/80 border border-indigo-200 rounded-xl space-y-2 animate-in fade-in duration-150">
-              <label className="block text-xs font-bold uppercase tracking-wider text-indigo-950 flex items-center justify-between">
-                <span>Classificação / Tipo de Emenda</span>
-                <span className="text-[10px] text-indigo-700 font-bold bg-indigo-100 px-2 py-0.5 rounded-full border border-indigo-200">
-                  Separação de Emendas
-                </span>
+          {/* Campo: Lei de Incentivo (Aplicável a Todos os Projetos) */}
+          <div className="p-3 bg-indigo-50/80 border border-indigo-200 rounded-xl space-y-2 animate-in fade-in duration-150">
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-bold uppercase tracking-wider text-indigo-950 flex items-center gap-1.5">
+                <Scale className="w-3.5 h-3.5 text-indigo-600" />
+                <span>Lei de Incentivo</span>
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <select
-                  value={amendmentType}
-                  onChange={(e) => setAmendmentType(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-semibold text-indigo-950"
+              
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddingNewLawInModal(!isAddingNewLawInModal)}
+                  className="text-[11px] font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 transition-colors"
+                  title="Cadastrar rapidamente uma nova Lei de Incentivo"
                 >
-                  <option value="Emenda 2026">Emenda 2026</option>
-                  <option value="Emenda 24-25">Emenda 24-25</option>
-                  <option value="Emenda Federal">Emenda Federal (União)</option>
-                  <option value="Emenda Estadual">Emenda Estadual</option>
-                  <option value="Emenda Municipal">Emenda Municipal</option>
-                  <option value="Outro">Outro Tipo Personalizado...</option>
-                </select>
-
-                {amendmentType === 'Outro' && (
-                  <input
-                    type="text"
-                    value={customAmendment}
-                    onChange={(e) => setCustomAmendment(e.target.value)}
-                    placeholder="Especifique o tipo da emenda..."
-                    className="w-full px-3 py-2 text-xs border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
-                  />
-                )}
+                  <Plus className="w-3 h-3" />
+                  <span>Nova Lei</span>
+                </button>
+                <span className="text-slate-300">|</span>
+                <button
+                  type="button"
+                  onClick={() => setIsLawsManagerOpen(true)}
+                  className="text-[11px] font-bold text-indigo-700 hover:text-indigo-900 flex items-center gap-1 transition-colors underline"
+                  title="Gerenciar lista de Leis de Incentivo (adicionar ou excluir)"
+                >
+                  <span>Gerenciar Leis</span>
+                </button>
               </div>
             </div>
-          )}
+
+            {/* Cadastro Rápido Inline de Lei de Incentivo */}
+            {isAddingNewLawInModal && (
+              <div className="flex items-center gap-1.5 p-2 bg-white rounded-lg border border-indigo-300 shadow-2xs animate-in fade-in duration-150">
+                <input
+                  type="text"
+                  value={newLawModalInput}
+                  onChange={(e) => setNewLawModalInput(e.target.value)}
+                  placeholder="Nome da nova lei (ex: Lei Paulo Gustavo)..."
+                  autoFocus
+                  className="flex-1 px-2.5 py-1 text-xs border border-indigo-200 rounded-md outline-none font-medium"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddNewLawInModal();
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={handleAddNewLawInModal}
+                  className="px-2.5 py-1 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white rounded-md"
+                >
+                  Salvar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAddingNewLawInModal(false);
+                    setNewLawModalInput('');
+                  }}
+                  className="p-1 text-slate-400 hover:text-slate-600 rounded-md"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <select
+                value={amendmentType}
+                onChange={(e) => setAmendmentType(e.target.value)}
+                className="w-full px-3 py-2 text-xs border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-semibold text-indigo-950"
+              >
+                <option value="">Nenhuma / Não especificada</option>
+                {incentiveLaws.map((law) => (
+                  <option key={law} value={law}>
+                    {law}
+                  </option>
+                ))}
+                <option value="Outro">Outra Lei Personalizada...</option>
+              </select>
+
+              {amendmentType === 'Outro' && (
+                <input
+                  type="text"
+                  value={customAmendment}
+                  onChange={(e) => setCustomAmendment(e.target.value)}
+                  placeholder="Especifique o nome da lei..."
+                  className="w-full px-3 py-2 text-xs border border-indigo-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white font-medium"
+                />
+              )}
+            </div>
+          </div>
 
           {/* Seção Nova: KV / Arte Digital */}
           <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
@@ -835,7 +923,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                 lawMechanism,
                 status,
                 notes,
-                amendmentType: isEmenda ? (amendmentType === 'Outro' ? customAmendment : amendmentType) : undefined,
+                amendmentType: amendmentType === 'Outro' ? customAmendment : (amendmentType || undefined),
                 columnId,
                 client,
                 sponsor,
@@ -876,6 +964,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
         )}
 
       </div>
+
+      {/* Modal de Gerenciamento Completo de Leis de Incentivo */}
+      <IncentiveLawsModal
+        isOpen={isLawsManagerOpen}
+        onClose={() => setIsLawsManagerOpen(false)}
+      />
     </div>
   );
 };

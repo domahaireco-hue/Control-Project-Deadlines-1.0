@@ -60,22 +60,21 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           
-          {/* Logo & Identidade Corporativa Quest Consult */}
+          {/* Logo & Identidade Corporativa Quest Consult (Versão Horizontal sem Borda) */}
           <div className="flex items-center space-x-3.5">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-emerald-400 p-0.5 shadow-md flex items-center justify-center overflow-hidden shrink-0">
-              <div className="w-full h-full bg-quest-900 rounded-[10px] flex items-center justify-center overflow-hidden p-1">
-                <img 
-                  src="/logo.avif" 
-                  alt="Quest Consult" 
-                  className="w-full h-full object-contain drop-shadow-sm"
-                />
-              </div>
-            </div>
+            <h1 className="flex items-center gap-2 select-none">
+              <img 
+                src="/logo.png" 
+                alt="Quest" 
+                className="h-8 sm:h-9 w-auto object-contain shrink-0 drop-shadow-xs hover:opacity-95 transition-opacity"
+              />
+              <span className="text-xl font-bold tracking-tight text-white">
+                CONSULT
+              </span>
+            </h1>
+            <div className="h-6 w-px bg-quest-800 hidden sm:block"></div>
             <div>
               <div className="flex items-center space-x-2">
-                <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-1.5">
-                  QUEST <span className="text-sky-400 font-light">CONSULT</span>
-                </h1>
                 <span className="px-2 py-0.5 text-[10px] font-semibold bg-sky-950 border border-sky-800 text-sky-300 rounded-full">
                   Prazos v1.2
                 </span>

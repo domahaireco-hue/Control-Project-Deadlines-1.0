@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   title: 'Quest Deadline Control | Quest Consult',
   description: 'Sistema Executivo de Gestão e Monitoramento de Prazos de Projetos em Funil Kanban - Quest Consult.',
   icons: {
-    icon: '/logo.avif',
-    shortcut: '/logo.avif',
-    apple: '/logo.avif',
+    icon: '/logo.png',
+    shortcut: '/logo.png',
+    apple: '/logo.png',
   },
 };
 

@@ -42,21 +42,19 @@ export const LoginScreen: React.FC = () => {
         {/* Cartão de Login */}
         <div className="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl p-7 sm:p-9 backdrop-blur-xl">
           
-          {/* Logo e Cabeçalho */}
+          {/* Logo e Cabeçalho (Versão Horizontal sem Borda) */}
           <div className="text-center mb-7">
-            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-emerald-400 p-0.5 shadow-lg shadow-sky-500/20 mb-3 overflow-hidden">
-              <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center overflow-hidden p-2">
-                <img 
-                  src="/logo.avif" 
-                  alt="Quest Consult" 
-                  className="w-full h-full object-contain drop-shadow"
-                />
-              </div>
+            <div className="flex items-center justify-center gap-2.5 mb-2 select-none">
+              <img 
+                src="/logo.png" 
+                alt="Quest" 
+                className="h-10 sm:h-12 w-auto object-contain drop-shadow-md"
+              />
+              <span className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+                CONSULT
+              </span>
             </div>
             
-            <h1 className="text-2xl font-black tracking-tight text-white flex items-center justify-center gap-1.5">
-              QUEST <span className="text-sky-400 font-light">CONSULT</span>
-            </h1>
             <p className="text-xs text-slate-400 font-medium mt-1">
               Controle de Prazos & Funil de Projetos
             </p>

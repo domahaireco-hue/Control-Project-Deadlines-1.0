@@ -120,14 +120,14 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
       <header className="border-b-2 border-slate-900 pb-3 mb-4">
         <div className="flex items-start justify-between">
           <div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <img 
-                src="/logo.avif" 
-                alt="Quest Consult" 
-                className="w-7 h-7 object-contain"
+                src="/logo.png" 
+                alt="Quest" 
+                className="h-6 w-auto object-contain"
               />
-              <span className="font-black text-xl tracking-tight text-slate-900">QUEST CONSULT</span>
-              <span className="text-xs px-2 py-0.5 font-bold uppercase rounded bg-slate-900 text-white">
+              <span className="font-bold text-xl tracking-tight text-slate-900">CONSULT</span>
+              <span className="text-xs px-2 py-0.5 font-bold uppercase rounded bg-slate-900 text-white ml-2">
                 Controle de Prazos Executivo
               </span>
             </div>

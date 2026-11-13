@@ -152,7 +152,14 @@ interface ProjectContextType {
   clearAllProjects: () => boolean;
   addCustomLaw: (name: string) => boolean;
   runFunnelAdvance: (force?: boolean) => Promise<FunnelAdvanceResult>;
-  sendDailyReportEmail: () => Promise<{ log: NotificationLog; summary: any }>;
+  sendDailyReportEmail: (pdfBase64?: string, filename?: string) => Promise<{
+    log?: NotificationLog;
+    summary?: any;
+    success?: boolean;
+    emailSent?: boolean;
+    mailError?: string;
+    message?: string;
+  }>;
   resetToDefault: () => void;
 }
 
@@ -1012,8 +1019,25 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     [projects]
   );
 
-  // Disparo de Relatório Geral Diário por e-mail para os 4 destinatários
-  const sendDailyReportEmail = useCallback(async () => {
+  // Disparo de Relatório Geral Diário por e-mail para os 4 destinatários com anexo PDF
+  const sendDailyReportEmail = useCallback(async (pdfBase64?: string, filename?: string) => {
+    try {
+      const response = await fetch('/api/send-daily-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projects,
+          pdfBase64,
+          filename,
+        }),
+      });
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+    } catch (err) {
+      console.error('Erro ao chamar /api/send-daily-report:', err);
+    }
     return await notificationService.sendDailySummaryReport(projects);
   }, [projects]);
 

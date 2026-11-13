@@ -20,6 +20,20 @@ const AGENTMAIL_INBOX_ID =
 const TREATY_ALERT_RECIPIENT = 'catelani@questconsult.com.br';
 const WHATSAPP_ALERT_PHONE = '5511992434262';
 
+export interface SendMailAttachment {
+  content: string; // base64
+  filename: string;
+  content_type: string;
+}
+
+export interface SendMailParams {
+  to: string[];
+  subject: string;
+  text: string;
+  html: string;
+  attachments?: SendMailAttachment[];
+}
+
 export interface SendMailResult {
   success: boolean;
   messageId?: string;
@@ -35,13 +49,21 @@ export class AgentMailService {
     subject,
     text,
     html,
-  }: {
-    to: string[];
-    subject: string;
-    text: string;
-    html: string;
-  }): Promise<SendMailResult> {
+    attachments,
+  }: SendMailParams): Promise<SendMailResult> {
     try {
+      const payload: Record<string, any> = {
+        to,
+        subject,
+        text,
+        html,
+        labels: ['quest-deadline-control', 'prazos'],
+      };
+
+      if (attachments && attachments.length > 0) {
+        payload.attachments = attachments;
+      }
+
       const response = await fetch(
         `https://api.agentmail.to/v0/inboxes/${AGENTMAIL_INBOX_ID}/messages/send`,
         {
@@ -50,13 +72,7 @@ export class AgentMailService {
             'Authorization': `Bearer ${AGENTMAIL_API_KEY}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            to,
-            subject,
-            text,
-            html,
-            labels: ['quest-deadline-control', 'prazos'],
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -75,6 +91,87 @@ export class AgentMailService {
       console.error('[AgentMailService] Falha de conexão com AgentMail:', err);
       return { success: false, error: err?.message || 'Falha de rede com AgentMail' };
     }
+  }
+
+  /**
+   * Dispara o Relatório Oficial Semanal com o arquivo PDF paisagem em anexo
+   * para os 4 destinatários cadastrados.
+   */
+  public static async sendReportWithPdfAttachment({
+    pdfBase64,
+    filename,
+    recipients,
+  }: {
+    pdfBase64: string;
+    filename?: string;
+    recipients?: string[];
+  }): Promise<SendMailResult> {
+    const to = recipients && recipients.length > 0
+      ? recipients
+      : [
+          'catelani@questconsult.com.br',
+          'tk@questconsult.com.br',
+          'lucas@questconsult.com.br',
+          'bruno.britto@questconsult.com.br',
+        ];
+
+    const dateFormatted = new Date().toLocaleDateString('pt-BR');
+    const subject = `[QUEST CONSULT - ${dateFormatted}] Relatório de Prazos Vencidos / Vincendos`;
+
+    const text = `Prezados,
+
+Atualização:
+Segue anexo relatório de prazos vencidos/vincendos referente aos projetos em questão. Qualquer dúvida devemos alinhar os próximos passos, fico à disposição.
+
+Att: Bruno Britto
+Quest Consult • Gestão de Prazos & Compliance`;
+
+    const html = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background-color: #ffffff;">
+        <div style="background: linear-gradient(135deg, #0f172a, #1e293b); padding: 18px 24px; border-radius: 8px; color: #ffffff; margin-bottom: 20px;">
+          <h2 style="margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -0.5px;">QUEST CONSULT • CONTROLE DE PRAZOS</h2>
+          <p style="margin: 4px 0 0 0; font-size: 12px; opacity: 0.9;">Relatório de Prazos Vencidos / Vincendos</p>
+        </div>
+
+        <p style="font-size: 14px; color: #334155; line-height: 1.6; margin: 0 0 16px 0;">
+          Prezados,
+        </p>
+
+        <p style="font-size: 14px; color: #334155; line-height: 1.6; margin: 0 0 16px 0;">
+          <strong>Atualização:</strong><br />
+          Segue anexo relatório de prazos vencidos/vincendos referente aos projetos em questão. Qualquer dúvida devemos alinhar os próximos passos, fico à disposição.
+        </p>
+
+        <div style="background-color: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px 18px; margin: 20px 0; font-size: 13px; color: #475569;">
+          📎 <strong>Arquivo Anexo:</strong> ${filename || `Quest_Consult_Relatorio_Prazos_${new Date().toISOString().split('T')[0]}.pdf`} (Formato Paisagem)
+        </div>
+
+        <p style="font-size: 13px; color: #334155; line-height: 1.5; margin: 20px 0 0 0;">
+          Att:<br />
+          <strong>Bruno Britto</strong><br />
+          <span style="color: #64748b; font-size: 12px;">Quest Consult • Gestão de Prazos & Compliance</span>
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+        <p style="font-size: 11px; color: #94a3b8; text-align: center; margin: 0;">
+          Quest Consult • Gestão Inteligente de Prazos e Compliance
+        </p>
+      </div>
+    `;
+
+    return this.sendEmail({
+      to,
+      subject,
+      text,
+      html,
+      attachments: [
+        {
+          content: pdfBase64,
+          filename: filename || `Quest_Consult_Relatorio_Prazos_${new Date().toISOString().split('T')[0]}.pdf`,
+          content_type: 'application/pdf',
+        },
+      ],
+    });
   }
 
   /**

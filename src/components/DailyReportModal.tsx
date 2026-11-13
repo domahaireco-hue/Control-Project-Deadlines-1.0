@@ -16,12 +16,13 @@ import {
   ExternalLink,
   Download,
   AlertCircle,
-  FileText
+  FileText,
+  Paperclip
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { DEFAULT_RECIPIENTS } from '@/services/notificationService';
-import { PdfSnapshotService } from '@/services/pdfSnapshotService';
-import { isProjectCompleted, isProjectInDanger, formatDatePtBr } from '@/services/spreadsheetService';
+import { PdfReportService } from '@/services/pdfReportService';
+import { isProjectCompleted, isProjectInDanger } from '@/services/spreadsheetService';
 
 interface DailyReportModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({ isOpen, onCl
   const { projects, sendDailyReportEmail } = useProjects();
   const [isSending, setIsSending] = useState(false);
   const [sendSuccess, setSendSuccess] = useState(false);
+  const [manualGmailNotice, setManualGmailNotice] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -47,16 +49,6 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({ isOpen, onCl
   const countDanger = dangerProjects.length;
   const countCompleted = completedProjects.length;
   const countTreaty = treatyProjects.length;
-
-  const handlePrintPdf = () => {
-    PdfSnapshotService.printKanbanSnapshot({
-      company: 'Quest Consult',
-      systemName: 'Quest Deadline Control',
-      generatedAt: new Date().toISOString(),
-      totalProjects: projects.length,
-      criticalCount: countDanger,
-    });
-  };
 
   const buildEmailContent = () => {
     const dateFormatted = new Date().toLocaleDateString('pt-BR');
@@ -75,33 +67,61 @@ Quest Consult • Gestão de Prazos & Compliance`;
     return { recipientEmails, subject, body };
   };
 
-  const handleSendViaGmail = async () => {
+  /**
+   * Disparo oficial direto com o PDF em anexo via API (AgentMail + Amazon SES)
+   * e download simultâneo do PDF paisagem
+   */
+  const handleSendDirectEmailWithAttachment = async () => {
     setIsSending(true);
     setSendError(null);
+    setSendSuccess(false);
+    setManualGmailNotice(false);
+
     try {
-      // 1. Baixar/Imprimir o PDF executivo paisagem sem modal sobreposto
-      handlePrintPdf();
+      // 1. Gera o PDF oficial em formato paisagem (excluindo concluídos)
+      const report = PdfReportService.generateLandscapeReport(projects);
 
-      // 2. Registrar no log de notificações interno
-      await sendDailyReportEmail();
+      // 2. Faz o download do arquivo PDF para a máquina
+      report.download();
 
-      // 3. Montar URL direta do Gmail Web logado como bruno.britto@questconsult.com.br
-      const { recipientEmails, subject, body } = buildEmailContent();
-      
-      const gmailUrl = `https://mail.google.com/mail/u/?authuser=bruno.britto@questconsult.com.br&view=cm&fs=1&to=${encodeURIComponent(recipientEmails)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-      
-      // Abrir em nova aba no Chrome
-      window.open(gmailUrl, '_blank');
+      // 3. Dispara o e-mail oficial com o anexo PDF via API
+      const res = await sendDailyReportEmail(report.base64, report.filename);
 
-      setSendSuccess(true);
-      setTimeout(() => {
-        setSendSuccess(false);
-      }, 10000);
-    } catch (err: unknown) {
-      setSendError('Erro ao preparar e-mail no Gmail. Tente novamente.');
+      if (res && res.emailSent) {
+        setSendSuccess(true);
+      } else {
+        setSendError(res?.message || res?.mailError || 'Falha no disparo via API de e-mail. Verifique a conexão.');
+      }
+    } catch (err: any) {
+      console.error('Erro ao enviar relatório com anexo:', err);
+      setSendError(err?.message || 'Erro inesperado ao gerar PDF e disparar e-mail.');
     } finally {
       setIsSending(false);
     }
+  };
+
+  /**
+   * Baixa apenas o PDF em formato paisagem
+   */
+  const handleDownloadPdfOnly = () => {
+    const report = PdfReportService.generateLandscapeReport(projects);
+    report.download();
+  };
+
+  /**
+   * Envio manual pelo Gmail Web
+   */
+  const handleOpenGmailManual = () => {
+    // 1. Baixa o PDF para anexar manualmente
+    const report = PdfReportService.generateLandscapeReport(projects);
+    report.download();
+
+    // 2. Abre a janela do Gmail Web
+    const { recipientEmails, subject, body } = buildEmailContent();
+    const gmailUrl = `https://mail.google.com/mail/u/?authuser=bruno.britto@questconsult.com.br&view=cm&fs=1&to=${encodeURIComponent(recipientEmails)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl, '_blank');
+
+    setManualGmailNotice(true);
   };
 
   return (
@@ -118,17 +138,17 @@ Quest Consult • Gestão de Prazos & Compliance`;
               <h2 className="text-base font-bold flex items-center gap-2">
                 <span>Relatório de Prazos por E-mail</span>
                 <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">
-                  Toda Segunda-feira às 08h00
+                  Segunda-feira às 08h00 & Manual
                 </span>
               </h2>
               <p className="text-xs text-quest-300">
-                Impressão executiva em modo paisagem com envio de instrução por e-mail para a diretoria
+                Disparo oficial com o arquivo PDF paisagem anexado para a diretoria
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-quest-400 hover:text-white hover:bg-quest-800 transition-colors"
+            className="p-1 rounded-lg text-quest-400 hover:text-white hover:bg-quest-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -179,9 +199,10 @@ Segue anexo relatório de prazos vencidos/vincendos referente aos projetos em qu
 Att: Bruno Britto
 Quest Consult • Gestão de Prazos & Compliance`}
             </div>
-            <p className="text-[10.5px] text-sky-800">
-              ℹ️ O detalhamento de cada projeto é consultado exclusivamente no <strong>PDF paisagem anexo</strong>, mantendo o corpo do e-mail limpo e direto.
-            </p>
+            <div className="flex items-center gap-1.5 text-[11px] text-sky-900 font-semibold bg-sky-100/70 p-2 rounded-lg border border-sky-200">
+              <Paperclip className="w-3.5 h-3.5 text-sky-700 shrink-0" />
+              <span>Anexo Obrigatório: <strong>Quest_Consult_Relatorio_Prazos_{new Date().toISOString().split('T')[0]}.pdf</strong> (Modo Paisagem)</span>
+            </div>
           </div>
 
           {/* Panorama de Prazos Vencidos / Vincendos do Anexo PDF */}
@@ -234,15 +255,31 @@ Quest Consult • Gestão de Prazos & Compliance`}
             </p>
           </div>
 
-          {/* Feedback de envio */}
+          {/* Feedback de envio oficial via API com PDF Anexo */}
           {sendSuccess && (
-            <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl space-y-1 text-emerald-900 animate-in fade-in">
+            <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl space-y-1.5 text-emerald-900 animate-in fade-in">
               <div className="flex items-center gap-2 font-bold text-xs text-emerald-800">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>PDF Paisagem Gerado & E-mail aberto no Gmail com sucesso!</span>
+                <span>E-mail com PDF Anexo Enviado com Sucesso!</span>
               </div>
-              <p className="text-[11px] text-emerald-700">
-                A nova mensagem no <strong>Gmail</strong> foi aberta conectada em <strong>bruno.britto@questconsult.com.br</strong> com os 4 destinatários pré-preenchidos e a instrução padrão formatada. Basta anexar o PDF gerado e clicar em <strong>Enviar</strong>.
+              <p className="text-[11px] text-emerald-700 leading-relaxed">
+                O e-mail oficial foi entregue diretamente aos 4 destinatários (<strong>catelani, tk, lucas, bruno.britto @questconsult.com.br</strong>) com o arquivo <strong>PDF paisagem anexado</strong> via AgentMail / Amazon SES.
+              </p>
+              <p className="text-[10.5px] text-emerald-800 font-semibold">
+                📥 O arquivo PDF também foi baixado automaticamente para o seu computador.
+              </p>
+            </div>
+          )}
+
+          {/* Aviso sobre o Gmail Web Manual */}
+          {manualGmailNotice && (
+            <div className="p-3.5 bg-amber-50 border border-amber-300 rounded-xl space-y-1.5 text-amber-900 animate-in fade-in">
+              <div className="flex items-center gap-2 font-bold text-xs text-amber-800">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>Arquivo PDF baixado para anexar manualmente</span>
+              </div>
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                O arquivo <strong>Quest_Consult_Relatorio_Prazos_...pdf</strong> foi baixado em sua pasta de <strong>Downloads</strong>. Por políticas de segurança do navegador, nenhuma página externa pode anexar arquivos locais automaticamente dentro do Gmail Web. Basta clicar no ícone do clipe (📎) no Gmail e anexar o arquivo baixado.
               </p>
             </div>
           )}
@@ -255,23 +292,37 @@ Quest Consult • Gestão de Prazos & Compliance`}
           )}
 
           {/* Ações */}
-          <div className="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <button
-              onClick={handlePrintPdf}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-colors"
-            >
-              <Printer className="w-3.5 h-3.5 text-slate-600" />
-              <span>Apenas Baixar PDF (Paisagem)</span>
-            </button>
+          <div className="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2.5">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={handleDownloadPdfOnly}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 transition-colors cursor-pointer"
+                title="Baixar arquivo PDF paisagem diretamente"
+              >
+                <Download className="w-3.5 h-3.5 text-slate-600" />
+                <span>Baixar PDF</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleOpenGmailManual}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition-colors cursor-pointer"
+                title="Abrir no Gmail Web"
+              >
+                <ExternalLink className="w-3.5 h-3.5 text-sky-600" />
+                <span>Gmail Web</span>
+              </button>
+            </div>
 
             <button
-              onClick={handleSendViaGmail}
+              type="button"
+              onClick={handleSendDirectEmailWithAttachment}
               disabled={isSending}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-500 hover:to-blue-600 rounded-xl shadow-md transition-all active:scale-98"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-bold text-white bg-gradient-to-r from-emerald-600 via-sky-600 to-blue-700 hover:from-emerald-500 hover:to-blue-600 rounded-xl shadow-md transition-all active:scale-98 cursor-pointer disabled:opacity-60"
             >
               <Send className={`w-3.5 h-3.5 ${isSending ? 'animate-spin' : ''}`} />
-              <span>{isSending ? 'Preparando...' : 'Baixar PDF & Enviar via Gmail (Chrome)'}</span>
-              <ExternalLink className="w-3 h-3 text-sky-200" />
+              <span>{isSending ? 'Disparando com PDF Anexo...' : 'Disparar E-mail com PDF Anexo (4 Destinatários)'}</span>
             </button>
           </div>
 

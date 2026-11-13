@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Relatório diário enviado com sucesso para os 4 destinatários cadastrados.',
+      message: 'Instrução do relatório de prazos enviada com sucesso para os 4 destinatários cadastrados.',
       recipients: DEFAULT_RECIPIENTS.map((r) => r.email),
       log,
       summary,

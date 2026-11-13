@@ -26,7 +26,7 @@ export const NotificationDrawer: React.FC<NotificationDrawerProps> = ({ isOpen, 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/50 backdrop-blur-xs flex justify-end">
+    <div className="no-print fixed inset-0 z-50 overflow-hidden bg-black/50 backdrop-blur-xs flex justify-end">
       <div className="relative w-full max-w-md bg-white h-full shadow-2xl flex flex-col border-l border-slate-200 animate-in slide-in-from-right duration-250">
         
         {/* Header Drawer */}

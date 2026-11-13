@@ -61,7 +61,7 @@
     print-color-adjust: exact !important;
   }
 
-  /* Oculta todos os componentes interativos de tela e o grid Kanban */
+  /* Oculta todos os componentes interativos de tela, modais, overlays e o grid Kanban */
   header, 
   nav, 
   button, 
@@ -70,8 +70,15 @@
   .notification-drawer, 
   .metrics-overview, 
   .kanban-board-container, 
-  .print-banner {
+  .print-banner,
+  .fixed,
+  [role="dialog"],
+  [aria-modal="true"],
+  dialog,
+  .modal {
     display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
   }
 
   /* Exibe o relatório de lista textual em página inteira */

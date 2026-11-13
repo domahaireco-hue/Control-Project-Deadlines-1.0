@@ -631,7 +631,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         ...project,
         columnId: normalizedTo,
         isCompleted: isMovingToCompleted,
-        isInTreaty: isMovingToCompleted ? true : (isMovingToTreaty ? true : false),
+        isInTreaty: isMovingToCompleted ? false : (isMovingToTreaty ? true : false),
+        daysRemaining: isMovingToCompleted ? null : project.daysRemaining,
         isManualColumn: true,
         history: [historyEntry, ...(project.history || [])],
         updatedAt: now,
@@ -795,7 +796,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updatedProj = {
           ...p,
           isCompleted: newCompleted,
-          isInTreaty: newCompleted ? true : p.isInTreaty,
+          isInTreaty: newCompleted ? false : p.isInTreaty,
+          daysRemaining: newCompleted ? null : p.daysRemaining,
           columnId: newColumn,
           history: [historyEntry, ...(p.history || [])],
           updatedAt: now,
@@ -890,6 +892,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         let targetCol = updates.columnId || p.columnId;
         if (updates.isCompleted === true) {
           targetCol = 'col_completed';
+          updates.isInTreaty = false;
+          updates.daysRemaining = null;
         } else if (updates.isCompleted === false && targetCol === 'col_completed') {
           targetCol = 'col_90';
         }

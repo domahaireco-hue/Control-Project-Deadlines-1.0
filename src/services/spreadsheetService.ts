@@ -268,7 +268,7 @@ export function evaluateProjectStatusAndDates({
   let daysRemaining: number | null = null;
 
   if (isCompleted) {
-    isInTreaty = true;
+    isInTreaty = false;
     if (combinedAll.includes('aprovada')) {
       finalStatus = 'Prestação de Contas Aprovada';
     } else if (combinedAll.includes('nao precisa')) {
@@ -333,6 +333,54 @@ export function evaluateProjectStatusAndDates({
     isInTreaty,
     columnId,
   };
+}
+
+/**
+ * Helper unificado para verificar se um projeto é considerado Concluído/Finalizado
+ * (Prestação de contas apresentada/aprovada, finalizado ou não precisa prorrogar).
+ */
+export function isProjectCompleted(project: {
+  isCompleted?: boolean;
+  columnId?: string;
+  status?: string;
+  originalStatusColC?: string;
+  notes?: string;
+}): boolean {
+  if (project.isCompleted === true || project.columnId === 'col_completed') {
+    return true;
+  }
+  const statusStr = normalizeString(
+    `${project.status || ''} ${project.originalStatusColC || ''} ${project.notes || ''}`
+  );
+  return (
+    statusStr.includes('prestacao de contas apresentada') ||
+    statusStr.includes('prestacao de contas aprovada') ||
+    statusStr.includes('pc apresentada') ||
+    statusStr.includes('pc aprovada') ||
+    statusStr.includes('pc enviada') ||
+    statusStr.includes('vai fazer pc') ||
+    statusStr.includes('entrou em periodo de pc') ||
+    statusStr.includes('projeto finalizado') ||
+    statusStr.includes('nao precisa pedir prorrogacao') ||
+    statusStr.includes('nao precisa prorrogar') ||
+    statusStr.includes('naoi precisa prorrogar') ||
+    statusStr.includes('nao vamos prorrogar') ||
+    statusStr.includes('nao precisa fazer nada') ||
+    statusStr.includes('concluido') ||
+    statusStr.includes('finalizado')
+  );
+}
+
+/**
+ * Helper unificado para verificar se um projeto está em situação de perigo crítico (Danger / 32 Dias)
+ * Regra: Ativo, NÃO concluído, NÃO em tratativa, e com prazo <= 32 dias ou vencido.
+ */
+export function isProjectInDanger(project: Project): boolean {
+  if (isProjectCompleted(project)) return false;
+  if (project.isInTreaty || project.columnId === 'col_treaty') return false;
+  if (project.columnId === 'col_risk' || (project.columnId as string) === 'col_32') return true;
+  if (project.daysRemaining !== null && project.daysRemaining !== undefined && project.daysRemaining <= 32) return true;
+  return false;
 }
 
 /**

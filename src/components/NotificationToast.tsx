@@ -21,7 +21,7 @@ export const NotificationToast: React.FC = () => {
   const isRisk = activeToast.subject.includes('RISCO') || activeToast.eventData?.toColumn === 'col_risk';
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 max-w-sm w-full animate-in slide-in-from-bottom duration-300">
+    <div className="no-print fixed bottom-5 right-5 z-50 max-w-sm w-full animate-in slide-in-from-bottom duration-300">
       <div
         className={`p-4 rounded-xl shadow-2xl border flex items-start space-x-3 ${
           isRisk
@@ -40,7 +40,7 @@ export const NotificationToast: React.FC = () => {
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold uppercase tracking-wider text-sky-400">
-              Notificação Disparada (3 E-mails)
+              Notificação Disparada (4 Destinatários)
             </span>
             <button
               onClick={dismissToast}

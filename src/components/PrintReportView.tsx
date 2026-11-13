@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Project, KanbanColumnId } from '@/types';
-import { formatDatePtBr, EMPTY_CELL_FALLBACK } from '@/services/spreadsheetService';
+import { formatDatePtBr, EMPTY_CELL_FALLBACK, isProjectCompleted } from '@/services/spreadsheetService';
 
 interface PrintReportViewProps {
   projects: Project[];
@@ -75,14 +75,6 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
       badge: 'bg-purple-100 text-purple-900 border-purple-300',
       color: '#7e22ce',
     },
-    {
-      id: 'col_completed',
-      matchIds: ['col_completed'],
-      title: '6. CONCLUÍDOS / FINALIZADOS (Prestação de Contas Apresentada / Aprovada)',
-      subtitle: 'Projetos finalizados',
-      badge: 'bg-teal-100 text-teal-900 border-teal-300',
-      color: '#0d9488',
-    },
   ];
 
   const formatDaysText = (days: number | null | undefined, isInTreaty?: boolean, isCompleted?: boolean) => {
@@ -121,35 +113,38 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
         <div className="flex items-start justify-between">
           <div>
             <div className="flex items-center gap-2.5">
-              <img 
-                src="/logo.png" 
-                alt="Quest" 
+              <img
+                src="/logo.png"
+                alt="Quest"
                 className="h-6 w-auto object-contain"
               />
               <span className="text-xs px-2 py-0.5 font-bold uppercase rounded bg-slate-900 text-white">
                 Controle de Prazos Executivo
               </span>
             </div>
-            <h1 className="text-sm font-bold text-slate-800 uppercase mt-1">
-              Relatório Geral de Vencimento de Projetos • Lista Paisagem (90, 60, 45, 32 Dias)
-            </h1>
-            <p className="text-[11px] text-slate-600 mt-0.5">
-              Destinatários Diários: <strong className="text-slate-800">catelani@questconsult.com.br, tk@questconsult.com.br, lucas@questconsult.com.br, bruno.britto@questconsult.com.br</strong>
-            </p>
-            <p className="text-[10px] text-slate-500 mt-0.5">
-              Filtro: <strong>{selectedMechanism}</strong>
-              {searchQuery && <span> • Busca: &quot;<strong>{searchQuery}</strong>&quot;</span>}
-              {' '}• Emissão: <strong>{currentDate}</strong>
-            </p>
+
+            <div>
+              <h1 className="text-sm font-bold text-slate-800 uppercase mt-1">
+                Relatório de Prazos Vencidos e Vincendos • Quest Consult (Lista Paisagem)
+              </h1>
+              <p className="text-[11px] text-slate-600 mt-0.5">
+                Destinatários: <strong className="text-slate-800">catelani@questconsult.com.br, tk@questconsult.com.br, lucas@questconsult.com.br, bruno.britto@questconsult.com.br</strong>
+              </p>
+              <p className="text-[10px] text-slate-500 mt-0.5">
+                Filtro: <strong>{selectedMechanism}</strong>
+                {searchQuery && <span> • Busca: &quot;<strong>{searchQuery}</strong>&quot;</span>}
+                {' '}• Emissão: <strong>{currentDate}</strong> (Relatório Semanal de Segunda-feira)
+              </p>
+            </div>
           </div>
 
-          {/* Resumo Numérico Executivo */}
+          {/* Resumo Numérico Executivo Completo */}
           <div className="border border-slate-300 rounded p-2 text-right text-[11px] bg-slate-50 min-w-[320px]">
             <div className="font-bold text-xs text-slate-900 mb-1 border-b border-slate-200 pb-1 flex justify-between">
-              <span>Total de Projetos:</span>
-              <span className="text-sm font-black">{totalCount}</span>
+              <span>Projetos em Acompanhamento:</span>
+              <span className="text-sm font-black">{countRisk + count45 + count60 + count90 + countTreaty}</span>
             </div>
-            <div className="grid grid-cols-6 gap-1 text-center font-semibold text-[9.5px]">
+            <div className="grid grid-cols-5 gap-1 text-center font-semibold text-[9.5px]">
               <div className="bg-red-100 text-red-900 p-1 rounded border border-red-200">
                 <p>32d Risco</p>
                 <p className="text-xs font-bold">{countRisk}</p>
@@ -170,10 +165,6 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
                 <p>Tratativa</p>
                 <p className="text-xs font-bold">{countTreaty}</p>
               </div>
-              <div className="bg-teal-100 text-teal-900 p-1 rounded border border-teal-200">
-                <p>Concluídos</p>
-                <p className="text-xs font-bold">{countCompleted}</p>
-              </div>
             </div>
           </div>
         </div>
@@ -183,7 +174,15 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
       <div className="space-y-4">
         {printColumnsOrder.map((colGroup) => {
           const groupProjects = projects
-            .filter((p) => colGroup.matchIds.includes(p.columnId))
+            .filter((p) => {
+              if (colGroup.id === 'col_completed') {
+                return isProjectCompleted(p);
+              }
+              if (isProjectCompleted(p)) {
+                return false;
+              }
+              return colGroup.matchIds.includes(p.columnId);
+            })
             .sort((a, b) => {
               const daysA = a.daysRemaining ?? 999999;
               const daysB = b.daysRemaining ?? 999999;
@@ -191,7 +190,10 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
             });
 
           return (
-            <section key={colGroup.id} className="print-group-section break-inside-avoid">
+            <section
+              key={colGroup.id}
+              className={`print-group-section ${colGroup.id === 'col_risk' ? 'section-danger' : ''} break-inside-avoid`}
+            >
               <div
                 className="flex items-center justify-between px-2.5 py-1.5 rounded-t border-t border-l border-r border-slate-400"
                 style={{ backgroundColor: '#f8fafc', borderLeftWidth: '5px', borderLeftColor: colGroup.color }}
@@ -234,9 +236,8 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
                       return (
                         <tr
                           key={proj.id}
-                          className={`border-b border-slate-300 ${
-                            idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'
-                          }`}
+                          className={`border-b border-slate-300 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'
+                            }`}
                         >
                           <td className="p-1 border border-slate-300 text-center text-slate-500 font-mono text-[9px]">
                             {idx + 1}
@@ -253,17 +254,16 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
 
                           <td className="p-1 border border-slate-300 text-center font-bold">
                             <span
-                              className={`inline-block px-1 py-0.2 rounded text-[9.5px] ${
-                                daysInfo.isCompleted
-                                  ? 'bg-teal-100 text-teal-900 border border-teal-300 font-bold'
-                                  : daysInfo.isOverdue
+                              className={`inline-block px-1 py-0.2 rounded text-[9.5px] ${daysInfo.isCompleted
+                                ? 'bg-teal-100 text-teal-900 border border-teal-300 font-bold'
+                                : daysInfo.isOverdue
                                   ? 'bg-red-100 text-red-900 border border-red-300 font-black'
                                   : daysInfo.isWarning
-                                  ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                                  : daysInfo.isTreaty
-                                  ? 'bg-purple-100 text-purple-900 border border-purple-200'
-                                  : 'text-slate-700'
-                              }`}
+                                    ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                                    : daysInfo.isTreaty
+                                      ? 'bg-purple-100 text-purple-900 border border-purple-200'
+                                      : 'text-slate-700'
+                                }`}
                             >
                               {daysInfo.text}
                             </span>

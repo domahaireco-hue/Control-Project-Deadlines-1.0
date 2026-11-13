@@ -21,14 +21,12 @@ import {
   Plus,
   AlertTriangle,
   Send,
-  MessageCircle,
   Scale
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { IncentiveLawsModal } from '@/components/IncentiveLawsModal';
 import { TablesModal } from '@/components/TablesModal';
 import { EMPTY_CELL_FALLBACK, calculateDaysRemaining, determineKanbanColumn } from '@/services/spreadsheetService';
-import { AgentMailService } from '@/services/agentMailService';
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -272,7 +270,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="no-print fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in duration-200 my-8">
         
         {/* Header Modal */}
@@ -912,47 +910,6 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
               placeholder="Ex: Enviado pedido de prorrogação..."
               className="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:outline-none"
             />
-          </div>
-
-          {/* Botão de Disparo WhatsApp para 11 99243-4262 */}
-          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold text-emerald-950 flex items-center gap-1.5">
-                <MessageCircle className="w-3.5 h-3.5 text-emerald-700" />
-                <span>Disparo Individual WhatsApp</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-200 text-emerald-900 font-mono font-bold">11 99243-4262</span>
-              </p>
-              <p className="text-[11px] text-emerald-800">
-                Envie o alerta individual deste projeto com texto preformatado para o WhatsApp corporativo.
-              </p>
-            </div>
-            <a
-              href={AgentMailService.generateWhatsAppUrl({
-                id: projectToEdit?.id || 'temp',
-                name,
-                code,
-                targetDate,
-                daysRemaining: targetDate ? calculateDaysRemaining(targetDate) : null,
-                lawMechanism,
-                status,
-                notes,
-                amendmentType: amendmentType === 'Outro' ? customAmendment : (amendmentType || undefined),
-                columnId,
-                client,
-                sponsor,
-                responsible,
-                startDate,
-                isManualColumn,
-                tags: [],
-                createdAt: '',
-                updatedAt: ''
-              })}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-xs transition-all shrink-0"
-            >
-              <span>📲 Abrir WhatsApp</span>
-            </a>
           </div>
 
           {/* Footer Ações */}

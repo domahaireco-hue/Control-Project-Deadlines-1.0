@@ -22,7 +22,6 @@ import {
   Building
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
-import { AgentMailService } from '@/services/agentMailService';
 
 interface ProjectCardProps {
   project: Project;
@@ -521,18 +520,6 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
       <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-slate-100 gap-1.5 flex-wrap">
         <div className="flex items-center gap-1.5 flex-wrap">
           {renderDaysBadge()}
-          {((project.daysRemaining !== null && project.daysRemaining <= 45) || project.columnId === 'col_risk' || project.columnId === 'col_treaty') && (
-            <a
-              href={AgentMailService.generateWhatsAppUrl(project)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xs transition-colors shrink-0"
-              title="Disparar alerta individual para WhatsApp 11 99243-4262"
-            >
-              <span>📲 WhatsApp</span>
-            </a>
-          )}
         </div>
 
         <button

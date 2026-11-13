@@ -6,7 +6,7 @@
  */
 
 import { Project, CardMoveEvent, KanbanColumnId } from '@/types';
-import { calculateDaysRemaining, determineKanbanColumn } from './spreadsheetService';
+import { calculateDaysRemaining, determineKanbanColumn, isProjectCompleted } from './spreadsheetService';
 import { notificationService } from './notificationService';
 
 export interface FunnelAdvanceResult {
@@ -38,6 +38,28 @@ export class FunnelService {
 
     const updatedProjects = await Promise.all(
       projects.map(async (project) => {
+        // Se o projeto está concluído, nunca avança no funil e mantém em col_completed
+        if (isProjectCompleted(project)) {
+          unchangedCount++;
+          return {
+            ...project,
+            isCompleted: true,
+            isInTreaty: false,
+            columnId: 'col_completed' as KanbanColumnId,
+            daysRemaining: null,
+          };
+        }
+
+        // Se o projeto está em tratativa de prorrogação, mantém em col_treaty
+        if (project.isInTreaty || project.columnId === 'col_treaty') {
+          unchangedCount++;
+          return {
+            ...project,
+            columnId: 'col_treaty' as KanbanColumnId,
+            daysRemaining: project.targetDate ? calculateDaysRemaining(project.targetDate) : project.daysRemaining,
+          };
+        }
+
         // Se não tem data alvo, mantém
         if (!project.targetDate) {
           unchangedCount++;

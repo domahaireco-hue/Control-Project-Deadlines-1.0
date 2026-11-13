@@ -18,7 +18,7 @@ export interface SnapshotMetadata {
 
 export class PdfSnapshotService {
   /**
-   * Dispara a impressão/exportação para PDF padrão executivo do navegador
+   * Dispara a impressão/exportação para PDF padrão executivo do navegador em formato paisagem
    */
   public static printKanbanSnapshot(metadata: SnapshotMetadata) {
     if (typeof window === 'undefined') return;
@@ -33,7 +33,7 @@ export class PdfSnapshotService {
 
     window.print();
 
-    // Restaura título e classe após o diálogo de impressão
+    // Restaura título e classes após o diálogo de impressão
     setTimeout(() => {
       document.title = originalTitle;
       document.body.classList.remove('printing-kanban');

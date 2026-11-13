@@ -8,6 +8,7 @@
  */
 
 import { Project } from '@/types';
+import { isProjectCompleted } from './spreadsheetService';
 
 const AGENTMAIL_API_KEY =
   process.env.AGENTMAIL_API_KEY ||
@@ -262,6 +263,11 @@ Acesse o sistema para registrar despachos e atualizações.`;
     project: Project,
     recipientEmail: string = TREATY_ALERT_RECIPIENT
   ): Promise<SendMailResult> {
+    // Projetos concluídos não geram alarme de vencimento
+    if (isProjectCompleted(project)) {
+      return { success: true };
+    }
+
     const days = project.daysRemaining ?? 0;
     const isOverdue = days <= 0;
     const urgencyLabel = isOverdue

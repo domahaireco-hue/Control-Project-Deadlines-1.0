@@ -14,11 +14,14 @@ import {
   ShieldAlert,
   Users,
   ExternalLink,
-  Download
+  Download,
+  AlertCircle,
+  FileText
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { DEFAULT_RECIPIENTS } from '@/services/notificationService';
 import { PdfSnapshotService } from '@/services/pdfSnapshotService';
+import { isProjectCompleted, isProjectInDanger, formatDatePtBr } from '@/services/spreadsheetService';
 
 interface DailyReportModalProps {
   isOpen: boolean;
@@ -33,22 +36,17 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
-  // Métricas
-  const totalProjects = projects.length;
-  const countCompleted = projects.filter((p) => p.isCompleted).length;
-  const inTreaty = projects.filter((p) => p.isInTreaty && !p.isCompleted);
-  const risk32 = projects.filter((p) => (p.columnId === 'col_risk' || p.columnId === 'col_32') && !p.isInTreaty && !p.isCompleted);
-  const alert45 = projects.filter((p) => (p.columnId === 'col_45' || p.columnId === 'col_30') && !p.isInTreaty && !p.isCompleted);
-  const op60 = projects.filter((p) => p.columnId === 'col_60' && !p.isInTreaty && !p.isCompleted);
-  const safe90 = projects.filter((p) => p.columnId === 'col_90' && !p.isInTreaty && !p.isCompleted);
+  // Filtragem dos projetos ativos por faixa de prazo (excluindo concluídos)
+  const dangerProjects = projects.filter(isProjectInDanger);
+  const completedProjects = projects.filter(isProjectCompleted);
+  const treatyProjects = projects.filter((p) => (p.isInTreaty || p.columnId === 'col_treaty') && !isProjectCompleted(p));
+  const alert45Projects = projects.filter((p) => (p.columnId === 'col_45' || p.columnId === 'col_30') && !isProjectCompleted(p) && !p.isInTreaty);
+  const op60Projects = projects.filter((p) => p.columnId === 'col_60' && !isProjectCompleted(p) && !p.isInTreaty);
+  const safe90Projects = projects.filter((p) => p.columnId === 'col_90' && !isProjectCompleted(p) && !p.isInTreaty);
 
-  const kvApproved = projects.filter((p) => p.kvStatus === 'aprovada').length;
-  const kvInReview = projects.filter((p) => p.kvStatus === 'em_aprovacao').length;
-  const kvPending = projects.filter((p) => !p.kvStatus || p.kvStatus === 'nao_enviado').length;
-
-  const proacProjects = projects.filter((p) => p.lawMechanism === 'PROAC' || (p.lawMechanism && p.lawMechanism.toUpperCase().includes('PROAC')));
-  const agendaVivaCount = proacProjects.filter((p) => p.agendaVivaRegistered).length;
-  const proacSystemCount = proacProjects.filter((p) => p.proacSystemRegistered).length;
+  const countDanger = dangerProjects.length;
+  const countCompleted = completedProjects.length;
+  const countTreaty = treatyProjects.length;
 
   const handlePrintPdf = () => {
     PdfSnapshotService.printKanbanSnapshot({
@@ -56,50 +54,22 @@ export const DailyReportModal: React.FC<DailyReportModalProps> = ({ isOpen, onCl
       systemName: 'Quest Deadline Control',
       generatedAt: new Date().toISOString(),
       totalProjects: projects.length,
-      criticalCount: risk32.length,
+      criticalCount: countDanger,
     });
   };
 
   const buildEmailContent = () => {
     const dateFormatted = new Date().toLocaleDateString('pt-BR');
-    const timeFormatted = new Date().toLocaleTimeString('pt-BR');
     const recipientEmails = DEFAULT_RECIPIENTS.map((r) => r.email).join(',');
 
-    const subject = `📊 [RELATÓRIO DIÁRIO QUEST CONSULT - ${dateFormatted}] Controle Geral de Prazos & Projetos`;
+    const subject = `[QUEST CONSULT - ${dateFormatted}] Relatório de Prazos Vencidos / Vincendos`;
 
-    const criticalList = risk32.length === 0
-      ? '✅ Nenhum projeto em risco crítico hoje.'
-      : risk32.map((p) => `• [${p.code || 'S/C'}] ${p.name} | Vence em: ${p.daysRemaining ?? 'N/D'} dias | Status: ${p.status}`).join('\n');
+    const body = `Prezados,
 
-    const body = `Prezados (Catelani, TK, Lucas e Bruno),
+Atualização:
+Segue anexo relatório de prazos vencidos/vincendos referente aos projetos em questão. Qualquer dúvida devemos alinhar os próximos passos, fico à disposição.
 
-Segue o Relatório Diário Consolidado de Controle de Prazos e Projetos da Quest Consult gerado em ${dateFormatted} às ${timeFormatted}.
-
-📊 RESUMO EXECUTIVO DO KANBAN:
-• Total Geral de Projetos: ${totalProjects}
-• 🔴 32 Dias (Limite Legal de Prorrogação / Risco Crítico): ${risk32.length} projeto(s)
-• 🟠 45 Dias (Alerta de Prorrogação): ${alert45.length} projeto(s)
-• 🔵 60 Dias (Atenção Operacional): ${op60.length} projeto(s)
-• 🟢 90 Dias (Prazo Confortável): ${safe90.length} projeto(s)
-• 🟣 Em Tratativa (Prorrogação Solicitada): ${inTreaty.length} projeto(s)
-• 🏁 Concluídos / Finalizados: ${countCompleted} projeto(s)
-
-🎨 STATUS KV / ARTE DIGITAL:
-• Aprovadas: ${kvApproved}
-• Em Aprovação: ${kvInReview}
-• Pendente de Envio: ${kvPending}
-
-🏛️ CONFORMIDADE PROAC (${proacProjects.length} Projetos):
-• Cadastrado no Agenda Viva: ${agendaVivaCount}/${proacProjects.length}
-• Cadastrado no Sistema PROAC: ${proacSystemCount}/${proacProjects.length}
-
-🚨 PROJETOS EM RISCO CRÍTICO (32 DIAS - AÇÃO IMEDIATA):
-${criticalList}
-
-* O relatório completo em PDF (formato paisagem executivo) foi gerado automaticamente pelo sistema para anexo nesta mensagem.
-
-Atenciosamente,
-Bruno Britto (bruno.britto@questconsult.com.br)
+Att: Bruno Britto
 Quest Consult • Gestão de Prazos & Compliance`;
 
     return { recipientEmails, subject, body };
@@ -109,7 +79,7 @@ Quest Consult • Gestão de Prazos & Compliance`;
     setIsSending(true);
     setSendError(null);
     try {
-      // 1. Baixar/Gerar o PDF paisagem executivo
+      // 1. Baixar/Imprimir o PDF executivo paisagem sem modal sobreposto
       handlePrintPdf();
 
       // 2. Registrar no log de notificações interno
@@ -135,7 +105,7 @@ Quest Consult • Gestão de Prazos & Compliance`;
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="no-print fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
       <div className="relative bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in duration-200 my-8">
         
         {/* Header Modal */}
@@ -146,13 +116,13 @@ Quest Consult • Gestão de Prazos & Compliance`;
             </div>
             <div>
               <h2 className="text-base font-bold flex items-center gap-2">
-                <span>Relatório Diário Geral por E-mail</span>
-                <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.2 rounded-full font-semibold">
-                  Diário às 08h00
+                <span>Relatório de Prazos por E-mail</span>
+                <span className="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">
+                  Toda Segunda-feira às 08h00
                 </span>
               </h2>
-              <p className="text-xs text-quest-400">
-                Envio automático do status consolidado de prazos, KV digital e conformidade PROAC
+              <p className="text-xs text-quest-300">
+                Impressão executiva em modo paisagem com envio de instrução por e-mail para a diretoria
               </p>
             </div>
           </div>
@@ -165,114 +135,103 @@ Quest Consult • Gestão de Prazos & Compliance`;
         </div>
 
         {/* Conteúdo */}
-        <div className="p-6 space-y-5 max-h-[80vh] overflow-y-auto text-xs">
+        <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto text-xs">
           
-          {/* Destinatários Fixos Cadastrados */}
-          <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
+          {/* Destinatários Oficiais */}
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-bold text-slate-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <h3 className="font-bold text-slate-800 uppercase tracking-wider text-[10.5px] flex items-center gap-1.5">
                 <Users className="w-3.5 h-3.5 text-sky-600" />
-                <span>Destinatários Oficiais do Relatório Diário (4)</span>
+                <span>Destinatários Oficiais do Relatório (4)</span>
               </h3>
-              <span className="text-[10px] text-emerald-700 bg-emerald-100 font-bold px-2 py-0.2 rounded">
-                Configurados
+              <span className="text-[9.5px] text-emerald-700 bg-emerald-100 font-bold px-2 py-0.2 rounded">
+                Catelani, TK, Lucas e Bruno Britto
               </span>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-slate-700">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-slate-700">
               {DEFAULT_RECIPIENTS.map((rec) => (
-                <div key={rec.email} className="p-2 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                  <p className="font-bold text-slate-900">{rec.name}</p>
-                  <p className="text-[11px] font-mono text-sky-700">{rec.email}</p>
-                  <p className="text-[10px] text-slate-400 mt-0.5">{rec.role}</p>
+                <div key={rec.email} className="p-1.5 bg-white rounded-lg border border-slate-200 text-[11px]">
+                  <p className="font-bold text-slate-900 leading-tight">{rec.name}</p>
+                  <p className="text-[10px] font-mono text-sky-700">{rec.email}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Resumo do Relatório Atual */}
-          <div>
-            <h3 className="font-bold text-slate-800 uppercase tracking-wider text-[11px] mb-2">
-              Resumo Consolidado do Painel de Prazos
-            </h3>
+          {/* Mensagem de Instrução do E-mail */}
+          <div className="p-3.5 bg-sky-50/70 border border-sky-200 rounded-xl space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-sky-950 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-sky-700" />
+                <span>Instrução enviada no corpo do e-mail</span>
+              </h3>
+              <span className="text-[10px] bg-sky-200 text-sky-900 font-bold px-2 py-0.5 rounded">
+                Padronizada
+              </span>
+            </div>
+            <div className="bg-white p-3 rounded-lg border border-sky-200 text-slate-800 font-mono text-[11px] whitespace-pre-line leading-relaxed shadow-2xs">
+              {`Prezados,
 
-            {/* Grid 4 Colunas Kanban */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center mb-3">
+Atualização:
+Segue anexo relatório de prazos vencidos/vincendos referente aos projetos em questão. Qualquer dúvida devemos alinhar os próximos passos, fico à disposição.
+
+Att: Bruno Britto
+Quest Consult • Gestão de Prazos & Compliance`}
+            </div>
+            <p className="text-[10.5px] text-sky-800">
+              ℹ️ O detalhamento de cada projeto é consultado exclusivamente no <strong>PDF paisagem anexo</strong>, mantendo o corpo do e-mail limpo e direto.
+            </p>
+          </div>
+
+          {/* Panorama de Prazos Vencidos / Vincendos do Anexo PDF */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="font-bold text-slate-800 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+                <Printer className="w-3.5 h-3.5 text-slate-600" />
+                <span>Conteúdo do Relatório em Anexo (Modo Paisagem)</span>
+              </h3>
+              <span className="text-[10px] font-semibold text-slate-500">
+                Prazos Ativos (90, 60, 45, 32 Dias e Tratativa)
+              </span>
+            </div>
+
+            {/* Grid 4 Colunas + Tratativa */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
               <div className="p-2 rounded-lg bg-red-50 border border-red-200">
-                <p className="text-[10px] font-bold text-red-700 uppercase">32d Risco</p>
-                <p className="text-xl font-black text-red-800">{risk32.length}</p>
-                <p className="text-[9px] text-red-600">Limite Prorrogação</p>
+                <p className="text-[9.5px] font-bold text-red-700 uppercase">32d Risco</p>
+                <p className="text-lg font-black text-red-800">{countDanger}</p>
+                <p className="text-[8.5px] text-red-600">Limite Prorrogação</p>
               </div>
 
               <div className="p-2 rounded-lg bg-amber-50 border border-amber-200">
-                <p className="text-[10px] font-bold text-amber-700 uppercase">45 Dias</p>
-                <p className="text-xl font-black text-amber-800">{alert45.length}</p>
-                <p className="text-[9px] text-amber-600">Alerta Técnico</p>
+                <p className="text-[9.5px] font-bold text-amber-700 uppercase">45 Dias</p>
+                <p className="text-lg font-black text-amber-800">{alert45Projects.length}</p>
+                <p className="text-[8.5px] text-amber-600">Alerta Técnico</p>
               </div>
 
               <div className="p-2 rounded-lg bg-sky-50 border border-sky-200">
-                <p className="text-[10px] font-bold text-sky-700 uppercase">60 Dias</p>
-                <p className="text-xl font-black text-sky-800">{op60.length}</p>
-                <p className="text-[9px] text-sky-600">Operacional</p>
+                <p className="text-[9.5px] font-bold text-sky-700 uppercase">60 Dias</p>
+                <p className="text-lg font-black text-sky-800">{op60Projects.length}</p>
+                <p className="text-[8.5px] text-sky-600">Operacional</p>
               </div>
 
               <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200">
-                <p className="text-[10px] font-bold text-emerald-700 uppercase">90 Dias</p>
-                <p className="text-xl font-black text-emerald-800">{safe90.length}</p>
-                <p className="text-[9px] text-emerald-600">Prazo Seguro</p>
+                <p className="text-[9.5px] font-bold text-emerald-700 uppercase">90 Dias</p>
+                <p className="text-lg font-black text-emerald-800">{safe90Projects.length}</p>
+                <p className="text-[8.5px] text-emerald-600">Prazo Seguro</p>
+              </div>
+
+              <div className="p-2 rounded-lg bg-purple-50 border border-purple-200 col-span-2 sm:col-span-1">
+                <p className="text-[9.5px] font-bold text-purple-700 uppercase">Tratativa</p>
+                <p className="text-lg font-black text-purple-800">{countTreaty}</p>
+                <p className="text-[8.5px] text-purple-600">Prorrogação pedida</p>
               </div>
             </div>
 
-            {/* Sub-métricas: KV, PROAC, Tratativa e Concluídos */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
-              {/* KV Status */}
-              <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg">
-                <p className="font-bold text-slate-800 mb-1 text-[11px]">KV / Arte Digital</p>
-                <div className="space-y-0.5 text-[10.5px]">
-                  <p className="flex justify-between">
-                    <span className="text-emerald-700">✓ Aprovadas:</span>
-                    <strong>{kvApproved}</strong>
-                  </p>
-                  <p className="flex justify-between">
-                    <span className="text-amber-700">⏳ Em Aprovação:</span>
-                    <strong>{kvInReview}</strong>
-                  </p>
-                  <p className="flex justify-between">
-                    <span className="text-slate-500">⚪ Pendentes:</span>
-                    <strong>{kvPending}</strong>
-                  </p>
-                </div>
-              </div>
-
-              {/* PROAC Conformidade */}
-              <div className="p-2.5 bg-amber-50/70 border border-amber-200 rounded-lg">
-                <p className="font-bold text-amber-900 mb-1 text-[11px]">PROAC ({proacProjects.length})</p>
-                <div className="space-y-0.5 text-[10.5px]">
-                  <p className="flex justify-between">
-                    <span>Agenda Viva:</span>
-                    <strong>{agendaVivaCount}/{proacProjects.length}</strong>
-                  </p>
-                  <p className="flex justify-between">
-                    <span>Sis. PROAC:</span>
-                    <strong>{proacSystemCount}/{proacProjects.length}</strong>
-                  </p>
-                </div>
-              </div>
-
-              {/* Tratativa */}
-              <div className="p-2.5 bg-purple-50/70 border border-purple-200 rounded-lg">
-                <p className="font-bold text-purple-900 mb-1 text-[11px]">Em Tratativa</p>
-                <p className="text-sm font-black text-purple-950 mt-1">{inTreaty.length} projetos</p>
-                <p className="text-[9.5px] text-purple-700 mt-0.5">Prorrogação solicitada</p>
-              </div>
-
-              {/* Concluídos */}
-              <div className="p-2.5 bg-teal-50/70 border border-teal-200 rounded-lg">
-                <p className="font-bold text-teal-900 mb-1 text-[11px]">Concluídos</p>
-                <p className="text-sm font-black text-teal-950 mt-1">{countCompleted} projetos</p>
-                <p className="text-[9.5px] text-teal-700 mt-0.5">PC apresentada / aprovada</p>
-              </div>
-            </div>
+            <p className="text-[10px] text-slate-500 mt-2 text-right">
+              ✓ Os <strong>{countCompleted} projetos concluídos</strong> foram desconsiderados do relatório de prazos vencidos/vincendos.
+            </p>
           </div>
 
           {/* Feedback de envio */}
@@ -280,10 +239,10 @@ Quest Consult • Gestão de Prazos & Compliance`;
             <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl space-y-1 text-emerald-900 animate-in fade-in">
               <div className="flex items-center gap-2 font-bold text-xs text-emerald-800">
                 <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>PDF Gerado & Mensagem aberta no Gmail com sucesso!</span>
+                <span>PDF Paisagem Gerado & E-mail aberto no Gmail com sucesso!</span>
               </div>
               <p className="text-[11px] text-emerald-700">
-                A nova mensagem no <strong>Gmail (Google Chrome)</strong> foi aberta conectada em <strong>bruno.britto@questconsult.com.br</strong> com os 4 destinatários pré-preenchidos (Catelani, TK, Lucas e Bruno Britto) e o resumo executivo formatado. Basta anexar o PDF gerado e clicar em <strong>Enviar</strong>.
+                A nova mensagem no <strong>Gmail</strong> foi aberta conectada em <strong>bruno.britto@questconsult.com.br</strong> com os 4 destinatários pré-preenchidos e a instrução padrão formatada. Basta anexar o PDF gerado e clicar em <strong>Enviar</strong>.
               </p>
             </div>
           )}

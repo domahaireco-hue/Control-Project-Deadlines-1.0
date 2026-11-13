@@ -1,17 +1,17 @@
 'use client';
 
 import React from 'react';
-import { 
-  UploadCloud, 
-  Plus, 
-  Bell, 
-  Play, 
-  Printer, 
-  Mail, 
-  Send, 
-  LogOut, 
-  UserCheck, 
-  Trash2 
+import {
+  UploadCloud,
+  Plus,
+  Bell,
+  Play,
+  Printer,
+  Mail,
+  Send,
+  LogOut,
+  UserCheck,
+  Trash2
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { useAuth } from '@/context/AuthContext';
@@ -59,13 +59,13 @@ export const Header: React.FC<HeaderProps> = ({
     <header className="bg-quest-900 border-b border-quest-800 text-white shadow-lg sticky top-0 z-30">
       <div className="w-full max-w-[1920px] mx-auto px-2 sm:px-4 lg:px-6 py-3">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          
+
           {/* Logo & Identidade Corporativa (Versão Horizontal sem Borda) */}
           <div className="flex items-center space-x-3.5">
             <h1 className="flex items-center select-none">
-              <img 
-                src="/logo.png" 
-                alt="Quest" 
+              <img
+                src="/logo.png"
+                alt="Quest"
                 className="h-8 sm:h-9 w-auto object-contain shrink-0 drop-shadow-xs hover:opacity-95 transition-opacity"
               />
             </h1>
@@ -110,15 +110,15 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Ações e Controles */}
           <div className="flex flex-wrap items-center gap-2">
-            
-            {/* Botão Relatório Diário E-mail */}
+
+            {/* Botão Relatório por E-mail */}
             <button
               onClick={onOpenDailyReport}
-              title="Abrir painel de disparo diário de relatório geral em PDF por e-mail para Catelani, TK, Lucas e Bruno Britto"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white shadow-xs transition-all"
+              title="Abrir painel de envio do relatório de prazos por e-mail para Catelani, TK, Lucas e Bruno Britto (Segunda-feira)"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg bg-sky-700 hover:bg-sky-600 text-white shadow-xs transition-all"
             >
-              <Mail className="w-3.5 h-3.5 text-indigo-200" />
-              <span>Relatório Diário (E-mail)</span>
+              <Mail className="w-3.5 h-3.5 text-sky-200" />
+              <span>Relatório por E-mail</span>
             </button>
 
 
@@ -181,7 +181,7 @@ export const Header: React.FC<HeaderProps> = ({
             {/* Perfil do Usuário Logado & Logout */}
             {user && (
               <div className="flex items-center gap-2 pl-2 border-l border-quest-800">
-                <div 
+                <div
                   className="flex items-center gap-2 py-1 px-2.5 rounded-xl bg-quest-800/90 border border-quest-700/80 shadow-2xs"
                   title={`Conectado como ${user.name} (${user.email})`}
                 >

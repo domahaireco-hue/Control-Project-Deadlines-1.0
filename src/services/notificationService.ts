@@ -6,6 +6,7 @@
  */
 
 import { CardMoveEvent, NotificationRecipient, NotificationLog, KanbanColumnId, Project } from '@/types';
+import { isProjectCompleted, isProjectInDanger } from './spreadsheetService';
 
 export const DEFAULT_RECIPIENTS: NotificationRecipient[] = [
   {
@@ -83,11 +84,14 @@ class NotificationService {
   public async onCardMove(event: CardMoveEvent): Promise<NotificationLog> {
     const fromName = COLUMN_NAMES[event.fromColumn] || event.fromColumn;
     const toName = COLUMN_NAMES[event.toColumn] || event.toColumn;
-    const isCritical = event.toColumn === 'col_risk' || event.toColumn === 'col_32';
+    const isCompleted = event.toColumn === 'col_completed';
+    const isCritical = (event.toColumn === 'col_risk' || event.toColumn === 'col_32') && !isCompleted;
 
-    const subject = isCritical
-      ? `🚨 [ALERTA CRÍTICO QUEST CONSULT - 32 DIAS] Projeto "${event.projectName}" entrou no limite legal de prorrogação!`
-      : `ℹ️ [Quest Deadline Control] Movimentação: "${event.projectName}" movido para ${toName}`;
+    const subject = isCompleted
+      ? `✅ [Quest Deadline Control] Conclusão: "${event.projectName}" concluído / prestação de contas apresentada`
+      : isCritical
+        ? `🚨 [ALERTA CRÍTICO QUEST CONSULT - 32 DIAS] Projeto "${event.projectName}" entrou no limite legal de prorrogação!`
+        : `ℹ️ [Quest Deadline Control] Movimentação: "${event.projectName}" movido para ${toName}`;
 
     const body = `
 Prezados,
@@ -130,67 +134,32 @@ Quest Consult
   }
 
   /**
-   * Dispara o Relatório Diário Geral com anexo/dados para os 4 destinatários fixos
+   * Dispara o Relatório Semanal de Prazos Vencidos/Vincendos em PDF paisagem para os 4 destinatários fixos
+   * Envia uma mensagem limpa de instrução orientando o acompanhamento do anexo em PDF paisagem.
    */
   public async sendDailySummaryReport(projects: Project[]): Promise<{ log: NotificationLog; summary: any }> {
     const dateFormatted = new Date().toLocaleDateString('pt-BR');
-    const timeFormatted = new Date().toLocaleTimeString('pt-BR');
 
-    const totalProjects = projects.length;
-    const risk32 = projects.filter((p) => (p.columnId === 'col_risk' || p.columnId === 'col_32') && !p.isInTreaty);
-    const alert45 = projects.filter((p) => (p.columnId === 'col_45' || p.columnId === 'col_30') && !p.isInTreaty);
-    const op60 = projects.filter((p) => p.columnId === 'col_60' && !p.isInTreaty);
-    const safe90 = projects.filter((p) => p.columnId === 'col_90' && !p.isInTreaty);
-    const inTreaty = projects.filter((p) => p.isInTreaty || p.status.includes('Prestação') || p.status.includes('Não precisa'));
+    const dangerProjects = projects.filter(isProjectInDanger);
+    const completedProjects = projects.filter(isProjectCompleted);
+    const inTreatyProjects = projects.filter((p) => (p.isInTreaty || p.columnId === 'col_treaty') && !isProjectCompleted(p));
 
-    const kvApproved = projects.filter((p) => p.kvStatus === 'aprovada').length;
-    const kvInReview = projects.filter((p) => p.kvStatus === 'em_aprovacao').length;
-    const kvPending = projects.filter((p) => !p.kvStatus || p.kvStatus === 'nao_enviado').length;
+    const subject = `[QUEST CONSULT - ${dateFormatted}] Relatório de Prazos Vencidos / Vincendos`;
 
-    const subject = `📊 [RELATÓRIO DIÁRIO QUEST CONSULT - ${dateFormatted}] Controle Geral de Prazos & Projetos`;
+    const summaryText = `Prezados,
 
-    const summaryText = `
-RELATÓRIO GERAL DIÁRIO DE CONTROLE DE PRAZOS - QUEST CONSULT
-Data de Emissão: ${dateFormatted} às ${timeFormatted}
+Atualização:
+Segue anexo relatório de prazos vencidos/vincendos referente aos projetos em questão. Qualquer dúvida devemos alinhar os próximos passos, fico à disposição.
 
-DESTINATÁRIOS:
-${this.recipients.map((r) => `• ${r.name} <${r.email}>`).join('\n')}
-
-RESUMO EXECUTIVO DO KANBAN:
-• Total de Projetos Cadastrados: ${totalProjects}
-• 🔴 32 Dias (Limite Legal de Prorrogação / Risco): ${risk32.length} projeto(s)
-• 🟠 45 Dias (Alerta de Prorrogação): ${alert45.length} projeto(s)
-• 🔵 60 Dias (Atenção Operacional): ${op60.length} projeto(s)
-• 🟢 90 Dias (Prazo Confortável): ${safe90.length} projeto(s)
-• 🟣 Projetos em Tratativa (Prestação de Contas / Concluídos): ${inTreaty.length} projeto(s)
-
-STATUS DE ARTES / KV DIGITAL:
-• Aprovadas: ${kvApproved}
-• Em Aprovação: ${kvInReview}
-• Pendente de Envio: ${kvPending}
-
-PROJETOS CRÍTICOS (32 DIAS - AÇÃO IMEDIATA):
-${
-  risk32.length === 0
-    ? 'Nenhum projeto em risco crítico hoje.'
-    : risk32
-        .map(
-          (p) =>
-            `- [${p.code}] ${p.name} | ${p.lawMechanism} | Vence em: ${p.daysRemaining ?? 'N/D'} dias | KV: ${p.kvStatus || 'Pendente'}`
-        )
-        .join('\n')
-}
-
-Para visualizar o painel completo ou baixar o PDF em modo paisagem, acesse:
-http://localhost:3000
-    `.trim();
+Att: Bruno Britto
+Quest Consult • Gestão de Prazos & Compliance`;
 
     const log: NotificationLog = {
       id: `daily_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       timestamp: new Date().toISOString(),
       recipients: this.recipients.map((r) => r.email),
       subject,
-      preview: `Relatório Geral Diário enviado para ${this.recipients.length} destinatários (${risk32.length} críticos em 32 dias)`,
+      preview: `Instrução de relatório enviada para ${this.recipients.length} destinatários (Anexo PDF Paisagem de Prazos)`,
       status: 'SENT_MOCK',
     };
 
@@ -201,12 +170,10 @@ http://localhost:3000
     return {
       log,
       summary: {
-        totalProjects,
-        risk32Count: risk32.length,
-        alert45Count: alert45.length,
-        op60Count: op60.length,
-        safe90Count: safe90.length,
-        inTreatyCount: inTreaty.length,
+        dangerProjectsCount: dangerProjects.length,
+        dangerProjects,
+        completedCount: completedProjects.length,
+        inTreatyCount: inTreatyProjects.length,
         recipients: this.recipients,
         body: summaryText,
       },

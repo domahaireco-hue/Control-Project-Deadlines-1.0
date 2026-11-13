@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AgentMailService } from '@/services/agentMailService';
 import { ProjectService } from '@/services/projectService';
+import { isProjectCompleted } from '@/services/spreadsheetService';
 import { isSupabaseAdminConfigured } from '@/lib/supabaseAdmin';
 import initialProjectsData from '@/data/initialProjects.json';
 import { Project } from '@/types';
@@ -29,9 +30,9 @@ export async function GET(request: NextRequest) {
       allProjects = initialProjectsData as Project[];
     }
 
-    // Filtra projetos atualmente em tratativa
+    // Filtra projetos atualmente em tratativa (desconsiderando projetos concluídos)
     const treatyProjects = allProjects.filter(
-      (p) => p.isInTreaty || p.columnId === 'col_treaty'
+      (p) => (p.isInTreaty || p.columnId === 'col_treaty') && !isProjectCompleted(p)
     );
 
     if (treatyProjects.length === 0) {

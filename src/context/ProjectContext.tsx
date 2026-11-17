@@ -952,7 +952,18 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Importar Planilha Excel (.xlsx / .csv) com opção de substituir base
   const importSpreadsheet = useCallback(
     async (buffer: ArrayBuffer, replaceAll: boolean = false): Promise<ImportResult> => {
-      const baseProjects = replaceAll ? [] : projects;
+      // Sempre mescla contra o estado ATUAL do banco (e não o cache local do navegador),
+      // evitando que uma importação feita com dados desatualizados recrie projetos já existentes.
+      let baseProjects: Project[] = replaceAll ? [] : projects;
+      if (!replaceAll && isSupabaseConfigured) {
+        const { data, error } = await ProjectService.fetchAllProjects();
+        if (error || !data) {
+          throw new Error(
+            `Não foi possível ler a base atual no Supabase antes de importar (${error?.message || 'sem dados'}). Importação cancelada para evitar duplicidades.`
+          );
+        }
+        baseProjects = data;
+      }
       const { projects: updatedList, result } = parseSpreadsheetBuffer(buffer, baseProjects);
 
       // Sincronização obrigatória e estrita com o Supabase: sem fallback
@@ -1009,7 +1020,20 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const { updatedProjects, result } = await FunnelService.checkAndAdvanceFunnel(projects, force);
         setProjects(updatedProjects);
         if (isSupabaseConfigured) {
-          await ProjectService.saveProjectsBatch(updatedProjects);
+          // Grava somente os projetos que de fato mudaram. Regravar a lista inteira do navegador
+          // podia reinserir projetos excluídos ou sobrescrever edições de outros usuários.
+          const originalById = new Map(projects.map((p) => [p.id, p]));
+          const changed = updatedProjects.filter((u) => {
+            const o = originalById.get(u.id);
+            return (
+              !o ||
+              o.columnId !== u.columnId ||
+              o.daysRemaining !== u.daysRemaining ||
+              o.isCompleted !== u.isCompleted ||
+              o.isInTreaty !== u.isInTreaty
+            );
+          });
+          await ProjectService.saveProjectsBatch(changed);
         }
         return result;
       } finally {

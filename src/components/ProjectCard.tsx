@@ -227,6 +227,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit }) => 
 
     const isAbandoned = diffDays >= 15 && !project.isCompleted;
 
+    // A data da última alteração não é exibida no card; só aparece o alerta de projeto parado (15+ dias)
+    if (!isAbandoned) return null;
+
     return (
       <div 
         className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium border transition-colors ${

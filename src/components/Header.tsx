@@ -10,8 +10,7 @@ import {
   Mail,
   Send,
   LogOut,
-  UserCheck,
-  Trash2
+  UserCheck
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { useAuth } from '@/context/AuthContext';
@@ -30,9 +29,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenNotifications,
   onOpenDailyReport,
 }) => {
-  const { projects, historyLogs, isAdvancingFunnel, runFunnelAdvance, clearAllProjects, syncStatus } = useProjects();
+  const { projects, historyLogs, isAdvancingFunnel, runFunnelAdvance, syncStatus } = useProjects();
   const { user, logout } = useAuth();
-  const isBrunoAdmin = user?.email?.toLowerCase().includes('bruno.britto') || user?.id === 'usr_bruno';
 
   const handleAdvanceFunnel = async () => {
     const res = await runFunnelAdvance(false);
@@ -151,18 +149,6 @@ export const Header: React.FC<HeaderProps> = ({
               <Plus className="w-3.5 h-3.5" />
               <span>Novo Projeto</span>
             </button>
-
-            {/* Botão Limpar Base para Nova Importação (Exclusivo Administrador Bruno Britto) */}
-            {isBrunoAdmin && (
-              <button
-                onClick={clearAllProjects}
-                title="Limpar todos os projetos para importar a planilha atualizada (Exclusivo Administrador)"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg bg-rose-950/70 hover:bg-rose-900 border border-rose-800/80 text-rose-300 hover:text-white shadow-xs transition-all"
-              >
-                <Trash2 className="w-3.5 h-3.5 text-rose-400" />
-                <span>Limpar Base</span>
-              </button>
-            )}
 
             {/* Botão Notificações */}
             <button

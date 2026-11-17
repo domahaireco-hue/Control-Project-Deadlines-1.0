@@ -392,13 +392,16 @@ export function parseSpreadsheetBuffer(
 ): { projects: Project[]; result: ImportResult } {
   const workbook = XLSX.read(buffer, { type: 'array', cellDates: true });
   
+  // Uma única cópia mutável por projeto, compartilhada entre o mapa de busca e a lista final,
+  // para que as atualizações vindas da planilha sejam efetivamente aplicadas e salvas.
+  const workingProjects: Project[] = currentProjects.map((p) => ({ ...p }));
   const updatedProjectsMap = new Map<string, Project>();
-  currentProjects.forEach((p) => {
-    updatedProjectsMap.set(p.id, { ...p });
+  workingProjects.forEach((p) => {
+    updatedProjectsMap.set(p.id, p);
     if (p.code && p.code !== EMPTY_CELL_FALLBACK) {
-      updatedProjectsMap.set(`code:${p.code.toLowerCase()}`, { ...p });
+      updatedProjectsMap.set(`code:${p.code.toLowerCase()}`, p);
     }
-    updatedProjectsMap.set(`name:${normalizeString(p.name)}`, { ...p });
+    updatedProjectsMap.set(`name:${normalizeString(p.name)}`, p);
   });
 
   const result: ImportResult = {
@@ -410,7 +413,7 @@ export function parseSpreadsheetBuffer(
     sheets: workbook.SheetNames,
   };
 
-  const finalProjectsList: Project[] = [...currentProjects];
+  const finalProjectsList: Project[] = workingProjects;
 
   for (const sheetName of workbook.SheetNames) {
     const sheet = workbook.Sheets[sheetName];

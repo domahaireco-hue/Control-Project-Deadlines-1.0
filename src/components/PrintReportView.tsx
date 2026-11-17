@@ -9,6 +9,8 @@ interface PrintReportViewProps {
   selectedMechanism?: string;
   searchQuery?: string;
   forceScreenVisible?: boolean;
+  /** Quando informado (somente na visualização em tela), cada linha abre o projeto para edição */
+  onProjectClick?: (project: Project) => void;
 }
 
 export const PrintReportView: React.FC<PrintReportViewProps> = ({
@@ -16,6 +18,7 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
   selectedMechanism = 'Todos',
   searchQuery = '',
   forceScreenVisible = false,
+  onProjectClick,
 }) => {
   const currentDate = new Date().toLocaleString('pt-BR', {
     day: '2-digit',
@@ -236,15 +239,23 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
                       return (
                         <tr
                           key={proj.id}
+                          onClick={onProjectClick ? () => onProjectClick(proj) : undefined}
+                          title={onProjectClick ? 'Clique para abrir e editar o projeto' : undefined}
                           className={`border-b border-slate-300 ${idx % 2 === 0 ? 'bg-white' : 'bg-slate-50/70'
-                            }`}
+                            } ${onProjectClick ? 'cursor-pointer hover:bg-sky-50 transition-colors' : ''}`}
                         >
                           <td className="p-1 border border-slate-300 text-center text-slate-500 font-mono text-[9px]">
                             {idx + 1}
                           </td>
 
                           <td className="p-1 border border-slate-300 font-semibold text-slate-900 leading-tight">
-                            {proj.name}
+                            {onProjectClick ? (
+                              <span className="text-sky-800 underline decoration-sky-300 underline-offset-2 hover:text-sky-600">
+                                {proj.name}
+                              </span>
+                            ) : (
+                              proj.name
+                            )}
                             {proj.client && proj.client !== EMPTY_CELL_FALLBACK && (
                               <span className="block font-normal text-[9px] text-slate-500">
                                 Proponente: {proj.client}

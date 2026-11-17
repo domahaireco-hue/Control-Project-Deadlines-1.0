@@ -132,6 +132,7 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({ onEditProject }) => {
             selectedMechanism={selectedMechanism}
             searchQuery={searchQuery}
             forceScreenVisible
+            onProjectClick={onEditProject}
           />
         </div>
       )}

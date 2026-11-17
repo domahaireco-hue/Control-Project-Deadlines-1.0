@@ -8,8 +8,7 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   Info,
-  Loader2,
-  Trash2 
+  Loader2
 } from 'lucide-react';
 import { useProjects } from '@/context/ProjectContext';
 import { ImportResult } from '@/types';
@@ -20,7 +19,7 @@ interface UploadModalProps {
 }
 
 export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => {
-  const { importSpreadsheet, clearAllProjects, projects } = useProjects();
+  const { importSpreadsheet, projects } = useProjects();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [dragActive, setDragActive] = useState(false);
@@ -173,21 +172,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({ isOpen, onClose }) => 
                   </p>
                 </div>
               </label>
-
-              {projects.length > 0 && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (clearAllProjects()) {
-                      alert('Base de projetos limpa com sucesso! Agora você pode importar sua nova planilha.');
-                    }
-                  }}
-                  className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 rounded-lg transition-colors shrink-0"
-                >
-                  <Trash2 className="w-3.5 h-3.5 text-rose-500" />
-                  <span>Limpar Base Agora ({projects.length})</span>
-                </button>
-              )}
             </div>
           )}
 

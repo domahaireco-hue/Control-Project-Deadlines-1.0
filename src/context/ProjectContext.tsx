@@ -6,10 +6,29 @@ import { notificationService } from '@/services/notificationService';
 import { FunnelService, FunnelAdvanceResult } from '@/services/funnelService';
 import { parseSpreadsheetBuffer } from '@/services/spreadsheetService';
 import { ProjectService } from '@/services/projectService';
-import { AgentMailService } from '@/services/agentMailService';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import initialProjectsData from '@/data/initialProjects.json';
+
+/**
+ * Pede ao servidor o alerta imediato de tratativa. Espera o projeto ser salvo antes,
+ * porque o servidor lê os dados do banco (o navegador não tem mais a chave do AgentMail).
+ */
+async function requestTreatyAlert(projectId: string, saving: Promise<unknown> | null): Promise<void> {
+  try {
+    if (saving) await saving;
+    const res = await fetch('/api/alerts/treaty', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ projectId }),
+    });
+    if (!res.ok) {
+      console.error('[ProjectContext] Falha ao solicitar alerta de tratativa:', res.status, await res.text());
+    }
+  } catch (err) {
+    console.error('[ProjectContext] Falha ao solicitar alerta de tratativa:', err);
+  }
+}
 
 export const KANBAN_COLUMNS: KanbanColumnConfig[] = [
   {
@@ -649,13 +668,11 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setProjects((prev) => prev.map((p) => (p.id === cardId ? updatedProject : p)));
 
       // Persistência no Supabase
-      if (isSupabaseConfigured) {
-        ProjectService.saveProject(updatedProject);
-      }
+      const saving = isSupabaseConfigured ? ProjectService.saveProject(updatedProject) : null;
 
-      // Dispara alerta imediato via AgentMail para catelani@questconsult.com.br se entrou em tratativa
-      if (isMovingToTreaty) {
-        AgentMailService.sendTreatyImmediateAlert(updatedProject, getActiveUserName());
+      // Alerta imediato (enviado pelo servidor) para catelani@questconsult.com.br se entrou em tratativa
+      if (isMovingToTreaty && !project.isInTreaty) {
+        requestTreatyAlert(updatedProject.id, saving);
       }
 
       const moveEvent: CardMoveEvent = {
@@ -772,12 +789,11 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       })
     );
 
-    if (updatedProj && isSupabaseConfigured) {
-      ProjectService.saveProject(updatedProj);
-    }
+    const saving = updatedProj && isSupabaseConfigured ? ProjectService.saveProject(updatedProj) : null;
 
+    // Só alerta quando o projeto ACABOU de entrar em tratativa
     if (updatedProj && (updatedProj as Project).isInTreaty) {
-      AgentMailService.sendTreatyImmediateAlert(updatedProj as Project, getActiveUserName());
+      requestTreatyAlert((updatedProj as Project).id, saving);
     }
   }, [getActiveUserName]);
 
@@ -891,6 +907,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateProject = useCallback((id: string, updates: Partial<Project>, logNote?: string) => {
     const now = new Date().toISOString();
     let updatedProj: Project | null = null;
+    let enteredTreaty = false;
 
     setProjects((prev) =>
       prev.map((p) => {
@@ -904,6 +921,14 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         } else if (updates.isCompleted === false && targetCol === 'col_completed') {
           targetCol = 'col_90';
         }
+
+        // Mantém a marca de tratativa coerente com a coluna quando ela muda pelo formulário
+        // (antes, tirar um projeto da coluna "Em Tratativa" pela edição deixava isInTreaty preso em true).
+        if (updates.isInTreaty === undefined && updates.columnId && updates.columnId !== p.columnId) {
+          if (targetCol === 'col_treaty') updates.isInTreaty = true;
+          else if (p.columnId === 'col_treaty') updates.isInTreaty = false;
+        }
+        enteredTreaty = !p.isInTreaty && (updates.isInTreaty === true || (targetCol === 'col_treaty' && p.columnId !== 'col_treaty'));
 
         const changes: { field: string; from: any; to: any }[] = [];
         (Object.keys(updates) as (keyof Project)[]).forEach((key) => {
@@ -932,12 +957,11 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       })
     );
 
-    if (updatedProj && isSupabaseConfigured) {
-      ProjectService.saveProject(updatedProj);
-    }
+    const saving = updatedProj && isSupabaseConfigured ? ProjectService.saveProject(updatedProj) : null;
 
-    if (updatedProj && (updatedProj as Project).isInTreaty) {
-      AgentMailService.sendTreatyImmediateAlert(updatedProj as Project, getActiveUserName());
+    // Antes alertava a cada edição de um projeto que já estava em tratativa; agora só na entrada
+    if (updatedProj && enteredTreaty) {
+      requestTreatyAlert((updatedProj as Project).id, saving);
     }
   }, [getActiveUserName]);
 

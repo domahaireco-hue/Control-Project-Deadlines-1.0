@@ -9,7 +9,21 @@
 import crypto from 'crypto';
 import { AuthUser } from '@/types';
 
-const SECRET = process.env.SESSION_SECRET || 'quest_consult_super_secret_session_key_2026_jwt_token';
+// O repositório é público: a chave de sessão precisa vir do ambiente (SESSION_SECRET), senão
+// qualquer pessoa poderia gerar um token válido.
+// TRANSIÇÃO: enquanto SESSION_SECRET não for cadastrada na Vercel, usa o valor antigo para não
+// derrubar os logins atuais. Remover este valor depois de cadastrar a variável.
+const LEGACY_SESSION_SECRET = 'quest_consult_super_secret_session_key_2026_jwt_token';
+let warnedLegacySecret = false;
+function getSessionSecret(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (secret && secret.length >= 32) return secret;
+  if (!warnedLegacySecret) {
+    console.warn('[serverAuth] SESSION_SECRET não configurada: usando a chave antiga (transição, inseguro).');
+    warnedLegacySecret = true;
+  }
+  return LEGACY_SESSION_SECRET;
+}
 const SALT = process.env.AUTH_SALT || 'QUEST_CONSULT_SECURE_SALT_2026';
 
 export interface ServerUserRecord {
@@ -91,7 +105,7 @@ export function createSessionToken(user: AuthUser): string {
   };
 
   const payloadEncoded = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = crypto.createHmac('sha256', SECRET).update(payloadEncoded).digest('base64url');
+  const signature = crypto.createHmac('sha256', getSessionSecret()).update(payloadEncoded).digest('base64url');
 
   return `${payloadEncoded}.${signature}`;
 }
@@ -105,7 +119,7 @@ export function verifySessionToken(token: string): AuthUser | null {
   const [payloadEncoded, signature] = token.split('.');
   if (!payloadEncoded || !signature) return null;
 
-  const expectedSignature = crypto.createHmac('sha256', SECRET).update(payloadEncoded).digest('base64url');
+  const expectedSignature = crypto.createHmac('sha256', getSessionSecret()).update(payloadEncoded).digest('base64url');
 
   try {
     const isValidSignature = crypto.timingSafeEqual(Buffer.from(signature, 'utf8'), Buffer.from(expectedSignature, 'utf8'));

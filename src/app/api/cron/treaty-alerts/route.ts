@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AgentMailService } from '@/services/agentMailService';
 import { ProjectService } from '@/services/projectService';
 import { isProjectCompleted } from '@/services/spreadsheetService';
-import { isSupabaseAdminConfigured } from '@/lib/supabaseAdmin';
+import { isSupabaseAdminConfigured, getSupabaseAdmin } from '@/lib/supabaseAdmin';
 import initialProjectsData from '@/data/initialProjects.json';
 import { Project } from '@/types';
 
@@ -71,18 +71,17 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Atualiza a data do último envio no Supabase
-    if (isSupabaseAdminConfigured) {
-      const updatedProjects = allProjects.map((p) => {
-        if (p.isInTreaty || p.columnId === 'col_treaty') {
-          return {
-            ...p,
-            lastTreatyAlertAt: now.toISOString(),
-          };
-        }
-        return p;
-      });
-      await ProjectService.serverSaveProjectsBatch(updatedProjects);
+    // Atualiza SOMENTE a data do último envio dos projetos em tratativa
+    // (antes regravava a base inteira, podendo sobrescrever edições feitas ao mesmo tempo).
+    const admin = getSupabaseAdmin();
+    if (admin) {
+      const { error } = await admin
+        .from('projects')
+        .update({ last_treaty_alert_at: now.toISOString() })
+        .in('id', treatyProjects.map((p) => p.id));
+      if (error) {
+        console.error('[API /api/cron/treaty-alerts] Falha ao gravar data do último alerta:', error);
+      }
     }
 
     return NextResponse.json({

@@ -9,13 +9,19 @@
 
 import { Project } from '@/types';
 import { isProjectCompleted } from './spreadsheetService';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
-const AGENTMAIL_API_KEY =
-  process.env.AGENTMAIL_API_KEY ||
-  'am_us_51fa636ef919e5a8f7a699f8742423c7b3a4d19b4988361a3047583d10e76839';
-
-const AGENTMAIL_INBOX_ID =
-  process.env.AGENTMAIL_INBOX_ID || 'b-6243@agentmail.to';
+// Somente servidor (o navegador não importa mais este arquivo).
+// TRANSIÇÃO: a chave antiga fica como reserva só até AGENTMAIL_API_KEY / AGENTMAIL_INBOX_ID serem
+// cadastrados na Vercel. Ela já está exposta no histórico público do repositório e será trocada;
+// depois disso estas duas reservas devem ser removidas.
+const LEGACY_AGENTMAIL_API_KEY = 'am_us_51fa636ef919e5a8f7a699f8742423c7b3a4d19b4988361a3047583d10e76839';
+const LEGACY_AGENTMAIL_INBOX_ID = 'b-6243@agentmail.to';
+const AGENTMAIL_API_KEY = process.env.AGENTMAIL_API_KEY || LEGACY_AGENTMAIL_API_KEY;
+const AGENTMAIL_INBOX_ID = process.env.AGENTMAIL_INBOX_ID || LEGACY_AGENTMAIL_INBOX_ID;
+if (!process.env.AGENTMAIL_API_KEY) {
+  console.warn('[AgentMailService] AGENTMAIL_API_KEY não configurada: usando a chave antiga (transição).');
+}
 
 const TREATY_ALERT_RECIPIENT = 'catelani@questconsult.com.br';
 const WHATSAPP_ALERT_PHONE = '5511992434262';
@@ -42,15 +48,51 @@ export interface SendMailResult {
 
 export class AgentMailService {
   /**
-   * Envia e-mail através da API REST do AgentMail
+   * Envia e-mail através da API REST do AgentMail e grava o resultado em notification_logs,
+   * para que seja possível conferir depois se cada alerta saiu (ou por que falhou).
    */
-  public static async sendEmail({
+  public static async sendEmail(params: SendMailParams): Promise<SendMailResult> {
+    const result = await this.deliver(params);
+    await this.logDelivery(params, result);
+    return result;
+  }
+
+  private static async logDelivery(params: SendMailParams, result: SendMailResult): Promise<void> {
+    const admin = getSupabaseAdmin();
+    if (!admin) return;
+    try {
+      const { error } = await admin.from('notification_logs').insert({
+        id: `mail_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+        timestamp: new Date().toISOString(),
+        recipients: params.to,
+        subject: params.subject,
+        preview: params.text.slice(0, 500),
+        status: result.success ? 'SENT' : 'FAILED',
+        event_data: {
+          channel: 'agentmail',
+          inbox: AGENTMAIL_INBOX_ID || null,
+          messageId: result.messageId || null,
+          error: result.error || null,
+          attachments: (params.attachments || []).map((a) => a.filename),
+        },
+      });
+      if (error) console.error('[AgentMailService] Falha ao gravar log de envio:', error);
+    } catch (err) {
+      console.error('[AgentMailService] Falha ao gravar log de envio:', err);
+    }
+  }
+
+  private static async deliver({
     to,
     subject,
     text,
     html,
     attachments,
   }: SendMailParams): Promise<SendMailResult> {
+    if (!AGENTMAIL_API_KEY || !AGENTMAIL_INBOX_ID) {
+      console.error('[AgentMailService] AGENTMAIL_API_KEY / AGENTMAIL_INBOX_ID não configurados no ambiente.');
+      return { success: false, error: 'AgentMail não configurado (variáveis de ambiente ausentes)' };
+    }
     try {
       const payload: Record<string, any> = {
         to,
@@ -83,9 +125,14 @@ export class AgentMailService {
         return { success: false, error: data?.message || 'Erro na API AgentMail' };
       }
 
+      if (!data?.message_id) {
+        console.error('[AgentMailService] Resposta sem message_id:', data);
+        return { success: false, error: 'AgentMail respondeu sem message_id (envio não confirmado)' };
+      }
+
       return {
         success: true,
-        messageId: data?.message_id,
+        messageId: data.message_id,
       };
     } catch (err: any) {
       console.error('[AgentMailService] Falha de conexão com AgentMail:', err);

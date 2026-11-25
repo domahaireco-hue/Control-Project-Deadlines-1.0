@@ -67,6 +67,16 @@ export function parseDate(value: unknown): { isoDate: string | null; formatted: 
     return { isoDate: null, formatted: EMPTY_CELL_FALLBACK };
   }
 
+  // Célula de data lida com cellDates: true chega como objeto Date (ex.: 2027-02-15T03:00:28Z).
+  // Soma 12h antes de pegar o dia em UTC para não cair no dia anterior/seguinte por causa do fuso.
+  if (value instanceof Date) {
+    if (isNaN(value.getTime())) {
+      return { isoDate: null, formatted: EMPTY_CELL_FALLBACK };
+    }
+    const iso = new Date(value.getTime() + 12 * 60 * 60 * 1000).toISOString().split('T')[0];
+    return { isoDate: iso, formatted: formatDatePtBr(iso) };
+  }
+
   // Se já for número de série do Excel (ex: 45000, 46022, 46387)
   if (typeof value === 'number') {
     if (value <= 0 || value < 1000) {
@@ -424,16 +434,20 @@ export function parseSpreadsheetBuffer(
     const isProac = lawMechanism === 'PROAC' || normalizeString(sheetName).includes('proac') || lawMechanism === 'MG - ICMS';
 
     // 1. Procura a linha de cabeçalho
+    // Para na PRIMEIRA linha que tiver uma célula exatamente "Projeto". Antes o laço só parava quando o índice
+    // era diferente de 1, então com o cabeçalho na linha 2 ele continuava e podia tomar a primeira linha de
+    // dados (ex.: "Projeto Finalizado") como cabeçalho, perdendo esse projeto e lendo as colunas errado.
     let headerRowIndex = 1;
-    for (let r = range.s.r; r <= Math.min(range.e.r, range.s.r + 5); r++) {
+    let headerFound = false;
+    for (let r = range.s.r; r <= Math.min(range.e.r, range.s.r + 5) && !headerFound; r++) {
       for (let c = range.s.c; c <= range.e.c; c++) {
         const cell = sheet[XLSX.utils.encode_cell({ r, c })];
-        if (cell && normalizeString(String(cell.v)).includes('projeto')) {
+        if (cell && normalizeString(String(cell.v)) === 'projeto') {
           headerRowIndex = r;
+          headerFound = true;
           break;
         }
       }
-      if (headerRowIndex !== 1) break;
     }
 
     // Identifica índices de colunas
